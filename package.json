@@ -1,0 +1,19 @@
+{
+  "name": "xtrike-bot",
+  "version": "1.0.0",
+  "description": "A multi-purpose discord bot written in discord.js for the \"Xtrike Now!\" discord server.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "multi-purpose"
+  ],
+  "author": "Xyrus Roldan <xyruskurt11@gmail.com> (https://xysites.blogspot.com)",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
