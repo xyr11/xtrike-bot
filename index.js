@@ -23,8 +23,13 @@ app.get('/', function(request, response) {
 
 client.on('ready', () => {
 	console.log(`Logged in successfully as ${client.user.tag}!`);
-	console.log('I am online!');
-	client.user.setActivity(`${prefix}help | ${prefix}info`, { type: 'LISTENING' });
+	client.user.setPresence({
+		game: {
+			name: `${prefix}help | ${prefix}info`,
+			type: 'LISTENING'
+		},
+		status: 'idle'
+	})
 });
 
 // variables
