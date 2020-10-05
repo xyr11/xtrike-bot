@@ -28,7 +28,7 @@ client.on('ready', () => {
 			name: `${prefix}help | ${prefix}info`,
 			type: 'LISTENING'
 		},
-		status: 'idle'
+		status: 'online'
 	})
 });
 
@@ -81,7 +81,7 @@ client.on("message", function(message) {
 			const pingHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('Ping command help')
-				.setDescription(`Get the bot's ping. \n \nSyntax: \`${prefix}ping\``)
+				.setDescription(`Get the bot's ping. \n \nCommand: \`${prefix}ping\``)
 				.addField('Other names', '`ping`, `latency`, `speed`, `network`'); 
 			return message.channel.send(pingHelp);
 		}
@@ -111,7 +111,7 @@ client.on("message", function(message) {
 			const infoHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('Info command help')
-				.setDescription(`Used to say the information about the bot. \n \nSyntax: \`${prefix}owner\``)
+				.setDescription(`Used to say the information about the bot. \n \nCommand: \`${prefix}owner\``)
 				.addField('Other names', '`info`, `bot`, `botinfo`, `xtrikebot`'); 
 			return message.channel.send(infoHelp);
 		}
@@ -173,7 +173,7 @@ client.on("message", function(message) {
 			const echoHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('Echo comamnd help')
-				.setDescription(`Used to echo some text. \n \nSyntax: \`${prefix}echo <text>\``)
+				.setDescription(`Used to echo some text. \n \nCommand: \`${prefix}echo <text>\``)
 				.addField('Other names', '`echo`, `repeat`');
 			return message.channel.send(echoHelp);
 		} else if (!args.length) {
@@ -237,8 +237,8 @@ client.on("message", function(message) {
 			const sadHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('`Sad` comamnd help')
-				.setDescription(`Let <@748386919460765706> cheer you if you're sad! \n \nSyntax: \`${prefix}sad\``)
-				.addFields('Other names', '`sad`, `(`, `\'(` ') ; 
+				.setDescription(`Let <@748386919460765706> cheer you if you're sad! \n \nCommand: \`${prefix}sad\``)
+				.addField('Other names', '`sad`, `(`, `\'(` ') ; 
 			return message.channel.send(sadHelp);
 		}
 		message.channel.send(`Hey ${userIDCall}, there's no room to be sad. Cheering on you through the hard times! <3`);
@@ -249,8 +249,8 @@ client.on("message", function(message) {
 			const echoHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('`Online` comamnd help')
-				.setDescription(`Used to determine the number of online members. \n \nSyntax: \`${prefix}online\``)
-				.addFields('Other names', '`online`, `on`, `active`') ; 
+				.setDescription(`Used to determine the number of online members. \n \nCommand: \`${prefix}online\``)
+				.addField('Other names', '`online`, `on`, `active`') ; 
 			return message.channel.send(echoHelp);
 		}
 		message.guild.members.fetch().then(fetchedMembers => {
@@ -299,7 +299,7 @@ client.on("message", function(message) {
 			const msgHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('Message command help')
-				.setDescription(`Used to create a message in the form of an embed. \n \nSyntax: \`${prefix}message\``)
+				.setDescription(`Used to create a message in the form of an embed. \n \nCommand: \`${prefix}message\``)
 				.addField('Other names', '`message`, `messages`, `msg`');
 			return message.channel.send(msgHelp);
 		}
@@ -376,7 +376,7 @@ client.on("message", function(message) {
 			const hmmHelp = new MessageEmbed()
 				.setColor('#77e4ff')
 				.setTitle('Hmm command help')
-				.setDescription(`Used to reply "hmm..." to the user \n \nSyntax: \`${prefix}hmm\``)
+				.setDescription(`Used to reply "hmm..." to the user \n \nCommand: \`${prefix}hmm\``)
 				.addField('Other names', '`hmm`, `hmmmmmm`, `hmmm`'); 
 			return message.channel.send(hmmHelp);
 		}
