@@ -1,12 +1,12 @@
 # Xtrike Bot (@Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
 
-**Quick links for pro users**: [Version and Changelogs](https://github.com/xyr11/xtrike-bot/new/main?readme=1#version)
+**Quick links for pro users**: [Version and Changelogs](#version)
 
 ## Features
 Not much is implememented now, so there still isn't an official release.
 
-The current features are: (it might be a little disappointing, move on to [the next stuff](https://github.com/xyr11/xtrike-bot/new/main?readme=1#technical-info))
+The current features are: (it might be a little disappointing at this moment)
 
 + Checks how many are offline
 + Creates a "message" embed
