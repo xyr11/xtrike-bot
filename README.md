@@ -18,11 +18,18 @@ The current features are: (it might be a little disappointing, move on to [the n
 + `online`
 + `echo`
 + `owner` (to be deprecated)
-+ `sad` (**beta** command)
-+ `uptime` (**beta** command)
-+ `restart` (**beta** command)
++ `sad` (**beta command**)
++ `uptime` (**beta command**)
++ `restart` (**beta command**)
 + `ping`
 + `help`
+
+#### Planned commands
+(To be implemented)
+
++ `define` (currently on development, uses the [Oxford Dictionary API](https://developer.oxforddictionaries.com))
++ `addtasks`/`addnotes` (planning stage)
++ `invite`
 
 ## Technical info
 
