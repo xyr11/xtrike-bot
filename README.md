@@ -62,7 +62,7 @@ Alpha 0.4 (Not **yet** official)
 
 #### Known Bugs
 + Custom status resetting (probably after app restart on heroku)
-+ Message command doesn't display anything when first input is endline, e.g. `;msg \n Endline`
++ Message command doesn't display anything when first input is endline, e.g. `;msg <next line>Hi!`
 
 ### Alpha 0.3
 
