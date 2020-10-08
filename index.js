@@ -220,14 +220,14 @@ client.on("message", function(message) {
 	} else if (commandList.info.indexOf(command) >= 0) { // info command
 		if(args[0] === "help") {
 			helpEmbed.title = 'Info command help';
-			helpEmbed.description = `Used to say the information about the bot. \n \nCommand: \`${prefix}owner\``;
+			helpEmbed.description = `Used to say the information about the bot. \n \nCommand: \`${prefix}info\``;
 			helpEmbed.fields = {name: 'Other names', value: `\`${commandList.info.join('`, `')}\``};
 			return message.channel.send({embed: helpEmbed}).catch(console.error);
 		}
 		// INFO EMBED
 		const infoEmbed = {color: botCo};
 		infoEmbed.title = 'Xtrike Bot 0.3 (Alpha)';
-		infoEmbed.description(`Xtrike Bot is a multi-purpose bot. \nIt is currently under development of <@681766482304434187>.`);
+		infoEmbed.description = `Xtrike Bot is a multi-purpose bot. \nIt is currently under development of <@681766482304434187>.`;
 		infoEmbed.fields = {name: `:tools: Version 0.4 (alpha) `, value: `More features coming soon!`};
 		infoEmbed.fields = {name: `Commands`, value: `Prefix: \`${prefix}\` \nFor commands, type \`${prefix}commands\`.`};
 		return message.channel.send(infoEmbed);
@@ -375,6 +375,7 @@ client.on("message", function(message) {
 			];
 			helpEmbed.footer = {text: '⚠ Currently under development'};
 		}
+		var helpTypes = ["up", "misc", "bot"];
 		if (args[0] === "up") {
 			helpEmbed.title = ':chart_with_upwards_trend: Upcoming Commands';
 			helpEmbed.description = `These are the commands that you can expect to be implemented in the future! \nSyntax: \`${prefix}<command> help\``;
@@ -391,7 +392,8 @@ client.on("message", function(message) {
 			helpEmbed.fields = {name: 'Commands:', value: `\`${commandTypes.bot.join('`, `')}\``};
 			helpEmbed.footer = {text: 'You can suggest more on #code-suggestions!'};
 		}
-		return message.channel.send({embed: helpEmbed}).catch(console.error);
+		if(!args.length || helpTypes.indexOf(args[0]) >= 0)
+			return message.channel.send({embed: helpEmbed}).catch(console.error);
 	}
 });
 
