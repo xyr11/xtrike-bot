@@ -13,23 +13,25 @@ The current features are: (it might be a little disappointing at this moment)
 + Other stuff for fancy purposes only
 
 ### List of Commands
-+ `info`
-+ `hmm`
 + `online`
++ `hmm`
 + `echo`
-+ `owner` (to be deprecated)
-+ `sad` (**beta command**)
-+ `uptime` (**beta command**)
-+ `restart` (**beta command**)
++ `sad`
++ `message`
 + `ping`
++ `uptime`
 + `help`
 
 #### Planned commands
 (To be implemented)
 
-+ `define` (currently on development, uses the [Oxford Dictionary API](https://developer.oxforddictionaries.com))
-+ `addtasks`/`addnotes` (planning stage)
-+ `invite`
++ subject
++ reqs
++ play
++ execute
++ timer
++ clock
++ oxford (currently on development, uses the [Oxford Dictionary API](https://developer.oxforddictionaries.com))
 
 ## Technical info
 
@@ -42,10 +44,30 @@ The bot is hosted on [Heroku](https://heroku.com "heroku.com") with the "Free" a
 Modules: discord.js, express
 
 ## Version
-Alpha 0.3 (Not **yet** official)
+Alpha 0.4 (Not **yet** official)
 
-### Alpha 0.3 Changelog
+### Alpha 0.4
+
+#### Changelogs
+```diff
++ Updated so that you can invite it on your own server!
++ Optimized all embed variables!
++ Revamped and optimized command finding to instead use arrays rather than your typical OR function
++ Added oxford to beta commands
++ Fixed a bug in the online command that it doesn't include Idle and Do Not Disturb members
++ Made uptime an official command
+- Remove owner, no-sleep and restart commands completely
+- Removed support for custom emojis from support server and replaced it with discord-wide emojis
 ```
+
+#### Known Bugs
++ Custom status resetting (probably after app restart on heroku)
++ Message command doesn't display anything when first input is endline, e.g. `;msg \n Endline`
+
+### Alpha 0.3
+
+#### Changelog
+```diff
 + Fixed echo command that crashes the bot after not mentioning someone
 + Added "no-sleep", "restart", "hmm" commands
 + Added "sad", "uptime", and "restart" as beta commands
@@ -62,4 +84,4 @@ Discord *Support* Server: [discord.gg/yTFSQpU](https://discord.gg/yTFSQpU)
 
 Thanks for checking out!
 
-[Not a rickroll](https://www.youtube.com/watch?v=dQw4w9WgXcQ "Hover text")
+A Tutorial for making Discord bots using `discord.js`? [Visit this!](https://www.youtube.com/watch?v=dQw4w9WgXcQ "Not yet finished")
