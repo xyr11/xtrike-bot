@@ -63,6 +63,7 @@ Alpha 0.4 (Not **yet** official)
 #### Known Bugs
 + Custom status resetting (probably after app restart on heroku)
 + Message command doesn't display anything when first input is endline, e.g. `;msg <next line>Hi!`
++ Uptime command resetting ([see in Issues](https://github.com/xyr11/xtrike-bot/issues/5))
 
 ### Alpha 0.3
 
