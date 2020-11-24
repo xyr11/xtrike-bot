@@ -180,10 +180,8 @@ client.on("message", function(message) {
 			// modify pingEmbed
 			pingEmbed.title = ':ping_pong: Ping Pong!';
 			pingEmbed.description = `The bot's latency is: **${ping}ms**. \nAPI latency is: **${botPing}ms**.`;
-			// send embed
-			m.channel.send({embed: pingEmbed});
-			// delete first message
-			return m.delete().catch(console.error);
+			// edit embed
+			m.edit({embed: pingEmbed});
 		});
 	} else if (commandList.uptime.indexOf(command) >= 0) { // uptime command
 		if (args[0] === "help") {
