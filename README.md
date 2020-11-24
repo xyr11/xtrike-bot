@@ -1,13 +1,12 @@
-# Xtrike Bot (@Xtrike#3034)
+# Xtrike Bot (Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
 
-**Quick links for pro users**: [Version and Changelogs](#version)
+**Jump to**: [Version and Changelogs](#versions)
 
 ## Features
 Not much is implememented now, so there still isn't an official release.
 
-The current features are: (it might be a little disappointing at this moment)
-
+Current features:
 + Checks how many are offline
 + Creates a "message" embed
 + Other stuff for fancy purposes only
@@ -23,7 +22,6 @@ The current features are: (it might be a little disappointing at this moment)
 + `help`
 
 #### Planned commands
-(To be implemented)
 
 + subject
 + reqs
@@ -31,24 +29,39 @@ The current features are: (it might be a little disappointing at this moment)
 + execute
 + timer
 + clock
-+ oxford (currently on development, uses the [Oxford Dictionary API](https://developer.oxforddictionaries.com))
++ oxford
 
 ## Technical info
 
 ### Hosted on
-The bot is hosted on [Heroku](https://heroku.com "heroku.com") with the "Free" account. (I'm justs a poor guy, y'know?)
+The bot is hosted on [Heroku](https://heroku.com "heroku.com") with the "Free" account. [More Info.](https://www.heroku.com/pricing) (see [Alpha 0.5](#alpha-05) for plans)
 
-### Programming languages and modules used
+### Programming language
 [Node.js](https://www.google.com/search?q=node.js "Search on Google") ([Javascript](https://www.google.com/search?q=javascript "Search on Google"))
 
-Modules: discord.js, express
+Modules: discord.js, express, dotenv
 
-## Version
-Alpha 0.4 (Not **yet** official)
+## Versions
+
+### Alpha 0.5
+*currently working on it*
+
+Visit the [official Discord support and Development server](#discord-support-and-development-server) to see its progress!
+
+#### Planned Features
++ Repl.it will be the bot's hosting platform instead of Heroku
++ `ping` command will just edit its embed rather than re-sending messages
++  swearing auto-filter
+
+#### Planned Fixes
++ [Uptime command display resetting #5](https://github.com/xyr11/xtrike-bot/issues/5 "See in Issues")
++ [Custom status resetting](https://github.com/xyr11/xtrike-bot/issues/7 "See in Issues")
++ [Add the command in error messages #4](https://github.com/xyr11/xtrike-bot/issues/4 "See in Issues")
+
 
 ### Alpha 0.4
-
-#### Changelogs
+*the current, live version*
+#### What's New
 ```diff
 + Updated so that you can invite it on your own server!
 + Optimized all embed variables!
@@ -60,14 +73,11 @@ Alpha 0.4 (Not **yet** official)
 - Removed support for custom emojis from support server and replaced it with discord-wide emojis
 ```
 
-#### Known Bugs
-+ Custom status resetting (probably after app restart on heroku)
-+ Message command doesn't display anything when first input is endline, e.g. `;msg <next line>Hi!`
-+ Uptime command resetting ([see in Issues](https://github.com/xyr11/xtrike-bot/issues/5))
+[Current Issues](https://github.com/xyr11/xtrike-bot/issues "See in Issues")
 
 ### Alpha 0.3
 
-#### Changelog
+#### What's New
 ```diff
 + Fixed echo command that crashes the bot after not mentioning someone
 + Added "no-sleep", "restart", "hmm" commands
@@ -78,11 +88,24 @@ Alpha 0.4 (Not **yet** official)
 - No-sleep command deprecated
 ```
 
-## Contact me
+### Alpha 0.2 and 0.1
+The barebones of the bot, with very limited features.
+
+No available data
+
+## Contact links
+### Xyrus Kurt P. Roldan (owner)
+Website: [XYR.codes](https://xyr.codes)
+
 Twitter: [@xy_rus](https://twitter.com/xy_rus)
 
-Discord *Support* Server: [discord.gg/yTFSQpU](https://discord.gg/yTFSQpU)
+Discord server: [🎯 Xtrike Now!](https://discord.gg/yTFSQpU)
 
-Thanks for checking out!
+Other contact links: [xyr.codes/p/contact.html](https://www.xyr.codes/p/contact.html)
 
-A Tutorial for making Discord bots using `discord.js`? [Visit this!](https://www.youtube.com/watch?v=dQw4w9WgXcQ "Not yet finished")
+### Discord Support and Development Server
+Where you can find support about the bot, beta-test versions that the owner is currently working on, or just poke around and discuss about life or something!
+
+Invite link: [discord.gg/x3F22hN](https://discord.gg/x3F22hN)
+
+## *Thanks for checking out!*
