@@ -67,7 +67,8 @@ Visit the [official Discord support and Development server](#discord-support-and
 
 #### What's New
 + `ping` command will just edit its embed rather than re-sending the message
-+ Switched hosting platform from Heroku to Repl.it, Heroku will be our backup
++ Switched hosting platform from Heroku to Repl.it, modules that aren't needed by Repl.it will not be deleted so that local development of the bot is possible and also because Heroku will be our backup platform
++ Removed the owner ID in the main file (index.js) and placed it in the .env file
 
 [Current Issues](https://github.com/xyr11/xtrike-bot/issues "See in Issues")
 
