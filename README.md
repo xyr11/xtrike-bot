@@ -1,3 +1,5 @@
+### *This project has been abandoned*. 
+
 # Xtrike Bot (Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
 
