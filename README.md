@@ -1,7 +1,9 @@
-### *This project has been abandoned*. 
+### *This project has been discontinued, updates will not flow on a regular basis, the bot is offline and unusable, discord support and development server serve no purpose. You can still fork this tho and improve upon it (the [license](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE) still applies), and maybe in the future, I will re-establish Xtrike Bot from its remnants. I also didn't bother to update the wordings in this file, just remember that this project has been discontinued. Thanks and rest in peace, Xtrike Bot.*
 
 # Xtrike Bot (Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
+
+RIP `Aug 2020 - Nov 27, 2020`. You will be missed.
 
 Skip to:
 
