@@ -1,4 +1,4 @@
-### *The development of the bot has been paused, updates will not flow on a regular basis. The bot will resume its development in the 2nd week of December, but this date is tentative. You can still fork this tho and improve upon it (the [license](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE) still applies), and maybe in the future, I will work on this full-time. I also didn't bother to update the wordings in this file, just remember that the development of this bot has been paused.*
+### *The development of the bot has been paused, updates will not flow on a regular basis. The bot will resume its development in unspecified time. You can still fork this though (the [license](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE) still applies), and maybe in the future, I will work on this full-time. I also didn't bother to update the wordings in this file, just remember that the development of this bot has been paused.*
 
 # Xtrike Bot (Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
