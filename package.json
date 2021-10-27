@@ -4,13 +4,10 @@
   "description": "A multi-purpose discord bot written in discord.js.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "run": "node index.js"
   },
-  "keywords": [
-    "multi-purpose"
-  ],
-  "author": "Xyrus Roldan <xyruskurt11@gmail.com> (https://xysites.blogspot.com)",
-  "license": "ISC",
+  "author": "Xyrus Roldan <xyruskurt11@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",

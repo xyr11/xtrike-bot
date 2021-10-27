@@ -1,11 +1,26 @@
 # Xtrike Bot (Xtrike#3034)
 A multi-purpose discord bot written in discord.js.
 
-[![Status][status-shield]][status-link]
-[![Uptime][uptime-shield]][status-link]
+![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724?style=flat-square) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot?style=flat-square)](#license) [![on Replit](https://img.shields.io/badge/on-Replit-blue?style=flat-square)](https://replit.com/@xyr11/xtrike-bot)
+
+## License
+MIT
+
+## Contact
+Xyrus Kurt Roldan - [@xy_rus](https://twitter.com/xy_rus)
+
+## *Thanks for checking out!*
+
+## Notices
+> *10/27/2021: I'm back! Also repository will be [rebooted](https://en.wikipedia.org/wiki/The_big_reset_button_in_the_sky).*
+
+> *December 2020 Notice: Main development of the bot has been paused and updates will not be able to flow on a regular basis. But you can still contribute by forking this repo. I also didn't bother to update the wordings in this file, just remember that the development of this bot has been paused.*
+
+<details>
+<summary>Old README.md</summary>
 
 ## Features
-Not much is implememented now, so there still isn't an official release.
+Not much is implemented now, so there still isn't an official release.
 
 Current features:
 + Checks how many are offline
@@ -101,34 +116,8 @@ Visit the [official Discord support and Development server](#discord-support-and
 ```
 
 ### Alpha 0.2 and 0.1
-The barebones of the bot, with very limited features.
+The bare bones of the bot, with very limited features.
 
 No available data
 
-## Contact
-
-Xyrus Kurt Roldan - [@xy_rus](https://twitter.com/xy_rus)
-
-Project link: <https://github.com/xyr11/xtrike-bot>
-
-Other contact links: <https://xyr.codes/p/contact.html>
-
-### Status Page
-<https://stats.uptimerobot.com/wZXVDuL21x>
-
-### Discord Support and Development Server
-[![Discord server][discord-shield]][discord-invite-link]
-
-Where you can find support about the bot, beta-test versions that the owner is currently working on, or just poke around and discuss about life or something!
-
-## *Thanks for checking out!*
-
-> #### *December 2020 Notice: Main development of the bot has been paused and updates will not be able to flow on a regular basis. But you can still contribute by forking this repo. I also didn't bother to update the wordings in this file, just remember that the development of this bot has been paused.*
-
-
-<!-- MARKDOWN LINKS -->
-[status-shield]: https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724?style=for-the-badge
-[status-link]: https://stats.uptimerobot.com/wZXVDuL21x
-[uptime-shield]: https://img.shields.io/uptimerobot/ratio/7/m786499889-6b41061a49e587f762227724?style=for-the-badge
-[discord-shield]: https://img.shields.io/discord/764355609973227580?style=for-the-badge
-[discord-invite-link]: https://discord.gg/x3F22hN
+</details>
