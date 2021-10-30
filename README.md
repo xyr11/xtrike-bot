@@ -1,15 +1,26 @@
-# Xtrike Bot (Xtrike#3034)
-A multi-purpose discord bot written in discord.js.
+# Xtrike Bot
+A multi-purpose discord bot written in [discord.js](https://discord.js.org).
 
 ![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724?style=flat-square) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot?style=flat-square)](#license) [![on Replit](https://img.shields.io/badge/on-Replit-blue?style=flat-square)](https://replit.com/@xyr11/xtrike-bot)
 
+## Versions
+### 0.1.0
+Rewrite for Discord.js v13 and replaced spaghetti code to an actual command handler. Also, modules, arrow functions, and more Modern Javascript™.
+
+### 0.0.1-0.0.5
+*(Previously known as "Alpha 0.1" to "Alpha 0.5")*
+
+All Discord.js pre-v13 code.
+
 ## License
-MIT
+[MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE)
 
 ## Contact
-Xyrus Kurt Roldan - [@xy_rus](https://twitter.com/xy_rus)
+[@xy_rus on bird app](https://twitter.com/xy_rus) <br>
+[Xtrike#<i>0507</i> on imagine a place](https://discord.com)
 
-## *Thanks for checking out!*
+## Credits
+Huge thank you to [the *How To Make a Discord Bot With Discord.JS v13* playlist by Worn Off Keys](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff.
 
 ## Notices
 > *10/27/2021: I'm back! Also repository will be [rebooted](https://en.wikipedia.org/wiki/The_big_reset_button_in_the_sky).*
