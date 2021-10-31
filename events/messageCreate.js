@@ -1,11 +1,8 @@
 // ? detect ALL new messages
 const { prefix, hasPerms } = require('../config')
 const errorCatch = require('../modules/errorCatch')
-const imageOCR = require('../modules/imageOCR')
 
 module.exports = (client, message) => {
-  imageOCR(message)
-
   // Ignore all bots
   if (message.author.bot) return
 
