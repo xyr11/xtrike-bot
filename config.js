@@ -53,10 +53,11 @@ const config = {
   },
 
   /**
-   * Get the current date and time
+   * Format the date and time with toLocaleString
+   * @param {String} unixTime unix time
    * @returns Date and time based on timezone
    */
-  time: () => new Date().toLocaleString('us', { timeZone: process.env.TIMEZONE ?? 'Etc/UTC' }),
+  time: (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: process.env.TIMEZONE ?? 'Etc/UTC' }),
 
   // permission levels
   permLevels: [

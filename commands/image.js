@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js')
-const { prefix, getUserPerms } = require('../config')
+const { prefix, getUserPerms, time } = require('../config')
 const { ImagesModel, activateChannel, activateServer, deactivateChannel, deactivateServer, filterData } = require('../modules/getImage')
 const Fuse = require('fuse.js')
 
@@ -82,8 +82,15 @@ exports.run = async (client, message, args) => {
   // get all image data
   const data = serverData.data
 
-  if (args[0] === 'debug') {
+  // debug
+  if (args[0] === 'debug' && getUserPerms(message) >= 4) {
     message.channel.send('```json\n' + JSON.stringify(data, undefined, 2) + '\n```')
+  }
+
+  // if there are no arguments passed
+  if (args.length === 0) {
+    message.reply('You need to give me words to search images on.')
+    return
   }
 
   const fuse = new Fuse(data, {
@@ -147,10 +154,9 @@ exports.run = async (client, message, args) => {
     // embed
     embeds.push(new MessageEmbed()
       .setColor(author.hexAccentColor)
-      .setAuthor(author.tag + author.bot ? ' [Bot]' : '', author.avatarURL)
-      .setDescription(`[#${+r + 1} by <@${author.id}>](${url})`)
+      .setAuthor(`#${+r + 1} by ` + author.tag + (author.bot ? ' [Bot]' : ''), author.avatarURL, url)
       .setImage(image)
-      .setTimestamp(when)
+      .setFooter(`Sent on ${time(when)} • Search results for "${args.join(' ')}" on ${time()}`)
     )
   }
   message.reply({

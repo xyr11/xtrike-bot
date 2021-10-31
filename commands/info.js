@@ -22,7 +22,7 @@ exports.run = (client, message, args) => {
         },
         {
           name: '🛠 Current Version',
-          value: 'v0.1.2 [(bot has been rebooted!)](https://github.com/xyr11/xtrike-bot/blob/main/README.md)'
+          value: 'v0.1.3 [(bot has been rebooted!)](https://github.com/xyr11/xtrike-bot/blob/main/README.md)'
         },
         {
           name: 'ℹ More features coming soon!',
