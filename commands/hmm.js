@@ -1,16 +1,16 @@
 exports.info = {
   name: 'hmm',
-  category: 'Miscellaneous',
+  category: 'General',
   description: 'Reply with "hmm..."',
   usage: 'hmm [Optional args]',
-  aliases: ['hmmm', 'hmmmm', 'hmmmmm', 'hmmmmmm'],
+  aliases: ['hmmm', 'hmmmm', 'hmmmmm', 'hmmmmm'],
   permLevel: 'User'
 }
 
 exports.run = (client, message, args) => {
   if (!args.length) {
-    message.reply(`${message.author} hmmmmmm... :thinking:`)
+    message.reply(`${message.author} hmmmmm... :thinking:`)
   } else {
-    message.channel.send(`${args} hmmmmmm... :thinking:`)
+    message.reply(`${args.join(' ')} hmmmmm... :thinking:`)
   }
 }

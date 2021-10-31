@@ -1,7 +1,7 @@
 exports.info = {
   name: 'test',
   category: 'Developer',
-  description: 'test',
+  description: '',
   usage: 'test [Optional args]',
   aliases: ['tests'],
   permLevel: 'Server Owner'

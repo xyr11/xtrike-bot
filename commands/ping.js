@@ -2,8 +2,8 @@ const { colors, pingArea } = require('../config')
 
 exports.info = {
   name: 'ping',
-  category: 'Developer',
-  description: 'ping',
+  category: 'Bot Info',
+  description: "Get the bot's ping. \nNote that this may take a few seconds.",
   usage: 'ping',
   aliases: ['speed', 'latency'],
   permLevel: 'User'
@@ -15,7 +15,7 @@ exports.run = async (client, message, args) => {
   const timeLogs = []
 
   await message.channel.send({
-    embeds: [{ title: 'Pinging...' }]
+    embeds: [{ description: ':person_running: Pinging...' }]
   })
 
     .then(async sentMsg => {

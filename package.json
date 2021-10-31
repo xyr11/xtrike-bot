@@ -4,7 +4,8 @@
   "description": "A multi-purpose discord bot written in discord.js.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "Xyrus Roldan <xyruskurt11@gmail.com>",
   "license": "MIT",
@@ -15,6 +16,9 @@
     "discord.js": "^13.2.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "fuse.js": "^6.4.6",
+    "mongoose": "^6.0.12",
+    "node-fetch": "^2.6.5",
     "nodemon": "^2.0.14"
   }
 }

@@ -2,7 +2,7 @@ const { prefix, colors } = require('../config')
 
 exports.info = {
   name: 'info',
-  category: 'Info',
+  category: 'Bot Info',
   description: 'Show information about the bot',
   usage: 'info',
   aliases: ['bot', 'version'],
@@ -22,7 +22,7 @@ exports.run = (client, message, args) => {
         },
         {
           name: '🛠 Current Version',
-          value: 'v0.1.0 [(bot is being rebooted!)](https://github.com/xyr11/xtrike-bot/blob/main/README.md)'
+          value: 'v0.1.2 [(bot has been rebooted!)](https://github.com/xyr11/xtrike-bot/blob/main/README.md)'
         },
         {
           name: 'ℹ More features coming soon!',

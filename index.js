@@ -5,7 +5,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // read config.json
-const { intents, partials, presence, time } = require('./config')
+const { intents, partials } = require('./config')
 
 // handle errors
 const errorCatch = require('./modules/errorCatch')
@@ -36,18 +36,5 @@ for (const file of events) {
   console.log(chalk.gray(`Loading the ${eventName} event`))
   client.on(eventName, event.bind(null, client))
 }
-
-// log if ready
-client.on('ready', async () => {
-  console.log(chalk.green(`Ready as ${client.user.tag}! (${time()}) 🤖`))
-
-  // presence
-  if (presence.activity) {
-    client.user.setPresence({
-      activities: [{ name: presence.activity, type: presence.activityType ?? '' }],
-      status: presence.status ?? 'online'
-    })
-  }
-})
 
 client.login(process.env.DISCORD_TOKEN)

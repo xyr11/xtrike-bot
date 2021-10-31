@@ -4,11 +4,7 @@ const chalk = require('chalk')
 /** Some cute error emotes for the damned */
 const errEmotes = ['🐞', '🐛', '🚫', '❗']
 
-/**
- * Generate a random number
- * @param {Number} max Max number
- * @returns Random number from 1 to max
- */
+// Generate a random number
 const randNo = max => Math.floor(Math.random() * Math.floor(max))
 
 /**

@@ -1,8 +1,12 @@
 // ? detect ALL new messages
-const { prefix, hasPerms } = require('../config')
+const { prefix, getUserPerms, hasPerms } = require('../config')
 const errorCatch = require('../modules/errorCatch')
+const { fetchImage } = require('../modules/getImage')
 
 module.exports = (client, message) => {
+  // get all images
+  fetchImage(message)
+
   // Ignore all bots
   if (message.author.bot) return
 
@@ -19,6 +23,11 @@ module.exports = (client, message) => {
   // if that command doesn't exist, silently exit and do nothing
   // if they dont have proper permLevels, do nothing too
   if (!cmd || !hasPerms(cmd.info.permLevel, message)) return
+
+  if (cmd.info.isBeta === true && getUserPerms(message) < 4) {
+    message.reply('This command isn\'t really done yet, check back later.')
+    return
+  }
 
   // run command
   message.channel.sendTyping() // bot is typing visual

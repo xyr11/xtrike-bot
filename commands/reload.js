@@ -4,8 +4,8 @@ const chalk = require('chalk')
 exports.info = {
   name: 'reload',
   category: 'Developer',
-  description: 'reload',
-  usage: 'reload',
+  description: '',
+  usage: 'reload [command]',
   aliases: [],
   permLevel: 'lmao'
 }

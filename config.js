@@ -3,9 +3,13 @@ const { Intents } = require('discord.js')
 
 // Inspired by https://github.com/AnIdiotsGuide/guidebot (config.js.example)
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
+
+/**
+ * The holy grail of const variable keeping, the config module!
+ */
 const config = {
 
-  // discord client stuff
+  // Discord client intents and partials
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MESSAGES
@@ -22,21 +26,19 @@ const config = {
     '681766482304434187'
   ],
 
-  // special treatment servers 😞😩
-  specialServers: {
-    one: '764355609973227580',
-    two: '707545242726826138',
-    three: '748355500172640308'
-  },
-
+  // prefix of the bot
   prefix: ';',
 
-  // special channels (all can be found on official support server!)
+  // bot id
+  botId: '748386919460765706',
+
+  // support server server id
   testGuild: '764355609973227580',
+  // special channels (all can be found on official support server!)
   errLog: '781136504382160898',
   pingArea: '904006592347897896',
 
-  // client.user.setPresence
+  // bot presence
   presence: {
     activity: ';help',
     activityType: 'LISTENING',
@@ -50,8 +52,11 @@ const config = {
     green: '#2ecc71'
   },
 
-  // time logging
-  time: () => new Date().toLocaleString('us', { timeZone: 'Asia/Manila' }),
+  /**
+   * Get the current date and time
+   * @returns Date and time based on timezone
+   */
+  time: () => new Date().toLocaleString('us', { timeZone: process.env.TIMEZONE ?? 'Etc/UTC' }),
 
   // permission levels
   permLevels: [
@@ -121,6 +126,12 @@ const config = {
     return userPermLevel
   },
 
+  /**
+   * Check if user has perms in commands
+   * @param {String} permName the name of the perm, commonly used in <command>.info.permLevel
+   * @param {Discord} message Discord  message
+   * @returns Boolean
+   */
   hasPerms: (permName, message) => {
     // find the object that has the same name as the permName
     const perm = config.permLevels.find(l => l.name === permName)
