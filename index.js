@@ -12,7 +12,7 @@ const errorCatch = require('./modules/errorCatch')
 process.on('unhandledRejection', error => errorCatch(error, client))
 
 // initialize client
-const client = new Client({ intents, partials })
+const client = new Client({ intents, partials, ws: { properties: { $browser: 'Discord iOS' } } })
 
 // read the commands folder
 client.commands = new Collection()

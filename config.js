@@ -40,9 +40,9 @@ const config = {
 
   // bot presence
   presence: {
-    activity: ';info',
+    activity: 'bangers like you',
     activityType: 'LISTENING',
-    status: 'dnd'
+    status: 'online'
   },
 
   // colors
