@@ -9,7 +9,7 @@ const { intents, partials } = require('./config')
 
 // handle errors
 const errorCatch = require('./modules/errorCatch')
-process.on('unhandledRejection', error => errorCatch(error, client))
+process.on('unhandledRejection', error => errorCatch(error, client, require('./modules/currentMsg').get()))
 
 // initialize client
 const client = new Client({ intents, partials, ws: { properties: { $browser: 'Discord iOS' } } })

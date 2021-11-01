@@ -32,6 +32,7 @@ module.exports = (client, message) => {
   // run command
   message.channel.sendTyping() // bot is typing visual
   try {
+    require('../modules/currentMsg').save(message) // save the current channel for error tracking
     cmd.run(client, message, args)
   } catch (error) {
     errorCatch(error, client, message)
