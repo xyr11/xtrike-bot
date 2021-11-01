@@ -32,7 +32,7 @@ exports.run = async (client, message, args) => {
   const excluded = excludedChannels.indexOf(channelId) > -1
 
   if (getUserPerms(message) < 2) {
-    message.reply('You need to be a moderator or an admin to be able to do this.')
+    message.reply('You need to be a moderator or have a higher role to be able to do this.')
   } else {
     if (['--activate', '--enable', '--include'].indexOf(args[0]) > -1) {
       if (args[1] === 'channel') {
