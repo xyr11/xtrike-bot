@@ -14,11 +14,11 @@ exports.run = (client, message, args) => {
     embeds: [{
       color: colors.main,
       title: 'Xtrike Bot',
-      description: 'Xtrike Bot is a multi-purpose bot by <@681766482304434187>',
+      description: 'Xtrike Bot is a multi-purpose bot by \n<@681766482304434187>',
       fields: [
         {
           name: ':speech_balloon: Commands',
-          value: `Prefix: \`${prefix}\` \nFor commands, type \`${prefix}commandName\`.` +
+          value: `Prefix: \`${prefix}\` \nFor commands, type \`${prefix}commandName\`.\n` +
             `To get help, enter \`${prefix}help commandName\``
         },
         {
