@@ -1,4 +1,5 @@
 const { colors, pingArea } = require('../config')
+const chalk = require('chalk')
 
 exports.info = {
   name: 'ping',
@@ -22,8 +23,8 @@ exports.run = async (client, message, args) => {
       // send and edit a message 5 times, then get each of their createdTimestamp and Date.now() before being deleted
       message.channel.sendTyping()
       // number of loops
-      let i = args[0] === 'debug' && Number(args[1]) && args[1] > 1 && args[1] < 30 ? args[1] : 5
-      for (i; i--;) {
+      const loops = (args[0] === 'debug' && Number(args[1]) && args[1] > 1 && args[1] < 30) ? args[1] : 5
+      for (let i = loops; i--;) {
         await client.channels.cache.get(pingArea).send('​').then(async msg => {
           message.channel.sendTyping()
           await msg.edit('​​').then(async msg => {
@@ -54,5 +55,6 @@ exports.run = async (client, message, args) => {
           timestamp: Date.now()
         }]
       })
+      console.log(chalk.blue(`Bot ping: ${botPing}ms | API ping: ${clientPing}ms | Count: ${loops} 🏓`))
     })
 }
