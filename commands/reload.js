@@ -1,4 +1,4 @@
-const { time } = require('../config')
+const { prefix, time } = require('../config')
 const chalk = require('chalk')
 
 exports.info = {
@@ -24,6 +24,6 @@ exports.run = (client, message, args) => {
 
   const props = require(`./${commandName}.js`)
   client.commands.set(commandName, props)
-  message.reply(`The command ${commandName} has been reloaded`)
-  console.log(chalk.green(`The command ${commandName} has been reloaded (${time()})`))
+  message.reply(`The command \`${prefix}${commandName}\` has been reloaded`)
+  console.log(chalk.green(`The command ${prefix}${commandName} has been reloaded (${time()})`))
 }
