@@ -32,7 +32,7 @@ All Discord.js pre-v13 code.
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-1. *If you're using Replit*, click the big gray button: [![on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot)
+1. *If you're using Replit*, click the big gray button: [![on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot). After that, go to the "Shell" tab and enter `npm test` to install Node 16.
 
    *If not*, then clone the repository via Git
    ```
