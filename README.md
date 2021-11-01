@@ -5,6 +5,16 @@ A multi-purpose discord bot written in [discord.js](https://discord.js.org).
 
 ## Versions
 
+### 0.1.3
+Re-added `package-lock.json`, updates to the `image` command, better Replit integration, and more:
++ Added include/exclude channel in  `image` command
++ Better `image` command replies
++ Better Replit integration in README
++ Updated `info` text
++ Console logging in ping
++ Changed presence activity
++ Added more emojis in `errorCatch.js`
+
 ### 0.1.2
 Introducing databases and the beta version of the `image` command which finds text in images. Also:
 - added an `env` entry for the timezone
