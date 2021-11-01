@@ -1,27 +1,18 @@
-const { getUserPerms, hasPerms } = require('../config')
+const { MessageEmbed } = require('discord.js')
+const { prefix, colors, hasPerms } = require('../config')
 
 exports.info = {
   name: 'help',
-  category: 'Info',
+  category: 'Bot Info',
   description: 'Show the description of all commands of the bot.',
-  usage: 'help <command name/alias>',
+  usage: '`help <command>`',
   aliases: ['help'],
-  permLevel: 'User',
-  isBeta: true
+  permLevel: 'User'
 }
 
-exports.run = (client, message, args) => {
-  // debug
-  if (args.length === 1 && args[0] === 'debug' && getUserPerms(message) >= 4) {
-    message.reply('```' + JSON.stringify(client.commands) + '```')
-  }
-
-  // get the help command of the help command itself
-  if (!args) {
-    // todo: ye
-
-    return
-  }
+exports.run = async (client, message, args) => {
+  // if there are no args, get the help command of the help command itself
+  if (args.length === 0) args[0] = 'help'
 
   // if there are args, get the first argument and search it up in commands list
   const cmd = client.commands.get(args[0])
@@ -30,13 +21,27 @@ exports.run = (client, message, args) => {
   // if they dont have proper permLevels, do nothing too
   // todo: if that command doesn't exist, say that that command doesn't exist / add those "did you mean x?" stuff in the future
   if (!cmd || !hasPerms(cmd.info.permLevel, message)) {
-    // stuff
-
+    message.reply({
+      embeds: [{
+        color: colors.main,
+        description: 'Sorry, we didn\'t find any command with\n' +
+          `the name \`${cmd}\`. Please try again.`,
+        footer: { text: `Xtrike Bot v${process.env.npm_package_version}` }
+      }]
+    })
     return
   }
 
-  // todo: if that command exist, check if they *should* see the command or not (for reserved commands like restart, reload, etc)
+  const { name, description, usage } = cmd.info
 
-  // todo: if they have proper permLevels, display the cmd.info stuff
-  message.channel.send(cmd)
+  const bot = await client.user.fetch()
+  console.log(bot.avatarURL)
+
+  const embed = new MessageEmbed()
+    .setColor(colors.main)
+    .setTitle(`${prefix}${name} command`)
+    .setDescription(description)
+    .setFooter(`Xtrike Bot v${process.env.npm_package_version}`, bot.avatarURL())
+  if (usage) embed.addFields({ name: 'Usage', value: usage.replace(/^`/gm, '`' + prefix) })
+  message.channel.send({ embeds: [embed] })
 }

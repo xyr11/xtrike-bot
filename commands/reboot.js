@@ -2,7 +2,7 @@ exports.info = {
   name: 'reboot',
   category: 'Developer',
   description: '',
-  usage: 'reboot',
+  usage: '`reboot`',
   aliases: [],
   permLevel: 'lmao'
 }

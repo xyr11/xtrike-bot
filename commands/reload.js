@@ -5,8 +5,8 @@ exports.info = {
   name: 'reload',
   category: 'Developer',
   description: '',
-  usage: 'reload [command]',
-  aliases: [],
+  usage: '`reload [command]`',
+  aliases: ['refresh'],
   permLevel: 'lmao'
 }
 

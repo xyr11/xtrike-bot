@@ -2,9 +2,9 @@ exports.info = {
   name: 'test',
   category: 'Developer',
   description: '',
-  usage: 'test [Optional args]',
+  usage: '`test [args]`',
   aliases: ['tests'],
-  permLevel: 'Server Owner'
+  permLevel: 'User'
 }
 
 exports.run = (client, message, args) => {

@@ -7,7 +7,10 @@ exports.info = {
   name: 'image',
   category: 'Commands',
   description: 'Search for text in images',
-  usage: 'image <WORDS> \nimage',
+  usage: '`image <words>`\n' +
+    '`image --here` to search on current channel only\n' +
+    '`image --deactivate <channel|server>`\n' +
+    '`image --activate <channel|server>`',
   aliases: ['bot', 'version'],
   permLevel: 'User'
 }
