@@ -40,7 +40,7 @@ const config = {
 
   // bot presence
   presence: {
-    activity: ';help',
+    activity: ';info',
     activityType: 'LISTENING',
     status: 'dnd'
   },
