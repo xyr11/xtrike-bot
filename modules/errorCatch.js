@@ -2,7 +2,7 @@ const { errLog, time, colors } = require('../config')
 const chalk = require('chalk')
 
 /** Some cute error emotes for the damned */
-const errEmotes = ['🐞', '🐛', '🚫', '❗']
+const errEmotes = '🐞 🐛 🦟 🐝 🐜 🚫 ❗'.split(' ')
 
 // Generate a random number
 const randNo = max => Math.floor(Math.random() * Math.floor(max))
