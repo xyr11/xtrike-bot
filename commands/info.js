@@ -17,16 +17,17 @@ exports.run = (client, message, args) => {
       description: 'Xtrike Bot is a multi-purpose bot by <@681766482304434187>',
       fields: [
         {
-          name: '💬 Commands',
-          value: `Prefix: \`${prefix}\` \nFor commands, type \`${prefix}commandName\`, case-insensitive`
+          name: ':speech_balloon: Commands',
+          value: `Prefix: \`${prefix}\` \nFor commands, type \`${prefix}commandName\`.` +
+            `To get help, enter \`${prefix}help commandName\``
         },
         {
-          name: '🛠 Current Version',
-          value: 'v0.1.3 [(bot has been rebooted!)](https://github.com/xyr11/xtrike-bot/blob/main/README.md)'
+          name: ':tools: Current Version',
+          value: `Version ${process.env.npm_package_version}`
         },
         {
-          name: 'ℹ More features coming soon!',
-          value: '[See more info](https://github.com/xyr11/xtrike-bot/blob/main/README.md), visit the [GitHub repository](https://github.com/xyr11/xtrike-bot), or join the [support and dev server](https://discord.gg/x3F22hN)'
+          name: ':information_source: More features coming soon!',
+          value: '[See more info](https://github.com/xyr11/xtrike-bot/blob/main/README.md), visit the [GitHub repository](https://github.com/xyr11/xtrike-bot), \nor join the [support and dev server](https://discord.gg/x3F22hN)'
         }
       ]
     }]
