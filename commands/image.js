@@ -7,22 +7,10 @@ exports.info = {
   name: 'image',
   category: 'Commands',
   description: 'Search for text in images',
-  usage: 'image <WORDS>',
+  usage: 'image <WORDS> \nimage',
   aliases: ['bot', 'version'],
   permLevel: 'User'
 }
-
-/*
-[{
-  guildId: '123456',
-  data: [{}, {}, {}, {}, {}],
-  excludedChannels: [
-    '654321',
-    '101010'
-  ],
-  totalToday: 42
-}]
-*/
 
 exports.run = async (client, message, args) => {
   // check if server has activated this command to their servers
@@ -98,7 +86,7 @@ exports.run = async (client, message, args) => {
   // ? now the fun stuff
 
   // get all image data
-  const data = serverData.data
+  let data = serverData.data
 
   // debug
   if (args[0] === 'debug' && getUserPerms(message) >= 4) {
@@ -109,9 +97,10 @@ exports.run = async (client, message, args) => {
   // return silently if server hasn't activated the command yet
   if (!activated || excluded) return
 
+  // if user wants to search on the current channel only
   if (args[0] === '--here') {
-    args.shift()
-    console.log(data)
+    args.shift() // remove the --here part
+    data = data.filter(obj => obj.channel === channelId) // remove all entries that aren't from the same channel
   }
 
   // if there are no arguments passed
