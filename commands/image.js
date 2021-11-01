@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js')
-const { prefix, getUserPerms, time } = require('../config')
+const { prefix, colors, getUserPerms, time } = require('../config')
 const { ImagesModel, activateChannel, activateServer, deactivateChannel, deactivateServer, filterData } = require('../modules/getImage')
 const Fuse = require('fuse.js')
 
@@ -27,7 +27,7 @@ exports.info = {
 exports.run = async (client, message, args) => {
   // check if server has activated this command to their servers
 
-  const guildId = message.guildId
+  const { channelId, guildId } = message
 
   // get server data, if any
   // ? only fetch ONCE, when the `;image` command is used
@@ -36,56 +36,77 @@ exports.run = async (client, message, args) => {
   // if serverData has a value in it then it means that the server has activated the command
   const activated = !!serverData
 
+  const excludedChannels = serverData.excludedChannels
+  const excluded = excludedChannels.indexOf(channelId) > -1
+
   if (getUserPerms(message) < 2) {
     message.reply('You need to be a moderator or an admin to be able to do this.')
   } else {
-    if (args[0] === '--activate' || args[0] === '--enable') {
+    if (['--activate', '--enable', '--include'].indexOf(args[0]) > -1) {
       if (args[1] === 'channel') {
         if (!activated) {
           message.reply(`A moderator or admin hasn't activated this command yet. \nTo enable it, enter \`${prefix}image --activate\``)
-          return
+        } else {
+          if (!excluded) {
+            message.reply(`This channel is already activated. By default, all channels are activated. \nTo deactivate a channel, try \`${prefix}image --deactivate channel\`.`)
+          } else {
+            await activateChannel(guildId, channelId, excludedChannels)
+            message.reply('Successfully included this channel for image monitoring.')
+          }
         }
-        activateChannel(message)
       } else if (!args[1] || (args[1] && args[1] === 'server')) {
         if (activated) {
           message.reply('You have activated this server already!')
         } else {
-          activateServer(message)
+          await activateServer(message)
+          message.reply({
+            content: 'Success!',
+            embeds: [{
+              color: colors.green,
+              description: `:green_circle: Successfully activated the \`${prefix}image\` command for this server`,
+              footer: { text: 'Now send those images!' }
+            }]
+          })
         }
+      }
+      return
+    } else if (['--deactivate', '--disable', '--exclude'].indexOf(args[0]) > -1) {
+      if (!activated) {
+        message.reply(`A moderator or admin hasn't activated this command yet. \nTo enable it, enter \`${prefix}image --activate\``)
         return
       }
-    } else {
-      if (args[0] === '--deactivate' || args[0] === '--disable') {
-        if (!activated) {
-          message.reply(`A moderator or admin hasn't activated this command yet. \nTo enable it, enter \`${prefix}image --activate\``)
-          return
+      if (args[1] === 'channel') {
+        if (excluded) {
+          message.reply('This channel is already excluded!')
+        } else {
+          await deactivateChannel(guildId, channelId, excludedChannels)
+          message.reply('Successfully excluded this channel for image monitoring.')
         }
-        if (args[1] === 'channel') {
-          deactivateChannel(message)
-        } else if (!args[1] || (args[1] && args[1] === 'server')) {
-          if (args[1] === 'server' && args[2] === 'YES') {
-            deactivateServer(message)
-            return
-          } else {
-            message.reply('```When you deactivate the image command, it will remove ALL data regarding sent images in this server shortly after (so if you plan to re-activate later, you cannot search for them.) \nAre you really sure about this? Please enter "image --deactivate server YES" if you\'re sure, and if not you can safely ignore this.```')
-            return
-          }
+      } else if (!args[1] || (args[1] && args[1] === 'server')) {
+        if (args[1] === 'server' && args[2] === 'YES') {
+          await deactivateServer(guildId)
+          message.reply('Successfully deactivated this command!')
+        } else {
+          message.reply('```When you deactivate the image command, it will remove ALL data regarding sent images in this server shortly after (so if you plan to re-activate later, you cannot search for them.) \nAre you really sure about this? Please enter "image --deactivate server YES" if you\'re sure, and if not you can safely ignore this.```')
         }
       }
+      return
     }
   }
 
-  // now the fun stuff
-  // again, return silently if server hasn't activated the command yet
-  if (!activated) return
+  // ? now the fun stuff
 
   // get all image data
   const data = serverData.data
 
   // debug
   if (args[0] === 'debug' && getUserPerms(message) >= 4) {
-    message.channel.send('```json\n' + JSON.stringify(data, undefined, 2) + '\n```')
+    message.reply('```json\n' + JSON.stringify(data, undefined, 2) + '\n```')
+    return
   }
+
+  // return silently if server hasn't activated the command yet
+  if (!activated || excluded) return
 
   // if there are no arguments passed
   if (args.length === 0) {
@@ -109,12 +130,8 @@ exports.run = async (client, message, args) => {
     keys: [
       'text',
       {
-        name: 'username',
+        name: 'author.username',
         weight: 0.3
-      },
-      {
-        name: 'nickname',
-        weight: 0.4
       }
     ]
   })
@@ -125,38 +142,20 @@ exports.run = async (client, message, args) => {
     message.reply('Sorry, I wasn\'t able to find images that contains that text.')
     return
   }
-  /**
-  let description = ''
-  for (const r in result) {
-    const item = result[r].item // the only relevant part
-    files.push(item.image)
-    description += `[#${+r + 1} by <@${item.authorId}>](${item.url})\n`
-  }
-  message.reply({
-    content: `I was able to find ${result.length} image${result.length > 1 ? 's' : ''}:`,
-    embeds: [{
-      title: 'Search results',
-      description,
-      footer: { text: 'Discord removed the ability to attach files in embeds so yeah' }
-    }],
-    files
-  })
-   */
+
   const embeds = []
   let content = `I was able to find ${result.length} image${result.length > 1 ? 's' : ''}:`
   for (const r in result) {
     // results
     const { url, image, author, when } = result[r].item
-
     // add link in content
     content += `\n#${+r + 1} by ${author.tag}: ${url}`
-
     // embed
     embeds.push(new MessageEmbed()
       .setColor(author.hexAccentColor)
       .setAuthor(`#${+r + 1} by ` + author.tag + (author.bot ? ' [Bot]' : ''), author.avatarURL, url)
       .setImage(image)
-      .setFooter(`Sent on ${time(when)} • Search results for "${args.join(' ')}" on ${time()}`)
+      .setFooter(`⏲ ${time(when)} • 🔍 "${args.join(' ')}" on ${time()}`)
     )
   }
   message.reply({
