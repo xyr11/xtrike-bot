@@ -41,9 +41,8 @@ exports.isActivated = async guildId => {
  */
 exports.activateChannel = async (guildId, channelId, excludedChannels) => {
   // remove channel id to excludedChannels (https://stackoverflow.com/a/3954451/12180492)
-  await ImagesModel.updateOne({ guildId: guildId }, {
-    excludedChannels: excludedChannels.splice(excludedChannels.indexOf(channelId), 1)
-  })
+  excludedChannels.splice(excludedChannels.indexOf(channelId), 1)
+  await ImagesModel.updateOne({ guildId }, { excludedChannels })
 }
 
 /**
