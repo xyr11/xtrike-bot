@@ -36,7 +36,8 @@ exports.run = async (client, message, args) => {
   // if serverData has a value in it then it means that the server has activated the command
   const activated = !!serverData
 
-  const excludedChannels = serverData.excludedChannels
+  let excludedChannels = []
+  if (activated) excludedChannels = serverData.excludedChannels
   const excluded = excludedChannels.indexOf(channelId) > -1
 
   if (getUserPerms(message) < 2) {
@@ -107,6 +108,11 @@ exports.run = async (client, message, args) => {
 
   // return silently if server hasn't activated the command yet
   if (!activated || excluded) return
+
+  if (args[0] === '--here') {
+    args.shift()
+    console.log(data)
+  }
 
   // if there are no arguments passed
   if (args.length === 0) {
