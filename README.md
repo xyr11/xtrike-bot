@@ -5,8 +5,38 @@ A multi-purpose discord bot written in [discord.js](https://discord.js.org).
 
 ## Versions
 
+### 0.1.4
+Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging
+
+<details>
+<summary>Changelog</summary>
+
+`;image`
++ Fixed bugs regarding activating the command
++ Added `--here` to search for images in the current channel only
+
+`;help`
++ Re-added the help command
++ Fixed the descriptions and usage of all commands
+
+`.env`
++ Added presence options in `.env` so that changing them can be easier
+
+Error logging
++ Better error logging, the full serialized error will now be sent to the error logging channel and the error.message will be the only thing shown in the current channel
+
+Others
++ Cleaned `config.js`
++ Changed the run command on `.replit` to include installation of Node 16
+
+</details>
+
 ### 0.1.3
 Re-added `package-lock.json`, updates to the `image` command, better Replit integration, and more:
+
+<details>
+<summary>Changelog</summary>
+
 + Added include/exclude channel in  `image` command
 + Better `image` command replies
 + Better Replit integration in README
@@ -14,6 +44,8 @@ Re-added `package-lock.json`, updates to the `image` command, better Replit inte
 + Console logging in ping
 + Changed presence activity
 + Added more emojis in `errorCatch.js`
+
+</details>
 
 ### 0.1.2
 Introducing databases and the beta version of the `image` command which finds text in images. Also:
