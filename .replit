@@ -1,2 +1,2 @@
-run="npm start"
+run="npm test && npm start"
 language="nodejs"
