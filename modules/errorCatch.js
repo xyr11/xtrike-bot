@@ -8,14 +8,29 @@ const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
 /** Generate a random number */
 const randNo = max => Math.floor(Math.random() * Math.floor(max))
 
+/** A variable for recording the current Message variable on commands for error tracking */
+let msg = null
+
 /**
- * Generate an error embed (in current channel and in error logging channel) and message in console
+ * Save the current message here
+ * @param {Message} message Message
+ */
+exports.saveMsg = function (message) { msg = message }
+
+/**
+ * Get the current Message variable saved
+ * @returns Message
+ */
+exports.getMsg = () => msg
+
+/**
+ * Send an error in current channel and in error logging channel, and in the console
  * @param {ErrorEvent} error Generated error
  * @param {Client} client Discord client
  * @param {Client} message Discord client
  * @param {String} title ???
  */
-module.exports = (error, client, message = null, title = error.name) => {
+exports.sendErr = (error, client, message = msg, title = error.name) => {
   const errEmote = errEmotes[randNo(errEmotes.length)]
 
   // Display it to console first

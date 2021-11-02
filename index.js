@@ -7,8 +7,8 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // handle errors
-const errorCatch = require('./modules/errorCatch')
-process.on('unhandledRejection', error => errorCatch(error, client, require('./modules/currentMsg').get()))
+const { sendErr } = require('./modules/errorCatch')
+process.on('unhandledRejection', error => sendErr(error, client))
 
 // get needed intents and partials
 const { intents, partials } = require('./config')
