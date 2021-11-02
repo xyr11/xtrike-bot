@@ -37,15 +37,16 @@ exports.sendErr = (error, client, message = msg, title = error.name) => {
   console.error(chalk.red(`${title ?? Error} (${time()})`))
   console.error(error)
 
-  // Internet connection error code (i think)
-  // Prevent infinite looping from internet connection error, if hosted locally
-  if (error.code === 500) return
-
   // serialize the error object
   const err = serializeError(error)
 
+  // errors that shouldn't be sent to the current channel because they have nothing to do with the message
+  const dontSendToChannel =
+    error.code === 500 || // to prevent infinite looping from internet connection error, if hosted locally (i think)
+    error.name === 'FetchError' // something to do with await fetch() which is async
+
   // Send the error embed to corresponding channel, if there are any
-  if (message && message.channel) {
+  if (message && message.channel && !dontSendToChannel) {
     try {
       message.channel.send({
         content: 'Sorry, seems like I have encountered an error.',
@@ -66,7 +67,7 @@ exports.sendErr = (error, client, message = msg, title = error.name) => {
     client.channels.cache.get(errLog).send({
       embeds: [{
         color: colors.red,
-        title: `${errEmote} New error ${message ? `from \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>` : ''}`,
+        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor(message.createdTimestamp / 1000)}>`,
         description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
       }]
     })
