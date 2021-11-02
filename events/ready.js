@@ -9,8 +9,8 @@ module.exports = async client => {
   // presence
   if (presence.activity) {
     client.user.setPresence({
-      activities: [{ name: presence.activity, type: presence.activityType ?? '' }],
-      status: presence.status ?? 'online'
+      activities: [{ name: presence.activity, type: presence.activityType }],
+      status: process.env.ISMOBILE === 'true' ? 'online' : presence.status
     })
   }
 

@@ -121,14 +121,13 @@ exports.fetchImage = async message => {
 
   // the main thing
   for (const link of linksFromMessage) {
-    // api key randomizer
-    const apiKey = process.env.OCRSPACE_KEY2 ? [process.env.OCRSPACE_KEY, process.env.OCRSPACE_KEY2][Math.floor(Math.random() * 2)] : process.env.OCRSPACE_KEY
+    // TODO: instead of just adding values blindingly, we should implement a check if the image (url) to be inserted already exists in the array [https://www.npmjs.com/package/pixelmatch]
 
+    // multiple API keys for OCR Space 🤔
+    const ocrSpaceKeys = process.env.OCRSPACE_KEY.split('|')
     // request to api
-    await fetch('https://api.ocr.space/parse/imageurl?apikey=' + apiKey + '&url=' + link).then(result => result.json())
+    await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrSpaceKeys[Math.floor(Math.random() * ocrSpaceKeys.length)] + '&url=' + link).then(result => result.json())
       .then(async result => {
-        // TODO: instead of just adding values blindingly, we should implement a check if the image (url) to be inserted already exists in the array [https://www.npmjs.com/package/pixelmatch]
-
         // get array of data
         const data = serverData.data ?? []
 

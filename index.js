@@ -14,7 +14,7 @@ process.on('unhandledRejection', error => errorCatch(error, client, require('./m
 const { intents, partials } = require('./config')
 
 // initialize client
-const client = new Client({ intents, partials, ws: { properties: { $browser: 'Discord iOS' } } })
+const client = new Client({ intents, partials, ws: { properties: process.env.ISMOBILE === 'true' ? { $browser: 'Discord iOS' } : {} } })
 
 // read the commands folder
 client.commands = new Collection()
@@ -38,5 +38,16 @@ for (const file of events) {
   console.log(chalk.gray(`Loading the ${eventName} event`))
   client.on(eventName, event.bind(null, client))
 }
+
+// express
+const express = require('express')
+const { urlencoded } = require('body-parser')
+const app = express()
+app.use(urlencoded({ extended: true }))
+
+// Basic alive checker
+app.get('/', (req, res) => {
+  res.status(200).send('le alive')
+})
 
 client.login(process.env.DISCORD_TOKEN)

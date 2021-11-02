@@ -54,12 +54,12 @@ All Discord.js pre-v13 code.
 
    *If not*, then create a `.env` file, copy the stuff below and replace the values with the actual value
    ```
-   # If you want to customize the timezone that will be shown in logs then add a valid 'TZ database name' below (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-   TIMEZONE=Antarctica/South_Pole
    DISCORD_TOKEN=your-discord-token
    CLIENT_ID=your-discord-client-id
    MONGO_URI=your-mongo-db-uri
    OCRSPACE_KEY=your-ocrspace-key
+   # If you want to customize the timezone. Needs a valid TZ name (en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+   TIMEZONE=Antarctica/South_Pole
    ```
 
 ### Run repository
@@ -72,8 +72,19 @@ If no errors are encountered, you will be able to see this message:
 Ready as <Bot username>! (<Date and time>) 🤖
 ```
 
+### Customizing the bot
+You can add additional .env variables to customize the bot, like presence info.
+
+#### Presence
+```
+STATUS=online          # online | idle | dnd | invisible
+ACTIVITYTYPE=PLAYING   # PLAYING | WATCHING | LISTENING | COMPETING
+PRESENCE=Bot is online
+ISMOBILE=true          # If you want the "Online in mobile" status. Will ignore ACTIVITYTYPE.
+```
+
 ### Updating local copy (for Git)
-[**NOTE: This will overwrite all files that are updated, so you will lose all changes.** Files you created, like for example `betterIndex.js`, will *not* be affected *unless* the latest commit has a `betterIndex.js` file in the same location.]
+***NOTE: This will overwrite all files that you have modified, so you will lose them.** New files that you created will *not* be affected *unless* the latest commit has a file with the same filename in the same location.*
 
 To update the code, enter the following:
 ```
