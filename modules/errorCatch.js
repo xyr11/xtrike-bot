@@ -1,10 +1,11 @@
 const { errLog, time, colors } = require('../config')
 const chalk = require('chalk')
+const { serializeError } = require('serialize-error')
 
 /** Some cute error emotes for the damned */
-const errEmotes = '🐞 🐛 🦟 🐝 🐜 🚫 ❗'.split(' ')
+const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
 
-// Generate a random number
+/** Generate a random number */
 const randNo = max => Math.floor(Math.random() * Math.floor(max))
 
 /**
@@ -13,36 +14,33 @@ const randNo = max => Math.floor(Math.random() * Math.floor(max))
  * @param {Client} client Discord client
  * @param {Client} message Discord client
  * @param {String} title ???
- * @param {String} notes Notes regarding the error, logged on the "footer" part of the embed
  */
-module.exports = (error, client, message = null, title = error.name, notes = '') => {
+module.exports = (error, client, message = null, title = error.name) => {
   const errEmote = errEmotes[randNo(errEmotes.length)]
 
   // Display it to console first
   console.error(chalk.red(`${title ?? Error} (${time()})`))
   console.error(error)
-  if (notes) console.error('Notes:', notes)
 
   // Internet connection error code (i think)
   // Prevent infinite looping from internet connection error, if hosted locally
   if (error.code === 500) return
 
-  // Then make the error embed
-  const errEmbed = {
-    content: 'Sorry, seems like I have encountered an error.',
-    embeds: [{
-      color: colors.red,
-      title: `${errEmote} ${title ?? 'Error'}`,
-      description: `${message ? `User command: \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>\n` : ''}\`\`\`${error}\`\`\` \nA copy of this error message will also be sent in the error logs of the bot for logging.`,
-      footer: { text: notes ?? 'Sorry for the inconvenience' },
-      timestamp: Date.now()
-    }]
-  }
+  // serialize the error object
+  const err = serializeError(error)
 
   // Send the error embed to corresponding channel, if there are any
   if (message && message.channel) {
     try {
-      message.channel.send(errEmbed)
+      message.channel.send({
+        content: 'Sorry, seems like I have encountered an error.',
+        embeds: [{
+          color: colors.red,
+          title: `${errEmote} I have encountered an error!`,
+          description: `${message ? `From \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>:\n` : ''}\`\`\`${error}\`\`\``,
+          footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
+        }]
+      })
     } catch (err) {
       console.error(err)
     }
@@ -50,7 +48,13 @@ module.exports = (error, client, message = null, title = error.name, notes = '')
 
   // Send the error embed to error logging channel
   try {
-    client.channels.cache.get(errLog).send(errEmbed)
+    client.channels.cache.get(errLog).send({
+      embeds: [{
+        color: colors.red,
+        title: `${errEmote} New error ${message ? `from \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>` : ''}`,
+        description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
+      }]
+    })
   } catch (err) {
     console.error(err)
   }

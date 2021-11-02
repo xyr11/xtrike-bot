@@ -1,15 +1,17 @@
 const { Client, Collection } = require('discord.js')
 const fs = require('fs')
 const chalk = require('chalk')
-const dotenv = require('dotenv')
-dotenv.config()
-
-// read config.json
-const { intents, partials } = require('./config')
 
 // handle errors
 const errorCatch = require('./modules/errorCatch')
 process.on('unhandledRejection', error => errorCatch(error, client, require('./modules/currentMsg').get()))
+
+// access our .env file
+const dotenv = require('dotenv')
+dotenv.config()
+
+// get needed intents and partials
+const { intents, partials } = require('./config')
 
 // initialize client
 const client = new Client({ intents, partials, ws: { properties: { $browser: 'Discord iOS' } } })
