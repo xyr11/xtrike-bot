@@ -33,7 +33,7 @@ const config = {
   botId: '748386919460765706',
 
   // support server server id
-  testGuild: '764355609973227580',
+  supportServer: '764355609973227580',
   // special channels (all can be found on official support server!)
   errLog: '781136504382160898',
   pingArea: '904006592347897896',
