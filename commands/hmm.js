@@ -9,8 +9,8 @@ exports.info = {
 
 exports.run = (client, message, args) => {
   if (!args.length) {
-    message.reply(`${message.author} hmmmmmm... :thinking:`)
+    message.channel.send(`${message.author} hmmmm... :thinking:`)
   } else {
-    message.reply(`${args.join(' ')} hmmmmmm... :thinking:`)
+    message.channel.send(`${message.author} ${args.join(' ')} hmmmm... :thinking:`)
   }
 }
