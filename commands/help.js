@@ -4,7 +4,7 @@ const { prefix, colors, hasPerms } = require('../config')
 exports.info = {
   name: 'help',
   category: 'Bot Info',
-  description: 'Show the description of all commands of the bot.',
+  description: 'Show what the different commands of the bot does',
   usage: '`help <command>`',
   aliases: ['help'],
   permLevel: 'User'
@@ -34,9 +34,7 @@ exports.run = async (client, message, args) => {
 
   const { name, description, usage } = cmd.info
 
-  const bot = await client.user.fetch()
-  console.log(bot.avatarURL)
-
+  const bot = await client.user.fetch() // for the bot avatar
   const embed = new MessageEmbed()
     .setColor(colors.main)
     .setTitle(`${prefix}${name} command`)
