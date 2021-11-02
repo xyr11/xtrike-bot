@@ -1,7 +1,7 @@
-const { time, botId } = require('../config')
 const chalk = require('chalk')
+const fetch = require('node-fetch')
+const { time, botId } = require('../config')
 const ImagesModel = require('../schemas/images')
-const fetch = require('node-fetch') // ! remember to install v2
 
 // expose the ImagesModel
 /**
@@ -76,14 +76,12 @@ exports.deactivateChannel = async (guildId, channelId, excludedChannels) => {
  * @param {Discord} message message
  */
 exports.deactivateServer = async guildId => {
-  // ! delete the entire guild
   await ImagesModel.deleteOne({ guildId })
 }
 
 /**
  * Get image from new messages, OCR it, and record it to database
  * @param {Discord} message message
- * @returns
  */
 exports.fetchImage = async message => {
   if (message.author.id === botId) return

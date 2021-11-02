@@ -2,13 +2,13 @@ const { Client, Collection } = require('discord.js')
 const fs = require('fs')
 const chalk = require('chalk')
 
-// handle errors
-const errorCatch = require('./modules/errorCatch')
-process.on('unhandledRejection', error => errorCatch(error, client, require('./modules/currentMsg').get()))
-
 // access our .env file
 const dotenv = require('dotenv')
 dotenv.config()
+
+// handle errors
+const errorCatch = require('./modules/errorCatch')
+process.on('unhandledRejection', error => errorCatch(error, client, require('./modules/currentMsg').get()))
 
 // get needed intents and partials
 const { intents, partials } = require('./config')

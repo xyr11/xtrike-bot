@@ -4,7 +4,7 @@ const errorCatch = require('../modules/errorCatch')
 const { fetchImage } = require('../modules/getImage')
 
 module.exports = (client, message) => {
-  // get all images
+  // Get images for the ;image command
   fetchImage(message)
 
   // Ignore all bots
@@ -13,23 +13,24 @@ module.exports = (client, message) => {
   // Ignore messages not starting with the prefix
   if (message.content.indexOf(prefix) !== 0) return
 
-  // get command and arguments innit
+  // Get command and arguments from the message
   const args = message.content.slice(prefix.length).trim().split(/ +/g)
   const command = args.shift().toLowerCase()
 
-  // grab the command data from client
+  // Grab the command data from client
   const cmd = client.commands.get(command)
 
-  // if that command doesn't exist, silently exit and do nothing
-  // if they dont have proper permLevels, do nothing too
+  // If that command doesn't exist, silently exit and do nothing
+  // If they dont have proper permLevels, do nothing too
   if (!cmd || !hasPerms(cmd.info.permLevel, message)) return
 
+  // Check if beta
   if (cmd.info.isBeta === true && getUserPerms(message) < 4) {
     message.reply('This command isn\'t really done yet, check back later.')
     return
   }
 
-  // run command
+  // Run the command
   message.channel.sendTyping() // bot is typing visual
   try {
     require('../modules/currentMsg').save(message) // save the current channel for error tracking
