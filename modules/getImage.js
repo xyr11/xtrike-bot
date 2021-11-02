@@ -56,8 +56,7 @@ exports.activateServer = async message => {
     data: [],
     excludedChannels: [],
     totalToday: 0,
-    messageInit: JSON.parse(JSON.stringify(message)),
-    time: Date.now()
+    messageInit: JSON.parse(JSON.stringify(message))
   }).save()
 }
 
