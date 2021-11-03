@@ -18,5 +18,11 @@ exports.run = (client, message, args) => {
         description: '```' + JSON.stringify(message, undefined, 2) + '```'
       }]
     })
+  } else if (args[0] === 'author') {
+    message.channel.send({
+      embeds: [{
+        description: '```' + JSON.stringify(message.author, undefined, 2) + '```'
+      }]
+    })
   }
 }
