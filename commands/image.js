@@ -6,32 +6,38 @@ const Fuse = require('fuse.js')
 exports.info = {
   name: 'image',
   category: 'Commands',
-  description: 'Search for text in images',
+  description: 'Search for text in images. \nBy default, it searches for images at most 36 hours old and from the current channel only.',
   usage: '`image <words>`\n' +
-    '`image --here <words>` to search on current channel only\n' +
+    '`image --server <words>` to search the whole server\n' +
+    '`image --all <words>` to search for images regardless of how old it is\n' +
     '`image --deactivate <channel|server>`\n' +
     '`image --activate <channel|server>`',
-  aliases: ['bot', 'version'],
-  permLevel: 'User'
+  aliases: ['images'],
+  permLevel: 'User',
+  requiredArgs: true
 }
 
+/**
+ * @param {Client} client Discord Client
+ * @param {Message} message Message
+ * @param {Array} args Arguments
+ */
 exports.run = async (client, message, args) => {
-  // check if server has activated this command to their servers
-
   const { channelId, guildId } = message
 
   // get server data, if any
-  // ? only fetch ONCE, when the `;image` command is used
-  // const serverData = await ImagesModel.find({ guildId })
   const serverData = filterData(await ImagesModel.find({ guildId }), message.guildId)
-  // if serverData has a value in it then it means that the server has activated the command
+  // if serverData has a value in it then it means that server has activated the command
   const activated = !!serverData
 
+  // get list of excluded channels
   let excludedChannels = []
   if (activated) excludedChannels = serverData.excludedChannels
+  // check if current channel is excluded
   const excluded = excludedChannels.indexOf(channelId) > -1
 
-  if (getUserPerms(message) < 2) {
+  // activating/deactivating the command
+  if (getUserPerms(message) < 2) { // check user permission level
     message.reply('You need to be a moderator or have a higher role to be able to do this.')
   } else {
     if (['--activate', '--enable', '--include'].indexOf(args[0]) > -1) {
@@ -86,78 +92,69 @@ exports.run = async (client, message, args) => {
     }
   }
 
-  // ? now the fun stuff
-
-  // get all image data
-  let data = serverData.data
-
-  // debug
-  if (args[0] === 'debug' && getUserPerms(message) >= 4) {
-    message.reply('```json\n' + JSON.stringify(data, undefined, 2) + '\n```')
-    return
-  }
-
   // return silently if server hasn't activated the command yet
   if (!activated || excluded) return
 
-  // if user wants to search on the current channel only
-  if (args[0] === '--here') {
-    args.shift() // remove the --here part
-    data = data.filter(obj => obj.channel === channelId) // remove all entries that aren't from the same channel
+  // get image data from collection entry
+  let data = serverData.data
+
+  // ? deprecated
+  if (args.indexOf('--here') > -1) {
+    args.splice(args.indexOf('--here'), 1) // remove --here
   }
 
-  // if there are no arguments passed
-  if (args.length === 0) {
-    message.reply('You need to give me words to search images on.')
-    return
+  // by default, this command will only check for images in the current channel
+  if (args.indexOf('--server') === -1) {
+    data = data.filter(obj => obj.channel === channelId)
+  } else {
+    // if user wants to search the whole server
+    args.splice(args.indexOf('--server'), 1) // remove the --server part
   }
 
+  // by default, this command will only check for images 36 hours ago
+  if (args.indexOf('--all') === -1) {
+    data = data.filter(obj => obj.when >= (Date.now() - 3600000 * 36))
+  } else {
+    // if user wants to check all images regardless of how old it is
+    args.splice(args.indexOf('--all'), 1) // remove the --all part
+  }
+
+  // Fuse.js search options
   const fuse = new Fuse(data, {
-    isCaseSensitive: false,
-    includeScore: false,
-    shouldSort: true,
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
     // includeMatches: false,
-    // findAllMatches: false,
     minMatchCharLength: 2,
+    // findAllMatches: false,
     // location: 0,
-    threshold: 0.75,
-    distance: 100,
-    // useExtendedSearch: false,
-    // ignoreLocation: false,
-    ignoreFieldNorm: false,
-    keys: [
-      'text',
-      {
-        name: 'author.username',
-        weight: 0.3
-      }
-    ]
+    threshold: 0.7,
+    // distance: 100,
+    ignoreLocation: true,
+    ignoreFieldNorm: true,
+    keys: ['text']
   })
 
+  // do magic (fuzzy search)
   const result = fuse.search(args.join(' '))
 
+  // check if there are any results
   if (result.length === 0) {
     message.reply('Sorry, I wasn\'t able to find images that contains that text.')
     return
   }
 
   const embeds = []
-  let content = `I was able to find ${result.length} image${result.length > 1 ? 's' : ''}:`
   for (const r in result) {
     // results
-    const { url, image, author, when } = result[r].item
-    // add link in content
-    content += `\n#${+r + 1} by ${author.tag}: ${url}`
+    const { url, channel, id, image, author, when } = result[r].item
     // embed
     embeds.push(new MessageEmbed()
       .setColor(author.hexAccentColor)
-      .setAuthor(`#${+r + 1} by ` + author.tag + (author.bot ? ' [Bot]' : ''), author.avatarURL, url)
+      .setAuthor(`#${+r + 1} by ${author.tag} (Link)`, author.avatarURL ?? `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.webp`, url ?? `https://discord.com/channels/${guildId}/${channel}/${id}`)
       .setImage(image)
-      .setFooter(`⏲ ${time(when)} • 🔍 "${args.join(' ')}" on ${time()}`)
+      .setFooter(`⌚ ${time(when)} • 🔍 "${args.join(' ')}" on ${time()}`)
     )
   }
-  message.reply({
-    content,
-    embeds
-  })
+  message.reply({ content: `I was able to find ${result.length} image${result.length > 1 ? 's' : ''}:`, embeds })
 }
