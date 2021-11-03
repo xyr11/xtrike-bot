@@ -20,7 +20,7 @@ exports.run = async (client, message, args) => {
   // if that command doesn't exist, silently exit and do nothing
   // if they dont have proper permLevels, do nothing too
   // todo: if that command doesn't exist, say that that command doesn't exist / add those "did you mean x?" stuff in the future
-  if (!cmd || !hasPerms(cmd.info.permLevel, message)) {
+  if (!cmd || !hasPerms(cmd, message)) {
     message.reply({
       embeds: [{
         color: colors.main,

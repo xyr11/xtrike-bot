@@ -22,7 +22,7 @@ module.exports = (client, message) => {
 
   // If that command doesn't exist, silently exit and do nothing
   // If they dont have proper permLevels, do nothing too
-  if (!cmd || !hasPerms(cmd.info.permLevel, message)) return
+  if (!cmd || !hasPerms(cmd, message)) return
 
   message.channel.sendTyping() // bot is typing visual
 

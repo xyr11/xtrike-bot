@@ -124,18 +124,18 @@ exports.getUserPerms = message => {
 
 /**
  * Check if user has the appropriate permission level for a certain command
- * @param {String} permName The name of the permission
+ * @param {Object} command The command object
  * @param {Discord} message Discord  message
  * @returns True or false
  */
-exports.hasPerms = (permName, message) => {
+exports.hasPerms = (command, message) => {
   // find the object that has the same name as the permName
-  const perm = exports.permLevels.find(l => l.name === permName)
+  const perm = exports.permLevels.find(l => l.name === command.info.permLevel)
   // get the user perm level
   const userPermLevel = exports.getUserPerms(message).level
   // check if the user perm level is equal to or greater than the perm given
   if (!perm) {
-    console.log(chalk.red(`Error: No ${permName} permLevel!`))
+    console.log(chalk.red(`Error: No ${command.info.permLevel} permLevel! \n${command}`))
     return false
   } else {
     return userPermLevel >= perm.level
