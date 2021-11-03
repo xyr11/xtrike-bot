@@ -1,6 +1,6 @@
 // ? detect ALL new messages
 const { prefix, getUserPerms, hasPerms } = require('../config')
-const { saveMsg, sendErr } = require('../modules/errorCatch')
+const { sendErr } = require('../modules/errorCatch')
 const { fetchImage } = require('../modules/getImage')
 
 module.exports = (client, message) => {
@@ -34,7 +34,6 @@ module.exports = (client, message) => {
 
   // Run the command
   try {
-    saveMsg(message) // save the current channel for error tracking
     if (cmd.info.requiredArgs === true && args.length === 0) {
       // Check if command requires arguments
       // If yes then return the help entry of the command instead and not the command itself

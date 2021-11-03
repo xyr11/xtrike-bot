@@ -8,21 +8,6 @@ const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
 /** Generate a random number */
 const randNo = max => Math.floor(Math.random() * Math.floor(max))
 
-/** A variable for recording the current Message variable on commands for error tracking */
-let msg = null
-
-/**
- * Save the current message here
- * @param {Message} message Message
- */
-exports.saveMsg = function (message) { msg = message }
-
-/**
- * Get the current Message variable saved
- * @returns Message
- */
-exports.getMsg = () => msg
-
 /**
  * Send an error in current channel and in error logging channel, and in the console
  * @param {ErrorEvent} error Generated error
@@ -30,7 +15,7 @@ exports.getMsg = () => msg
  * @param {Client} message Discord client
  * @param {String} title ???
  */
-exports.sendErr = (error, client, message = msg, title = error.name) => {
+exports.sendErr = (error, client, message = null, title = error.name) => {
   const errEmote = errEmotes[randNo(errEmotes.length)]
 
   // Display it to console first
@@ -67,7 +52,7 @@ exports.sendErr = (error, client, message = msg, title = error.name) => {
     client.channels.cache.get(errLog).send({
       embeds: [{
         color: colors.red,
-        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message.createdTimestamp ?? Date.now()) / 1000)}>`,
+        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message ? message.createdTimestamp : Date.now()) / 1000)}>`,
         description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
       }]
     })
