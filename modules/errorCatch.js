@@ -1,6 +1,7 @@
-const { errLog, time, colors } = require('../config')
+const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { serializeError } = require('serialize-error')
+const { errLog, time, colors } = require('../config')
 
 /** Some cute error emotes for the damned */
 const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
@@ -25,9 +26,12 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
   // serialize the error object
   const err = serializeError(error)
 
+  // 500 error codes
+  const error500 = error.code >= 500 && error.code < 600
+
   // errors that shouldn't be sent to the current channel because they have nothing to do with the message
   const dontSendToChannel =
-    error.code === 500 || // to prevent infinite looping from internet connection error, if hosted locally (i think)
+    error500 ||
     error.name === 'FetchError' // something to do with await fetch() which is async
 
   // Send the error embed to corresponding channel, if there are any
@@ -48,15 +52,17 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
   }
 
   // Send the error embed to error logging channel
-  try {
-    client.channels.cache.get(errLog).send({
-      embeds: [{
-        color: colors.red,
-        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message ? message.createdTimestamp : Date.now()) / 1000)}>`,
-        description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
-      }]
-    })
-  } catch (err) {
-    console.error(err)
+  if (!error500) {
+    try {
+      client.channels.cache.get(errLog).send({
+        embeds: [{
+          color: colors.red,
+          title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message ? message.createdTimestamp : Date.now()) / 1000)}>`,
+          description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
+        }]
+      })
+    } catch (err) {
+      console.error(err)
+    }
   }
 }
