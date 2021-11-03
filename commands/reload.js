@@ -4,16 +4,16 @@ const chalk = require('chalk')
 exports.info = {
   name: 'reload',
   category: 'Developer',
-  description: '',
-  usage: '`reload [command]`',
+  description: 'Reload a command',
+  usage: '`reload <command name>`',
   aliases: ['refresh'],
-  permLevel: 'lmao'
+  permLevel: 'lmao',
+  requiredArgs: true
 }
 
 // from https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js)
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
 exports.run = (client, message, args) => {
-  if (!args || args.length < 1) return message.reply('Must provide a command name to reload.')
   const commandName = args[0]
   // Check if the command exists and is valid
   if (!client.commands.has(commandName)) return message.reply('That command does not exist')
