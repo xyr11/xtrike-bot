@@ -32,12 +32,13 @@ exports.run = async (client, message, args) => {
     return
   }
 
-  const { name, description, usage } = cmd.info
+  const { name, description, usage, thumbnail } = cmd.info
 
   const bot = await client.user.fetch() // for the bot avatar
   const embed = new MessageEmbed()
     .setColor(colors.main)
     .setTitle(`${prefix}${name} command`)
+    .setThumbnail(thumbnail ?? '')
     .setDescription(description)
     .setFooter(`Xtrike Bot v${process.env.npm_package_version}`, bot.avatarURL())
   if (usage) embed.addFields({ name: 'Usage', value: usage.replace(/^`/gm, '`' + prefix) })
