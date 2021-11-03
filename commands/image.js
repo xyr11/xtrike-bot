@@ -136,13 +136,16 @@ exports.run = async (client, message, args) => {
   })
 
   // do magic (fuzzy search)
-  const result = fuse.search(args.join(' '))
+  let result = fuse.search(args.join(' '))
 
   // check if there are any results
   if (result.length === 0) {
     message.reply('Sorry, I wasn\'t able to find images that contains that text.')
     return
   }
+
+  // cut the results to 10
+  result = result.splice(10, result.length - 9)
 
   const embeds = []
   for (const r in result) {
