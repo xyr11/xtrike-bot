@@ -25,7 +25,7 @@ exports.run = async (client, message, args) => {
       embeds: [{
         color: colors.main,
         description: 'Sorry, we didn\'t find any command with\n' +
-          `the name \`${cmd}\`. Please try again.`,
+          `the name \`${args[0]}\`. Please try again.`,
         footer: { text: `Xtrike Bot v${process.env.npm_package_version}` }
       }]
     })
