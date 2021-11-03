@@ -12,9 +12,8 @@ exports.info = {
 
 /**
  * @param {Message} message
- * @param {Array} args
  */
-exports.run = (message, args) => {
+exports.run = message => {
   message.channel.send({
     embeds: [{
       color: colors.main,
