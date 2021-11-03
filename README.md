@@ -1,7 +1,7 @@
 # Xtrike Bot
-A multi-purpose discord bot written in [discord.js](https://discord.js.org).
+a multi-purpose Discord bot written in [discord.js](https://discord.js.org) that does all sorts of bot stuff
 
-[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license)
+[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) ![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)
 
 ## Versions
 
