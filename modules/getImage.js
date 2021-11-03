@@ -1,6 +1,7 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const fetch = require('node-fetch')
-const { time, botId } = require('../config')
+const { time } = require('../config')
 const ImagesModel = require('../schemas/images')
 
 // expose the ImagesModel
@@ -37,7 +38,7 @@ exports.isActivated = async guildId => {
 
 /**
  * Activate `;image` in channel
- * @param {Discord} message message
+ * @param {Message} message message
  */
 exports.activateChannel = async (guildId, channelId, excludedChannels) => {
   // remove channel id to excludedChannels (https://stackoverflow.com/a/3954451/12180492)
@@ -47,7 +48,7 @@ exports.activateChannel = async (guildId, channelId, excludedChannels) => {
 
 /**
  * Activate `;image` in server
- * @param {Discord} message message
+ * @param {Message} message message
  */
 exports.activateServer = async message => {
   // TODO: more optimized by recording all guild ids in a different data thing and then search there?
@@ -62,7 +63,7 @@ exports.activateServer = async message => {
 
 /**
  * Deactivate `;image` in channel
- * @param {Discord} message message
+ * @param {Message} message message
  */
 exports.deactivateChannel = async (guildId, channelId, excludedChannels) => {
   // add it to serverData.excludedChannels
@@ -73,7 +74,7 @@ exports.deactivateChannel = async (guildId, channelId, excludedChannels) => {
 
 /**
  * Deactivate `;image` in server
- * @param {Discord} message message
+ * @param {Message} message message
  */
 exports.deactivateServer = async guildId => {
   await ImagesModel.deleteOne({ guildId })
@@ -81,10 +82,10 @@ exports.deactivateServer = async guildId => {
 
 /**
  * Get image from new messages, OCR it, and record it to database
- * @param {Discord} message message
+ * @param {Message} message message
  */
 exports.fetchImage = async message => {
-  if (message.author.id === botId) return
+  if (message.author.id === message.client.id) return
 
   const { channelId, guildId } = message
 
