@@ -67,7 +67,7 @@ exports.sendErr = (error, client, message = msg, title = error.name) => {
     client.channels.cache.get(errLog).send({
       embeds: [{
         color: colors.red,
-        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor(message.createdTimestamp / 1000)}>`,
+        title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message.createdTimestamp ?? Date.now()) / 1000)}>`,
         description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
       }]
     })
