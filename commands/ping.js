@@ -1,3 +1,4 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const { colors, pingArea } = require('../config')
 const chalk = require('chalk')
 
@@ -10,7 +11,13 @@ exports.info = {
   permLevel: 'User'
 }
 
-exports.run = async (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = async (message, args) => {
+  const client = message.client
+
   let botPing = []
   let clientPing = []
   const timeLogs = []

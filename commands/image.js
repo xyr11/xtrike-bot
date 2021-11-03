@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, colors, getUserPerms, time } = require('../config')
 const { ImagesModel, activateChannel, activateServer, deactivateChannel, deactivateServer, filterData } = require('../modules/getImage')
 const Fuse = require('fuse.js')
@@ -18,11 +18,10 @@ exports.info = {
 }
 
 /**
- * @param {Client} client Discord Client
  * @param {Message} message Message
  * @param {Array} args Arguments
  */
-exports.run = async (client, message, args) => {
+exports.run = async (message, args) => {
   const { channelId, guildId } = message
 
   // get server data, if any

@@ -1,3 +1,5 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+
 exports.info = {
   name: 'test',
   category: 'Developer',
@@ -7,7 +9,11 @@ exports.info = {
   permLevel: 'User'
 }
 
-exports.run = (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = (message, args) => {
   message.channel.send(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
   if (args[0] === 'embed') {
     // should produce a ReferenceError error
@@ -22,6 +28,12 @@ exports.run = (client, message, args) => {
     message.channel.send({
       embeds: [{
         description: '```' + JSON.stringify(message.author, undefined, 2) + '```'
+      }]
+    })
+  } else if (args[0] === 'bot') {
+    message.channel.send({
+      embeds: [{
+        description: '```' + JSON.stringify(message.client.user, undefined, 2) + '```'
       }]
     })
   }

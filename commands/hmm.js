@@ -1,3 +1,5 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+
 exports.info = {
   name: 'hmm',
   category: 'General',
@@ -7,7 +9,11 @@ exports.info = {
   permLevel: 'User'
 }
 
-exports.run = (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = (message, args) => {
   if (!args.length) {
     message.channel.send(`${message.author} hmmmm... :thinking:`)
   } else {

@@ -1,3 +1,4 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, time } = require('../config')
 const chalk = require('chalk')
 
@@ -13,8 +14,14 @@ exports.info = {
 
 // from https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js)
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
-exports.run = (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = (message, args) => {
+  const client = message.client
   const commandName = args[0]
+
   // Check if the command exists and is valid
   if (!client.commands.has(commandName)) return message.reply('That command does not exist')
 

@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const Fuse = require('fuse.js')
 const { prefix, colors, hasPerms } = require('../config')
 
@@ -11,7 +11,13 @@ exports.info = {
   permLevel: 'User'
 }
 
-exports.run = async (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = async (message, args) => {
+  const client = message.client
+
   const bot = await client.user.fetch() // for the bot avatar
 
   // if there are no args, get the help command of the help command itself

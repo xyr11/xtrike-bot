@@ -1,9 +1,13 @@
 // ? detect ALL new messages
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, getUserPerms, hasPerms } = require('../config')
 const { sendErr } = require('../modules/errorCatch')
 const { fetchImage } = require('../modules/getImage')
 
-module.exports = (client, message) => {
+/** @param {Message} message */
+exports.execute = message => {
+  const client = message.client
+
   // Get images for the ;image command
   fetchImage(message)
 
@@ -37,9 +41,11 @@ module.exports = (client, message) => {
     if (cmd.info.requiredArgs === true && args.length === 0) {
       // Check if command requires arguments
       // If yes then return the help entry of the command instead and not the command itself
-      client.commands.get('help').run(client, message, [cmd.info.name])
-    } else {
-      cmd.run(client, message, args)
+      client.commands.get('help').run(message, [cmd.info.name])
+    } else if (dank && cmd.info.dank) {
+      cmd.run(message, args)
+    } else if (!dank) {
+      cmd.run(message, args)
     }
   } catch (error) {
     sendErr(error, client, message)

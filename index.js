@@ -36,7 +36,7 @@ for (const file of events) {
   const event = require(`./events/${file}`)
   // Load em
   console.log(chalk.gray(`Loading the ${eventName} event`))
-  client.on(eventName, event.bind(null, client))
+  client.on(eventName, (...args) => event.execute(...args))
 }
 
 // express
@@ -49,5 +49,11 @@ app.use(urlencoded({ extended: true }))
 app.get('/', (req, res) => {
   res.status(200).send('le alive')
 })
+
+// sniper
+// const { msgDelete, msgEdit, reactRemove } = require('./modules/sniper')
+// client.on('messageDelete', msgDelete)
+// client.on('messageUpdate', msgEdit)
+// client.on('messageReactionRemove', reactRemove)
 
 client.login(process.env.DISCORD_TOKEN)

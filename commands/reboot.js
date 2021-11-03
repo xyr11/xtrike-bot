@@ -1,3 +1,5 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+
 exports.info = {
   name: 'reboot',
   category: 'Developer',
@@ -9,7 +11,12 @@ exports.info = {
 
 // from https://github.com/AnIdiotsGuide (commands/reboot.js)
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
-exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
+exports.run = async (message, args) => { // eslint-disable-line no-unused-vars
+  const client = message.client
   await message.reply('Bot is shutting down.')
   await Promise.all(client.commands.map(cmd => { // eslint-disable-line array-callback-return
     // the path is relative to the *current folder*, so just ./filename.js
