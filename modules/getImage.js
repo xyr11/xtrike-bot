@@ -157,12 +157,12 @@ exports.fetchImage = async message => {
         let author = await message.author.fetch()
         author = JSON.parse(JSON.stringify(author))
         // remove unnecessary values (https://stackoverflow.com/a/56081419/12180492)
-        author = ['id', 'tag', 'username', 'bot', 'avatarURL'].reduce((obj, key) => ({ ...obj, [key]: author[key] }), {})
+        author = ['id', 'tag', 'avatar', 'hexAccentColor'].reduce((obj, key) => ({ ...obj, [key]: author[key] }), {})
 
         // create the object that will be placed inside the data array
         const newImage = {
-          url: `https://discord.com/channels/${guildId}/${channelId}/${message.id}`,
           channel: channelId,
+          id: message.id,
           image: link,
           text,
           error,
