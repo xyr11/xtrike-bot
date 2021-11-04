@@ -1,7 +1,7 @@
 const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const { presence, time } = require('../config')
 const chalk = require('chalk')
-const mongoose = require('mongoose')
+const Amongoose = require('mongoose')
 
 /** @param {Client} client */
 exports.execute = async client => {
@@ -17,5 +17,5 @@ exports.execute = async client => {
   }
 
   // mongodb
-  await mongoose.connect(process.env.MONGO_URI, { keepAlive: true })
+  await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
 }
