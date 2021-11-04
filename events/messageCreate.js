@@ -1,15 +1,13 @@
-// ? detect ALL new messages
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const { prefix, getUserPerms, hasPerms } = require('../config')
 const { sendErr } = require('../modules/errorCatch')
-const { fetchImage } = require('../modules/getImage')
+const { prefix, getUserPerms, hasPerms } = require('../config')
 
 /** @param {Message} message */
 exports.execute = message => {
   const client = message.client
 
   // Get images for the ;image command
-  fetchImage(message)
+  require('../modules/getImage').fetchImage(message)
 
   // Ignore all bots
   if (message.author.bot) return
@@ -35,8 +33,6 @@ exports.execute = message => {
   // If they dont have proper permLevels, do nothing too
   if (!cmd || !hasPerms(cmd, message)) return
 
-  message.channel.sendTyping() // bot is typing visual
-
   // Check if beta
   if (cmd.info.isBeta === true && getUserPerms(message) < 4) {
     message.reply('This command isn\'t really done yet, check back later.')
@@ -48,10 +44,14 @@ exports.execute = message => {
     if (cmd.info.requiredArgs === true && args.length === 0) {
       // Check if command requires arguments
       // If yes then return the help entry of the command instead and not the command itself
+      message.channel.sendTyping()
       client.commands.get('help').run(message, [cmd.info.name])
     } else if (dank && cmd.info.dank) {
+      // Check if command is a dank command and accepts 'pls'
+      message.channel.sendTyping()
       cmd.run(message, args)
     } else if (!dank) {
+      message.channel.sendTyping()
       cmd.run(message, args)
     }
   } catch (error) {
