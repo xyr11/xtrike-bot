@@ -49,6 +49,9 @@ Re-added `package-lock.json`, updates to the `image` command, better Replit inte
 
 ### 0.1.2
 Introducing databases and the beta version of the `image` command which finds text in images. Also:
+<details>
+<summary>Changelog</summary>
+
 - added an `env` entry for the timezone
 - updated the `.info` part of commands
 - moved the 'ready' event to its own file
@@ -56,13 +59,59 @@ Introducing databases and the beta version of the `image` command which finds te
 - added a `Develop` guide in README.md
 - added new modules
 
+</details>
+
 ### 0.1.0
+<details>
+<summary>Changelog</summary>
+
 Rewrite for Discord.js v13 and replaced spaghetti code to an actual command handler. Also, modules, arrow functions, and more Modern Javascript™.
 
-### 0.0.1-0.0.5
-*(Previously known as "Alpha 0.1" to "Alpha 0.5")*
+</details>
 
-All Discord.js pre-v13 code.
+### 0.0.5
+<details>
+<summary>Changelog</summary>
+
++ `ping` command will just edit its embed rather than re-sending the message
++ Switched hosting platform from Heroku to Repl.it, modules that aren't needed by Repl.it will not be deleted so that local development of the bot is possible and also because Heroku will be our backup platform
++ Removed the owner ID in the main file (index.js) and placed it in the .env file
+
+</details>
+
+### 0.0.4
+<details>
+<summary>Changelog</summary>
+
+```diff
++ Updated so that you can invite it on your own server!
++ Optimized all embed variables!
++ Revamped and optimized command finding to instead use arrays rather than your typical OR function
++ Added oxford to beta commands
++ Fixed a bug in the online command that it doesn't include Idle and Do Not Disturb members
++ Made uptime an official command
+- Remove owner, no-sleep and restart commands completely
+- Removed support for custom emojis from support server and replaced it with discord-wide emojis
+```
+</details>
+
+### 0.0.3
+<details>
+<summary>Changelog</summary>
+
+```diff
++ Fixed echo command that crashes the bot after not mentioning someone
++ Added "no-sleep", "restart", "hmm" commands
++ Added "sad", "uptime", and "restart" as beta commands
++ Added all commands with its corresponding 'help' guides (e.g. ;ping help)
++ Added a new update naming system
+- Removed "hmm" command from beta commands to be an official command
+- No-sleep command deprecated
+```
+</details>
+
+### 0.0.2 and 0.0.1
+The bare bones of the bot, with very limited features.
 
 ## Develop
 
@@ -74,7 +123,7 @@ All Discord.js pre-v13 code.
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-1. *If you're using Replit*, click the big gray button: [![on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot). After that, go to the "Shell" tab and enter `npm test` to install Node 16.
+1. *If you're using Replit*, click the big gray button: [![on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
 
    *If not*, then clone the repository via Git
    ```
@@ -94,8 +143,12 @@ All Discord.js pre-v13 code.
    TIMEZONE=Antarctica/South_Pole
    ```
 
+3. On the `config.json` file, change the `exports.prefix`, `exports.botId`, `exports.botSupport`, `exports.devs`, `exports.botServer`, `exports.errLog`, and `exports.pingArea` variables to your own liking. Read the comments to see what they do.
+
 ### Run repository
-*If you're on Replit*, press the big "Run" button. *If not*, enter the following:
+*If you're on Replit*, you should press the big "Run" button.
+
+*If not*, enter the following command:
 ```
 npm start
 ```
@@ -105,15 +158,19 @@ Ready as <Bot username>! (<Date and time>) 🤖
 ```
 
 ### Customizing the bot
-You can add additional .env variables to customize the bot, like presence info.
+You can add additional .env variables to customize the bot. See the documentation below.
 
-#### Presence
+<details>
+<summary>Customize the presence details</summary>
+
 ```
 STATUS=online          # online | idle | dnd | invisible
 ACTIVITYTYPE=PLAYING   # PLAYING | WATCHING | LISTENING | COMPETING
 PRESENCE=Bot is online
 ISMOBILE=true          # If you want the "Online in mobile" status. Will ignore ACTIVITYTYPE.
 ```
+
+</details>
 
 ### Updating local copy (for Git)
 ***NOTE: This will overwrite all files that you have modified, so you will lose them.** New files that you created will *not* be affected *unless* the latest commit has a file with the same filename in the same location.*
@@ -134,116 +191,4 @@ If you want your created files to be saved permanently then I suggest forking th
 [Xtrike#<i>0507</i> (id: 681766482304434187)](https://discord.com) on imagine a place
 
 ## Credits
-Huge thank you to [the *How To Make a Discord Bot With Discord.JS v13* playlist by Worn Off Keys](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff.
-
-## Notices
-> *10/27/2021: I'm back! Also repository will be [rebooted](https://en.wikipedia.org/wiki/The_big_reset_button_in_the_sky).*
-
-> *December 2020 Notice: Main development of the bot has been paused and updates will not be able to flow on a regular basis. But you can still contribute by forking this repo. I also didn't bother to update the wordings in this file, just remember that the development of this bot has been paused.*
-
-<br>
-<details>
-<summary>Old README.md</summary>
-
-## Features
-Not much is implemented now, so there still isn't an official release.
-
-Current features:
-+ Checks how many are offline
-+ Creates a "message" embed
-+ Other stuff for fancy purposes only
-
-### List of Commands
-+ `online`
-+ `hmm`
-+ `echo`
-+ `sad`
-+ `message`
-+ `ping`
-+ `uptime`
-+ `help`
-
-#### Planned commands
-
-+ subject
-+ reqs
-+ play
-+ execute
-+ timer
-+ clock
-+ oxford
-
-## Technical info
-
-### Hosted on
-The bot is *now* hosted on [Repl.it](https://repl.it/~).
-
-### Programming language
-[Node.js](https://www.google.com/search?q=node.js "Search on Google") ([Javascript](https://www.google.com/search?q=javascript "Search on Google"))
-
-Modules: discord.js
-
-## Versions
-
-### Alpha 0.5
-*currently been working*
-
-Visit the [official Discord support and Development server](#discord-support-and-development-server) to see its progress!
-
-#### Planned Features
-+  swearing auto-filter
-
-#### Planned Fixes
-+ [Uptime command display resetting #5](https://github.com/xyr11/xtrike-bot/issues/5 "See in Issues")
-+ [Custom status resetting #7](https://github.com/xyr11/xtrike-bot/issues/7 "See in Issues")
-+ [Add the command in error messages #4](https://github.com/xyr11/xtrike-bot/issues/4 "See in Issues")
-+ [Info command not working #8](https://github.com/xyr11/xtrike-bot/issues/8 "See in Issues")
-
-
-### Build-01 for Alpha 0.5
-*the current, live version*
-
-#### What's New
-+ `ping` command will just edit its embed rather than re-sending the message
-+ Switched hosting platform from Heroku to Repl.it, modules that aren't needed by Repl.it will not be deleted so that local development of the bot is possible and also because Heroku will be our backup platform
-+ Removed the owner ID in the main file (index.js) and placed it in the .env file
-
-[Current Issues](https://github.com/xyr11/xtrike-bot/issues "See in Issues")
-
-
-### Alpha 0.4
-
-#### What's New
-```diff
-+ Updated so that you can invite it on your own server!
-+ Optimized all embed variables!
-+ Revamped and optimized command finding to instead use arrays rather than your typical OR function
-+ Added oxford to beta commands
-+ Fixed a bug in the online command that it doesn't include Idle and Do Not Disturb members
-+ Made uptime an official command
-- Remove owner, no-sleep and restart commands completely
-- Removed support for custom emojis from support server and replaced it with discord-wide emojis
-```
-
-[Current Issues](https://github.com/xyr11/xtrike-bot/issues "See in Issues")
-
-
-### Alpha 0.3
-
-#### What's New
-```diff
-+ Fixed echo command that crashes the bot after not mentioning someone
-+ Added "no-sleep", "restart", "hmm" commands
-+ Added "sad", "uptime", and "restart" as beta commands
-+ Added all commands with its corresponding 'help' guides (e.g. ;ping help)
-+ Added a new update naming system
-- Removed "hmm" command from beta commands to be an official command
-- No-sleep command deprecated
-```
-
-### Alpha 0.2 and 0.1
-The bare bones of the bot, with very limited features.
-
-No available data
-
-</details>
+Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thank also to [Replit](https://replit.com) for the bot hosting.
