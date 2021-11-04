@@ -6,12 +6,12 @@ const Fuse = require('fuse.js')
 exports.info = {
   name: 'image',
   category: 'Commands',
-  description: 'Search for text in images. \nBy default, it searches for images at most 36 hours old and from the current channel only.',
-  usage: '`$$image <words>`\n' +
-    '`$$image --server <words>` to search the whole server\n' +
-    '`$$image --all <words>` to search for images regardless of how old it is\n' +
-    '`$$image --deactivate <channel|server>`\n' +
-    '`$$image --activate <channel|server>`',
+  description: 'Search for text in images. By default, it searches for images sent until 7 days ago and from the current channel only.',
+  usage: '`$$image [options] <words>`\n',
+  options: '`--server` to search on all channels\n' +
+  '`--all` to search images regardless of how old it is\n' +
+  '`--deactivate <channel|server>`\n' +
+  '`--activate <channel|server>`',
   aliases: ['images'],
   permLevel: 'User',
   requiredArgs: true
@@ -110,9 +110,9 @@ exports.run = async (message, args) => {
     args.splice(args.indexOf('--server'), 1) // remove the --server part
   }
 
-  // by default, this command will only check for images 36 hours ago
+  // by default, this command will only check for images sent 7 days or earlier
   if (args.indexOf('--all') === -1) {
-    data = data.filter(obj => obj.when >= (Date.now() - 3600000 * 36))
+    data = data.filter(obj => obj.when >= (Date.now() - 3600000 * 24 * 7))
   } else {
     // if user wants to check all images regardless of how old it is
     args.splice(args.indexOf('--all'), 1) // remove the --all part
