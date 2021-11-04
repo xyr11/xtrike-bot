@@ -15,6 +15,7 @@ exports.info = {
   description: 'Snipe deleted messages in the current or given channel.\n\n' +
     '[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)',
   usage: '`$$snipe [channel]`',
+  similar: '`$$editsnipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true
 }
