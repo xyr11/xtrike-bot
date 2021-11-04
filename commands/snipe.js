@@ -33,10 +33,13 @@ exports.run = async (message, args) => {
   // if there's no value
   if (!snipe) return message.reply("There's nothing to snipe!")
 
+  // get user
+  const author = await message.client.users.cache.get(snipe.id)
+
   // create embed
   const embed = new MessageEmbed()
-    .setAuthor(snipe.author, snipe.avatar)
-    .setColor(snipe.color)
+    .setAuthor(snipe.author, author.avatarURL())
+    .setColor(author.hexAccentColor)
     .setFooter(`#${message.channel.name}`)
     .setTimestamp(snipe.time)
   if (snipe.content) embed.setDescription(snipe.content)

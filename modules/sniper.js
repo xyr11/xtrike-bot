@@ -22,11 +22,9 @@ exports.reactionSnipes = () => reactionSnipes
  */
 exports.msgDelete = async (message) => {
   if (message.partial) return // content is null or deleted embed
-  const author = await message.author.fetch()
   snipes[message.channel.id] = {
     author: message.author.tag,
-    avatar: author.avatarURL(),
-    color: author.hexAccentColor,
+    id: message.author.id,
     content: message.content,
     embeds: message.embeds,
     attachments: [...message.attachments.values()].map((a) => a.proxyURL),
@@ -41,11 +39,9 @@ exports.msgDelete = async (message) => {
  */
 exports.msgEdit = async (oldMessage, newMessage) => {
   if (oldMessage.partial) return // content is null
-  const author = await newMessage.author.fetch()
   editSnipes[oldMessage.channel.id] = {
     author: oldMessage.author.tag,
-    avatar: author.avatarURL(),
-    color: author.hexAccentColor,
+    id: oldMessage.author.id,
     content: oldMessage.content,
     url: oldMessage.url,
     time: newMessage.editedTimestamp
@@ -59,11 +55,9 @@ exports.msgEdit = async (oldMessage, newMessage) => {
  */
 exports.reactRemove = async (reaction, user) => {
   if (reaction.partial) reaction = await reaction.fetch()
-  const author = await user.fetch()
   reactionSnipes[reaction.message.channel.id] = {
     user: user.tag,
-    avatar: author.avatarURL(),
-    color: author.hexAccentColor,
+    id: user.id,
     emoji: reaction.emoji,
     url: reaction.message.url,
     time: Date.now()
