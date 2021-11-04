@@ -4,7 +4,7 @@ exports.info = {
   name: 'hmm',
   category: 'General',
   description: 'Reply with "hmm..."',
-  usage: '`hmm [args]`',
+  usage: '`$$hmm [args]`',
   aliases: ['hmmm', 'hmmmm', 'hmmmmm', 'hmmmmmm'],
   permLevel: 'User'
 }

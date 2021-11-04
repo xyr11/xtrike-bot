@@ -4,7 +4,7 @@ exports.info = {
   name: 'reboot',
   category: 'Developer',
   description: '',
-  usage: '`reboot`',
+  usage: '`$$reboot`',
   aliases: [],
   permLevel: 'lmao'
 }
@@ -13,9 +13,8 @@ exports.info = {
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
 /**
  * @param {Message} message
- * @param {Array} args
  */
-exports.run = async (message, args) => { // eslint-disable-line no-unused-vars
+exports.run = async message => {
   const client = message.client
   await message.reply('Bot is shutting down.')
   await Promise.all(client.commands.map(cmd => { // eslint-disable-line array-callback-return

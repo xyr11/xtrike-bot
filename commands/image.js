@@ -7,11 +7,11 @@ exports.info = {
   name: 'image',
   category: 'Commands',
   description: 'Search for text in images. \nBy default, it searches for images at most 36 hours old and from the current channel only.',
-  usage: '`image <words>`\n' +
-    '`image --server <words>` to search the whole server\n' +
-    '`image --all <words>` to search for images regardless of how old it is\n' +
-    '`image --deactivate <channel|server>`\n' +
-    '`image --activate <channel|server>`',
+  usage: '`$$image <words>`\n' +
+    '`$$image --server <words>` to search the whole server\n' +
+    '`$$image --all <words>` to search for images regardless of how old it is\n' +
+    '`$$image --deactivate <channel|server>`\n' +
+    '`$$image --activate <channel|server>`',
   aliases: ['images'],
   permLevel: 'User',
   requiredArgs: true

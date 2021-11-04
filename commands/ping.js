@@ -6,7 +6,7 @@ exports.info = {
   name: 'ping',
   category: 'Bot Info',
   description: "Get the bot's ping. \nNote that this may take a few seconds.",
-  usage: '`ping`',
+  usage: '`$$ping`',
   aliases: ['speed', 'latency'],
   permLevel: 'User'
 }

@@ -12,9 +12,9 @@ exports.info = {
   name: 'snipe',
   category: 'General',
   thumbnail: 'https://imgur.com/dRSYp1f.png',
-  description: 'Snipe deleted messages.\n\n' +
+  description: 'Snipe deleted messages in the current or given channel.\n\n' +
     '[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)',
-  usage: '`snipe`\n`editsnipe`\n`reactionsnipe`',
+  usage: '`$$snipe [channel]`',
   permLevel: 'User',
   dank: true
 }

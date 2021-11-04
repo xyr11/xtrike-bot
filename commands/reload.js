@@ -6,7 +6,7 @@ exports.info = {
   name: 'reload',
   category: 'Developer',
   description: 'Reload a command',
-  usage: '`reload <command name>`',
+  usage: '`$$reload <command name>`',
   aliases: ['refresh'],
   permLevel: 'lmao',
   requiredArgs: true

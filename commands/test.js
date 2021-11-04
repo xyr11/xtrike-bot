@@ -4,7 +4,7 @@ exports.info = {
   name: 'test',
   category: 'Developer',
   description: '',
-  usage: '`test [args]`',
+  usage: '`$$test`',
   aliases: ['tests'],
   permLevel: 'User'
 }

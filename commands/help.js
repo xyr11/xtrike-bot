@@ -6,7 +6,7 @@ exports.info = {
   name: 'help',
   category: 'Bot Info',
   description: 'Show what the different commands of the bot does',
-  usage: '`help <command>`',
+  usage: '`$$help <command>`',
   aliases: ['help'],
   permLevel: 'User'
 }
@@ -49,7 +49,7 @@ exports.run = async (message, args) => {
       .setTitle(`${prefix}${name} command`)
       .setThumbnail(thumbnail ?? '')
       .setDescription(description)
-    if (usage) embed.addFields({ name: 'Usage', value: usage.replace(/^`/gm, '`' + prefix) })
+    if (usage) embed.addFields({ name: 'Usage', value: usage.replaceAll('$$', prefix) })
   }
   message.reply({ embeds: [embed] })
 }
