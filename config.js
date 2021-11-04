@@ -7,16 +7,14 @@ const { Intents } = require('discord.js')
 /** Bot intents */
 exports.intents = [
   Intents.FLAGS.GUILDS,
-  Intents.FLAGS.GUILD_MESSAGES
+  Intents.FLAGS.GUILD_MESSAGES,
+  Intents.FLAGS.GUILD_MESSAGE_REACTIONS
 ]
 /** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
 exports.partials = ['MESSAGE', 'REACTION', 'USER']
 
 /** Prefix of the bot */
 exports.prefix = ';'
-
-/** User id of the bot */
-exports.botId = '748386919460765706'
 
 // User ids of various important people
 /** Bot support user ids */
