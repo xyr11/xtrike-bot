@@ -9,8 +9,8 @@ exports.intents = [
   Intents.FLAGS.GUILDS,
   Intents.FLAGS.GUILD_MESSAGES
 ]
-/** Bot partials (?) */
-exports.partials = []
+/** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
+exports.partials = ['MESSAGE', 'REACTION', 'USER']
 
 /** Prefix of the bot */
 exports.prefix = ';'
