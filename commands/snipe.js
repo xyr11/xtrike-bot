@@ -19,6 +19,10 @@ exports.info = {
   dank: true
 }
 
+/**
+ * @param {Message} message
+ * @param {Array} args
+ */
 exports.run = async (message, args) => {
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
