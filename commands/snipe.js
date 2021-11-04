@@ -23,10 +23,17 @@ exports.info = {
  * @param {Message} message
  * @param {Array} args
  */
-exports.run = async (message, args) => {
+exports.run = async (message, args, isSlash = false) => {
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
-  const channel = args[0] || message.channel
+  const channel = isSlash
+    // if slash command
+    ? (args.options.getChannel('channel') || args.channel)
+    // if normal message
+    : (args[0] && args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)
+        ? { id: args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)[0] }
+        : message.channel)
+
   // get the snipe data
   const snipe = snipes()[channel.id]
 
