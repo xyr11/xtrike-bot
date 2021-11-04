@@ -22,7 +22,8 @@ exports.execute = message => {
   let args = message.content.slice(prefix.length).trim().split(/ +/g)
   let command = args.shift().toLowerCase()
   if (dank) {
-    args = message.content.split(/ +/g).splice(0, 2)
+    args = message.content.split(/ +/g)
+    args.splice(0, 2)
     command = message.content.split(/ +/g)[1]
   }
 
