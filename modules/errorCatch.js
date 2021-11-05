@@ -51,16 +51,23 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
     }
   }
 
+  // split error log into 4089 characters (4096-7)
+  const fullErr = JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/').match(/(.|\s){1,4089}/g)
+  fullErr.splice(10, fullErr.length - 9) // cut it up to 10 entries only
+  // create embeds
+  const embeds = []
+  for (const i in fullErr) {
+    embeds[i] = {
+      color: colors.red,
+      title: i === '0' ? `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message ? message.createdTimestamp : Date.now()) / 1000)}>` : '',
+      description: `\`\`\`\n${fullErr[i]}\`\`\``
+    }
+  }
+
   // Send the error embed to error logging channel
   if (!error500) {
     try {
-      client.channels.cache.get(errLog).send({
-        embeds: [{
-          color: colors.red,
-          title: `${errEmote} New error ${message ? `from \`${message.content}\`` : ''} at <t:${Math.floor((message ? message.createdTimestamp : Date.now()) / 1000)}>`,
-          description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
-        }]
-      })
+      client.channels.cache.get(errLog).send({ embeds })
     } catch (err) {
       console.error(err)
     }
