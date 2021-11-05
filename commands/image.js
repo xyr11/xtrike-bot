@@ -135,7 +135,7 @@ exports.run = async (message, args) => {
   })
 
   // do magic (fuzzy search)
-  let result = fuse.search(args.join(' '))
+  const result = fuse.search(args.join(' '))
 
   // check if there are any results
   if (result.length === 0) {
@@ -144,7 +144,7 @@ exports.run = async (message, args) => {
   }
 
   // cut the results to 10
-  result = result.splice(10, result.length - 9)
+  result.splice(10, result.length - 9)
 
   const embeds = []
   for (const r in result) {
