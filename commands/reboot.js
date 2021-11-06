@@ -19,7 +19,7 @@ exports.info = {
 exports.run = async message => {
   const client = message.client
   console.log(chalk.red(`Bot is shutting down. ${time()}  🤖`))
-  await client.user.setActivity('none. Bot rebooting...', { type: presence.activityType })
+  await client.user.setActivity('none. Rebooting...', { type: presence.activityType })
   await message.reply('Bot is shutting down.')
   await Promise.all(client.commands.map(cmd => { // eslint-disable-line array-callback-return
     // the path is relative to the *current folder*, so just ./filename.js
