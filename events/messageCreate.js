@@ -9,6 +9,9 @@ exports.execute = message => {
   // Get images for the ;image command
   require('../modules/getImage').fetchImage(message)
 
+  // Check for Twitter links and get the raw video file if present
+  require('../modules/twitterMedia')(message)
+
   // Ignore all bots
   if (message.author.bot) return
 

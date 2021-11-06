@@ -29,8 +29,13 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
   // 500 error codes
   const error500 = error.code >= 500 && error.code < 600
 
+  // errors that shouldn't be send in the current channel AND the error logging channel
+  const dontSend =
+    err.stderr === "ERROR: There's no video in this tweet.; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output." // youtube-dl typical error
+
   // errors that shouldn't be sent to the current channel because they have nothing to do with the message
   const dontSendToChannel =
+    dontSend ||
     error500 ||
     error.name === 'FetchError' // something to do with await fetch() which is async
 
@@ -65,7 +70,7 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
   }
 
   // Send the error embed to error logging channel
-  if (!error500) {
+  if (!error500 && !dontSend) {
     try {
       client.channels.cache.get(errLog).send({ embeds })
     } catch (err) {
