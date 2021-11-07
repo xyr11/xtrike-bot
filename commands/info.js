@@ -4,7 +4,7 @@ const { prefix, colors } = require('../config')
 exports.info = {
   name: 'info',
   category: 'Bot Info',
-  description: 'Show information about the bot',
+  description: 'Show information about the bot.',
   usage: '`$$info`',
   aliases: ['bot', 'version'],
   permLevel: 'User'

@@ -12,7 +12,7 @@ exports.info = {
   name: 'snipe',
   category: 'General',
   thumbnail: 'https://imgur.com/dRSYp1f.png',
-  description: 'Snipe deleted messages in the current or given channel.\n\n' +
+  description: 'Get the most recently deleted message in the current or given channel.\n\n' +
     '[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)',
   usage: '`$$snipe [channel]`',
   similar: '`$$editsnipe` `$$reactionsnipe`',
