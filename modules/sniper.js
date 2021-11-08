@@ -43,6 +43,7 @@ exports.msgEdit = async (oldMessage, newMessage) => {
     author: oldMessage.author.tag,
     id: oldMessage.author.id,
     content: oldMessage.content,
+    attachments: [...oldMessage.attachments.values()].map((a) => a.proxyURL),
     url: oldMessage.url,
     time: newMessage.editedTimestamp
   }
@@ -56,7 +57,7 @@ exports.msgEdit = async (oldMessage, newMessage) => {
 exports.reactRemove = async (reaction, user) => {
   if (reaction.partial) reaction = await reaction.fetch()
   reactionSnipes[reaction.message.channel.id] = {
-    user: user.tag,
+    author: user.tag,
     id: user.id,
     emoji: reaction.emoji,
     url: reaction.message.url,
