@@ -143,7 +143,7 @@ The bare bones of the bot, with very limited features.
    TIMEZONE=Antarctica/South_Pole
    ```
 
-3. On the `config.json` file, change the `exports.prefix`, `exports.botId`, `exports.botSupport`, `exports.devs`, `exports.botServer`, `exports.errLog`, and `exports.pingArea` variables to your own liking. Read the comments to see what they do.
+3. On the `config.json` file, change the `exports.prefix`, `exports.botSupport`, `exports.devs`, `exports.botServer`, and `exports.errLog` variables to your own liking. Read the comments to see what they do.
 
 ### Run repository
 *If you're on Replit*, you should press the big "Run" button.
