@@ -28,8 +28,6 @@ exports.botServer = '764355609973227580'
 // Special channels and their channel ids (all can be found on official support server!)
 /** Channel id of error log channel */
 exports.errLog = '781136504382160898'
-/** Channel to send messages for message pings */
-exports.pingArea = '904006592347897896'
 
 /** Bot presence based on env variables */
 exports.presence = {

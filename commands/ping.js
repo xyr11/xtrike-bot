@@ -1,11 +1,11 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const { colors, pingArea } = require('../config')
+const { colors } = require('../config')
 const chalk = require('chalk')
 
 exports.info = {
   name: 'ping',
   category: 'Bot Info',
-  description: "Get the bot's ping. \nNote that this may take a few seconds.",
+  description: "Get the bot's ping.",
   usage: '`$$ping`',
   aliases: ['speed', 'latency'],
   permLevel: 'User'
@@ -20,45 +20,42 @@ exports.run = async (message, args) => {
 
   let botPing = []
   let clientPing = []
-  const timeLogs = []
+  const logs = []
 
   await message.channel.send({
     embeds: [{ description: ':person_running: Pinging...' }]
   })
 
     .then(async sentMsg => {
-      // send and edit a message 5 times, then get each of their createdTimestamp and Date.now() before being deleted
-      message.channel.sendTyping()
-      // number of loops
-      const loops = (args[0] === 'debug' && Number(args[1]) && args[1] > 1 && args[1] < 30) ? args[1] : 5
+      // number of loops. default is 4, max is 30
+      const loops = (Number(args[0]) && args[0] > 0 && args[0] < 31) ? args[0] : 4
+
+      // loop
+      let referenceTime
       for (let i = loops; i--;) {
-        await client.channels.cache.get(pingArea).send('​').then(async msg => {
-          message.channel.sendTyping()
-          await msg.edit('​​').then(async msg => {
-            botPing.push(msg.editedTimestamp - msg.createdTimestamp)
-            clientPing.push(Math.round(client.ws.ping))
-            if (args[0] === 'debug') timeLogs.push(`<t:${Math.floor(msg.editedTimestamp / 1000)}:T> ping: ${msg.editedTimestamp - msg.createdTimestamp} | ${client.ws.ping}`)
-            await msg.delete()
-          })
+        // send a message
+        // edit that message x times
+        await sentMsg.edit({ content: '​​'.repeat(i + 1) }).then(async msg => {
+          // get each of their createdTimestamp and Date.now()
+          botPing.push(msg.editedTimestamp - (referenceTime || msg.createdTimestamp))
+          clientPing.push(Math.round(client.ws.ping))
+          if (loops !== 5) logs.push(`<t:${Math.floor(msg.editedTimestamp / 1000)}:T> ping: ${msg.editedTimestamp - (referenceTime || msg.createdTimestamp)} | ${client.ws.ping}`)
+          // set reference time for next edit
+          referenceTime = msg.editedTimestamp
         })
       }
-
       // compute average
       botPing = Math.floor((botPing.reduce((a, b) => a + b, 0) / botPing.length) || 0)
       clientPing = Math.floor((clientPing.reduce((a, b) => a + b, 0) / clientPing.length) || 0)
-
-      message.channel.sendTyping()
-      sentMsg.edit({
+      // send the results
+      await sentMsg.edit({
         embeds: [{
-          color: colors.main,
           title: ':ping_pong: Ping!',
-          description: `The bot's latency is: ${botPing}ms \nAPI latency is: ${clientPing}ms`,
-          fields: timeLogs.length
-            ? [{
-                name: 'Logs',
-                value: timeLogs.join('\n')
-              }]
-            : '',
+          color: colors.main,
+          description: `The bot's latency is: ${botPing}ms \nAPI latency is: ${clientPing}ms` +
+            (logs.length
+              ? `\n\n**Logs**\n${logs.join('\n')}`
+              : ''),
           timestamp: Date.now()
         }]
       })
