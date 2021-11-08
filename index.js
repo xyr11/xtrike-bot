@@ -55,20 +55,6 @@ for (const file of events) {
 }
 
 // express
-const express = require('express')
-const { urlencoded } = require('body-parser')
-const app = express()
-app.use(urlencoded({ extended: true }))
-
-// Basic alive checker
-app.get('/', (req, res) => {
-  res.status(200).send('le alive')
-})
-
-// sniper
-// const { msgDelete, msgEdit, reactRemove } = require('./modules/sniper')
-// client.on('messageDelete', msgDelete)
-// client.on('messageUpdate', msgEdit)
-// client.on('messageReactionRemove', reactRemove)
+require('./modules/express')
 
 client.login(process.env.DISCORD_TOKEN)
