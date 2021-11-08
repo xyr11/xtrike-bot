@@ -127,55 +127,67 @@ exports.fetchImage = async message => {
     // multiple API keys for OCR Space 🤔
     const ocrSpaceKeys = process.env.OCRSPACE_KEY.split('|')
     // request to api
-    await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrSpaceKeys[Math.floor(Math.random() * ocrSpaceKeys.length)] + '&url=' + link).then(result => result.json())
-      .then(async result => {
-        // get array of data
-        const data = serverData.data ?? []
+    let notFetched = true
+    // infinite loop
+    while (notFetched) {
+      try {
+        await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrSpaceKeys[Math.floor(Math.random() * ocrSpaceKeys.length)] + '&url=' + link).then(result => result.json())
+          .then(async result => {
+            // stop the infinite loop
+            notFetched = false
 
-        // check for errors
-        let error = { status: false }
-        if (result.IsErroredOnProcessing) {
-          error = {
-            status: true,
-            exitCode: result.OCRExitCode,
-            parsedResults: result.ParsedResults
-          }
-        }
+            // get array of data
+            const data = serverData.data ?? []
 
-        // extract the text from the result
-        let text = ''
-        if (!result.ParsedResults) {
-          // didn't find any text
-          return
-        } else if (result.ParsedResults && result.ParsedResults.length > 1) {
-          // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to 'awb' but it extracts the ParsedText key
-          text = result.ParsedResults.reduce((a, b) => ({ ParsedText: a.ParsedText + b.ParsedText + '' })).ParsedText
-        } else if (result.ParsedResults.length === 1) {
-          text = result.ParsedResults[0].ParsedText
-        }
+            // check for errors
+            let error = { status: false }
+            if (result.IsErroredOnProcessing) {
+              error = {
+                status: true,
+                exitCode: result.OCRExitCode,
+                parsedResults: result.ParsedResults
+              }
+            }
 
-        // get author data
-        let author = await message.author.fetch()
-        author = JSON.parse(JSON.stringify(author))
-        // remove unnecessary values (https://stackoverflow.com/a/56081419/12180492)
-        author = ['id', 'tag', 'avatar', 'hexAccentColor'].reduce((obj, key) => ({ ...obj, [key]: author[key] }), {})
+            // extract the text from the result
+            let text = ''
+            if (!result.ParsedResults) {
+              // didn't find any text
+              return
+            } else if (result.ParsedResults && result.ParsedResults.length > 1) {
+              // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to 'awb' but it extracts the ParsedText key
+              text = result.ParsedResults.reduce((a, b) => ({ ParsedText: a.ParsedText + b.ParsedText + '' })).ParsedText
+            } else if (result.ParsedResults.length === 1) {
+              text = result.ParsedResults[0].ParsedText
+            }
 
-        // create the object that will be placed inside the data array
-        const newImage = {
-          channel: channelId,
-          id: message.id,
-          image: link,
-          text,
-          error,
-          when: Date.now(),
-          author,
-          processTime: process.ProcessingTimeInMilliseconds
-        }
-        // add to array
-        data.push(newImage)
+            // get author data
+            let author = await message.author.fetch()
+            author = JSON.parse(JSON.stringify(author))
+            // remove unnecessary values (https://stackoverflow.com/a/56081419/12180492)
+            author = ['id', 'tag', 'avatar', 'hexAccentColor'].reduce((obj, key) => ({ ...obj, [key]: author[key] }), {})
 
-        // update data in database
-        await ImagesModel.updateOne({ guildId }, { data, totalToday: +serverData.totalToday + 1 })
-      })
+            // create the object that will be placed inside the data array
+            const newImage = {
+              channel: channelId,
+              id: message.id,
+              image: link,
+              text,
+              error,
+              when: Date.now(),
+              author,
+              processTime: process.ProcessingTimeInMilliseconds
+            }
+            // add to array
+            data.push(newImage)
+
+            // update data in database
+            await ImagesModel.updateOne({ guildId }, { data, totalToday: +serverData.totalToday + 1 })
+          })
+      } catch (err) {
+        // stop the infinite loop if bot encountered an error NOT related to FetchError
+        if (err.name !== 'FetchError') notFetched = false
+      }
+    }
   }
 }
