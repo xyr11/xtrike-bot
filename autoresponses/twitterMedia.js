@@ -12,13 +12,10 @@ temp.track()
  * @param {Message} message
  */
 module.exports = async message => {
-  if (message.author.id === message.client.id) return
-
   // twitter link
   let twtLink = message.content.match(/(?<=.|^|\s)https:\/\/twitter\.com\/[A-z0-9_]{0,15}\/status\/[0-9]{5,}(?=\s|\?|$)/g)
   // if there aren't any twitter links, return
   if (!twtLink || twtLink.length < 1) return
-
   // get first link only
   twtLink = twtLink[0]
 

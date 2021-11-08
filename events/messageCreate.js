@@ -6,11 +6,10 @@ const { prefix, getUserPerms, hasPerms } = require('../config')
 exports.execute = message => {
   const client = message.client
 
-  // Get images for the ;image command
-  require('../modules/getImage').fetchImage(message)
+  if (message.author.id === client.id) return // NEVER acknowledge your own message
 
-  // Check for Twitter links and get the raw video file if present
-  require('../modules/twitterMedia')(message)
+  // Trigger all autoresponses
+  for (const i of client.autoresponses) i(message)
 
   // Ignore all bots
   if (message.author.bot) return

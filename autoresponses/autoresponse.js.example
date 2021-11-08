@@ -1,0 +1,14 @@
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+
+/**
+ * Description
+ * @param {Message} message
+ */
+module.exports = message => {
+  // Please note that autoresponse files SHOULD have their own built-in message filter.
+  // filter
+  if (message.content !== 'hi') return
+
+  // do stuff
+  console.log(JSON.stringify(message, undefined, 2))
+}

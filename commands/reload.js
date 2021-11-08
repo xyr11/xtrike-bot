@@ -1,6 +1,7 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const { prefix, time } = require('../config')
 const chalk = require('chalk')
+const fs = require('fs')
+const { prefix, time } = require('../config')
 
 exports.info = {
   name: 'reload',
@@ -12,8 +13,6 @@ exports.info = {
   requiredArgs: true
 }
 
-// from https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js)
-// License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
 /**
  * @param {Message} message
  * @param {Array} args
@@ -22,6 +21,29 @@ exports.run = (message, args) => {
   const client = message.client
   const commandName = args[0]
 
+  // Check if bot will reload autoresponses
+  if (commandName === 'auto') {
+    // reload all autoresponses
+    client.autoresponses = []
+    client.autoresponseNames = []
+    for (const file of fs.readdirSync('./autoresponses').filter(file => file.endsWith('.js'))) {
+      // delete require cache
+      delete require.cache[require.resolve(`../autoresponses/${file}`)]
+      // re-add the module
+      const autoresponse = require(`../autoresponses/${file}`)
+      // add to arrays
+      client.autoresponses.push(autoresponse)
+      client.autoresponseNames.push(file.split('.')[0])
+    }
+
+    message.reply('Autoresponses have been reloaded')
+    console.log(chalk.green(`Autoresponses have been reloaded (${time()})`))
+    return
+  }
+
+  // from https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js)
+
+  // MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
   // Check if the command exists and is valid
   if (!client.commands.has(commandName)) return message.reply('That command does not exist')
 

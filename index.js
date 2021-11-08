@@ -18,14 +18,29 @@ const client = new Client({ intents, partials, ws: { properties: process.env.ISM
 
 // read the commands folder
 client.commands = new Collection()
-const files = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
-for (const file of files) {
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+for (const file of commandFiles) {
   const commandName = file.split('.')[0]
   // Add module of each of the command files
   const command = require(`./commands/${file}`)
   // Load em
   console.log(chalk.gray(`Loading the ${commandName} command`))
   client.commands.set(command.info.name, command)
+}
+
+// read the autoresponses folder
+client.autoresponses = []
+client.autoresponseNames = []
+const autoresponseFiles = fs.readdirSync('./autoresponses').filter(file => file.endsWith('.js'))
+for (const file of autoresponseFiles) {
+  const autoresponseName = file.split('.')[0]
+  // Add module of each of the autoresponse files
+  const autoresponse = require(`./autoresponses/${file}`)
+  // Load em
+  console.log(chalk.gray(`Loading the ${autoresponseName} autoresponse`))
+  // Add to arrays
+  client.autoresponses.push(autoresponse)
+  client.autoresponseNames.push(autoresponseName)
 }
 
 // read the events folder
