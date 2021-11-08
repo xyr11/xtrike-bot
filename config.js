@@ -22,7 +22,7 @@ exports.botSupport = []
 /** Bot developer user ids */
 exports.devs = ['681766482304434187']
 
-/** Official server guild id */
+/** Test server for slash commands */
 exports.botServer = '764355609973227580'
 
 // Special channels and their channel ids (all can be found on official support server!)

@@ -8,7 +8,7 @@ exports.info = {
   category: 'Commands',
   description: 'Search for text in images. By default, it searches for images sent until 7 days ago and from the current channel only.',
   usage: '`$$image [options] <words>`\n',
-  options: '`--server` to search on all channels\n' +
+  option: '`--server` to search on all channels\n' +
   '`--all` to search images regardless of how old it is\n' +
   '`--deactivate <channel|server>`\n' +
   '`--activate <channel|server>`',

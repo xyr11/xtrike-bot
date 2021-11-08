@@ -1,5 +1,4 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const { sendErr } = require('../modules/errorCatch')
 const { prefix, getUserPerms, hasPerms } = require('../config')
 
 /** @param {Message} message */
@@ -58,6 +57,6 @@ exports.execute = message => {
       cmd.run(message, args)
     }
   } catch (error) {
-    sendErr(error, client, message)
+    require('../modules/errorCatch')(error, client, message)
   }
 }

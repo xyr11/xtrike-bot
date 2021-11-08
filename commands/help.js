@@ -43,14 +43,14 @@ exports.run = async (message, args) => {
           ? 'Did you mean:\n\n' + results.join('\n')
           : 'Please try again.'))
   } else {
-    const { name, description, usage, thumbnail, options, similar } = cmd.info
+    const { name, description, usage, thumbnail, option, similar } = cmd.info
     // set the embed
     embed.setColor(colors.main)
       .setTitle(`${prefix}${name} command`)
       .setThumbnail(thumbnail ?? '')
       .setDescription(description)
     if (usage) embed.addFields({ name: 'Usage', value: usage.replaceAll('$$', prefix) })
-    if (options) embed.addFields({ name: 'Options', value: options })
+    if (option) embed.addFields({ name: 'Options', value: option })
     if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })
   }
   message.reply({ embeds: [embed] })
