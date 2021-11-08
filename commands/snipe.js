@@ -36,21 +36,23 @@ exports.run = async (message, args, isSlash = false) => {
         : message.channel)
 
   // get the snipe data
-  const snipe = snipes()[channel.id]
+  const deleted = snipes()[channel.id]
 
   // if there's no value
-  if (!snipe) return message.reply("There's nothing to snipe!")
+  if (!deleted) return message.reply("There's nothing to snipe!")
+
+  console.log(deleted)
 
   // get user
-  const author = await message.client.users.cache.get(snipe.id)
+  const author = await message.client.users.cache.get(deleted.id)
 
   // create embed
   const embed = new MessageEmbed()
-    .setAuthor(snipe.author, author.avatarURL())
+    .setAuthor(deleted.author, author.avatarURL())
     .setColor(author.hexAccentColor)
     .setFooter(`#${message.channel.name}`)
-    .setTimestamp(snipe.time)
-  if (snipe.content) embed.setDescription(snipe.content)
-  if (snipe.image) embed.setImage(snipe.image)
+    .setTimestamp(deleted.time)
+  if (deleted.content) embed.setDescription(deleted.content)
+  if (deleted.attachments.length > 0) embed.setImage(deleted.attachments[0])
   await message.reply({ embeds: [embed] })
 }
