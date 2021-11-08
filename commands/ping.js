@@ -39,7 +39,7 @@ exports.run = async (message, args) => {
           // get each of their createdTimestamp and Date.now()
           botPing.push(msg.editedTimestamp - (referenceTime || msg.createdTimestamp))
           clientPing.push(Math.round(client.ws.ping))
-          if (loops !== 5) logs.push(`<t:${Math.floor(msg.editedTimestamp / 1000)}:T> ping: ${msg.editedTimestamp - (referenceTime || msg.createdTimestamp)} | ${client.ws.ping}`)
+          if (loops !== 4) logs.push(`<t:${Math.floor(msg.editedTimestamp / 1000)}:T> ping: ${msg.editedTimestamp - (referenceTime || msg.createdTimestamp)} | ${client.ws.ping}`)
           // set reference time for next edit
           referenceTime = msg.editedTimestamp
         })
