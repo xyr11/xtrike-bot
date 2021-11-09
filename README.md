@@ -133,17 +133,15 @@ The bare bones of the bot, with very limited features.
 
 2. *If you're using Replit*, add the keys and values in the System Environmental Variables part, following the naming scheme of the keys below [(see the Replit docs for more info)](https://docs.replit.com/programming-ide/storing-sensitive-information-environment-variables).
 
-   *If not*, then create a `.env` file, copy the stuff below and replace the values with the actual value
+   *If not*, then create a `.env` file, copy the stuff below and add the actual values after the equal symbol
    ```
    DISCORD_TOKEN=your-discord-token
    CLIENT_ID=your-discord-client-id
    MONGO_URI=your-mongo-db-uri
    OCRSPACE_KEY=your-ocrspace-key
-   # If you want to customize the timezone. Needs a valid TZ name (en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-   TIMEZONE=Antarctica/South_Pole
    ```
 
-3. On the `config.json` file, change the `exports.prefix`, `exports.botSupport`, `exports.devs`, `exports.botServer`, and `exports.errLog` variables to your own liking. Read the comments to see what they do.
+3. On the `config.json` file, add values to the `exports.botSupport`, `exports.devs`, and `exports.errLog` variables. Read the comments to see what they do.
 
 ### Run repository
 *If you're on Replit*, you should press the big "Run" button.
@@ -158,16 +156,33 @@ Ready as <Bot username>! (<Date and time>) 🤖
 ```
 
 ### Customizing the bot
-You can add additional .env variables to customize the bot. See the documentation below.
+You can add additional `.env` variables to customize the bot. See the documentation below. A template can also be found on `.env.example` (if you are not using Replit).
 
 <details>
-<summary>Customize the presence details</summary>
+<summary>Documentation</summary>
 
 ```
-STATUS=online          # online | idle | dnd | invisible
-ACTIVITYTYPE=PLAYING   # PLAYING | WATCHING | LISTENING | COMPETING
-PRESENCE=Bot is online
-ISMOBILE=true          # If you want the "Online in mobile" status. Will ignore ACTIVITYTYPE.
+# Bot prefix
+PREFIX=;
+
+# If you want to customize the timezone. Needs a valid TZ name (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+TIMEZONE=Antarctica/South_Pole
+
+# Slash commands options
+# Deploy slash commands in all servers?
+DEPLOY_SLASH=false
+# The id of the testing server if DEPLOY_SLASH is not true. If DEPLOY_SLASH is not true, the bot will only deploy slash commands in the test server.
+BOT_SERVER=777777777777777777
+
+# Presence
+# Status: online/idle/dnd/invisible
+STATUS=online
+# Activity type: PLAYING/WATCHING/LISTENING/COMPETING
+ACTIVITYTYPE=PLAYING
+# Activity text, the one that will show up in "Playing ..."
+PRESENCE=I am online!
+# If you want the "Online in mobile" status, set to `true`. Will ignore ACTIVITYTYPE.
+ISMOBILE=
 ```
 
 </details>

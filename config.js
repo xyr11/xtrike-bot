@@ -14,16 +14,13 @@ exports.intents = [
 exports.partials = ['MESSAGE', 'REACTION', 'USER']
 
 /** Prefix of the bot */
-exports.prefix = ';'
+exports.prefix = process.env.PREFIX || ';'
 
 // User ids of various important people
 /** Bot support user ids */
 exports.botSupport = []
 /** Bot developer user ids */
 exports.devs = ['681766482304434187']
-
-/** Test server for slash commands */
-exports.botServer = '764355609973227580'
 
 // Special channels and their channel ids (all can be found on official support server!)
 /** Channel id of error log channel */
