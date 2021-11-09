@@ -114,7 +114,6 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 The bare bones of the bot, with very limited features.
 
 ## Develop
-
 ### Prerequisites
 + [Git](https://git-scm.com/downloads)
 + [Node.js 16.6 or later (preferably the latest version)](https://nodejs.org/en/download/)
@@ -123,7 +122,7 @@ The bare bones of the bot, with very limited features.
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-1. *If you're using Replit*, click the big gray button: [![on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+1. *If you're using Replit*, click: [![Run on Replit link](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
 
    *If not*, then clone the repository via Git
    ```
@@ -150,7 +149,7 @@ The bare bones of the bot, with very limited features.
 ```
 npm start
 ```
-If no errors are encountered, you will be able to see this message:
+If no errors are encountered, you will be able to see this message if the bot successfully logs in to Discord:
 ```
 Ready as <Bot username>! (<Date and time>) 🤖
 ```
@@ -187,14 +186,12 @@ ISMOBILE=
 
 </details>
 
-### Updating local copy (for Git)
-***NOTE: This will overwrite all files that you have modified, so you will lose them.** New files that you created will *not* be affected *unless* the latest commit has a file with the same filename in the same location.*
-
-To update the code, enter the following:
+### Updating the cloned repository (for Git)
+To update the code, enter:
 ```
 git fetch --all && git reset --hard origin/main && npm i
 ```
-If you want your created files to be saved permanently then I suggest forking this on GitHub and do Steps 1-3, replacing the url of my repo to yours.
+***NOTE: This will overwrite all files that you have modified, so you will lose them.*** If you want it to be saved permanently then I suggest forking the repository instead and doing `git merge` with your own version every time there is a new update.
 
 ## License
 [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE)
