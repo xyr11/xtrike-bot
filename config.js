@@ -37,11 +37,27 @@ exports.colors = {
 }
 
 /**
- * Return a date and time string correctly formatted using process.env.TIMEZONE
+ * Return a date and time string formatted using `process.env.TIMEZONE`
  * @param {String} unixTime Unix time
  * @returns Date and time string
  */
 exports.time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: process.env.TIMEZONE ?? 'Etc/UTC' })
+
+/**
+ * Return a formatted Discord time string
+ * @param {String} unixTime Unix time
+ * @param {String} suffix
+ * Custom suffix.
+ * + None: Short date time  ("June 27, 2021 9:48 PM")
+ * + `F`: Long date time   ("Sunday, June 27, 2021 9:48 PM")
+ * + `d`: Short date       ("06/27/2021")
+ * + `D`: Long date        ("June 27, 2021")
+ * + `t`: Short time       ("9:48 PM")
+ * + `T`: Long time        ("9:48:37 PM")
+ * + `R`: Relative time    ("2 days ago")
+ * @returns date and time string
+ */
+exports.discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
 
 /** The different permission levels and their checks */
 exports.permLevels = [
@@ -81,7 +97,8 @@ exports.permLevels = [
     // If they don't then return false, which will prevent them from executing the command.
     check: message => {
       try {
-        const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase()) || message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase())
+        const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase()) ||
+          message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase())
         if (modRole && message.member.roles.cache.has(modRole.id)) return true
       } catch (e) {
         return false
@@ -91,7 +108,7 @@ exports.permLevels = [
   {
     level: 1,
     name: 'User',
-    check: (message) => true
+    check: () => true
   }
 ]
 
