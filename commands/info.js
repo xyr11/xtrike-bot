@@ -1,4 +1,4 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, colors } = require('../config')
 
 exports.info = {
@@ -12,8 +12,9 @@ exports.info = {
 
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  */
-exports.run = message => {
+exports.run = (message, interaction) => {
   message.channel.send({
     embeds: [{
       color: colors.main,

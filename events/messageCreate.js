@@ -18,7 +18,6 @@ exports.execute = message => {
 
   // Ignore messages not starting with the prefix
   if (message.content.indexOf(prefix) !== 0 && !dank) return
-
   // Get command and arguments from the message
   let args = message.content.slice(prefix.length).trim().split(/ +/g)
   let command = args.shift().toLowerCase()
@@ -27,7 +26,6 @@ exports.execute = message => {
     args.splice(0, 2)
     command = message.content.split(/ +/g)[1]
   }
-
   // Grab the command data from client
   const cmd = client.commands.get(command)
 
@@ -44,17 +42,13 @@ exports.execute = message => {
   // Run the command
   try {
     if (cmd.info.requiredArgs === true && args.length === 0) {
-      // Check if command requires arguments
-      // If yes then return the help entry of the command instead and not the command itself
+      // If the command requires arguments and there are no given arguments then return the help entry instead
       message.channel.sendTyping()
-      client.commands.get('help').run(message, [cmd.info.name])
-    } else if (dank && cmd.info.dank) {
+      client.commands.get('help').run(message, null, [cmd.info.name])
+    } else if (!dank || (dank && cmd.info.dank)) {
       // Check if command is a dank command and accepts 'pls'
       message.channel.sendTyping()
-      cmd.run(message, args)
-    } else if (!dank) {
-      message.channel.sendTyping()
-      cmd.run(message, args)
+      cmd.run(message, null, args)
     }
   } catch (error) {
     require('../modules/errorCatch')(error, client, message)

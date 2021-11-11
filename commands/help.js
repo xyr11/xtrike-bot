@@ -1,4 +1,4 @@
-const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const Fuse = require('fuse.js')
 const { prefix, colors, hasPerms } = require('../config')
 
@@ -8,14 +8,23 @@ exports.info = {
   description: 'Show what the different commands of the bot does',
   usage: '`$$help <command>`',
   aliases: ['help'],
-  permLevel: 'User'
+  permLevel: 'User',
+  options: [
+    {
+      type: 3,
+      name: 'command',
+      description: 'Command that you want to get help on',
+      choices: []
+    }
+  ]
 }
 
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  * @param {Array} args
  */
-exports.run = async (message, args) => {
+exports.run = async (message, interaction, args) => {
   const client = message.client
 
   const bot = await client.user.fetch() // for the bot avatar
@@ -48,7 +57,7 @@ exports.run = async (message, args) => {
     embed.setColor(colors.main)
       .setTitle(`${prefix}${name} command`)
       .setThumbnail(thumbnail ?? '')
-      .setDescription(description)
+      .setDescription(description.replace(/{{|}}/g, '')) // remove `{{` and `}}`
     if (usage) embed.addFields({ name: 'Usage', value: usage.replaceAll('$$', prefix) })
     if (option) embed.addFields({ name: 'Options', value: option })
     if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })

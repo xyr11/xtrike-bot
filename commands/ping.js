@@ -1,4 +1,4 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const { colors } = require('../config')
 const chalk = require('chalk')
 
@@ -8,14 +8,22 @@ exports.info = {
   description: "Get the bot's ping.",
   usage: '`$$ping`',
   aliases: ['speed', 'latency'],
-  permLevel: 'User'
+  permLevel: 'User',
+  options: [
+    {
+      type: 4,
+      name: 'repeat',
+      description: 'The number of tests the bot should perform to determine the ping.'
+    }
+  ]
 }
 
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  * @param {Array} args
  */
-exports.run = async (message, args) => {
+exports.run = async (message, interaction, args) => {
   const client = message.client
 
   let botPing = []

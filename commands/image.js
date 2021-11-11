@@ -1,4 +1,4 @@
-const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, colors, getUserPerms, time } = require('../config')
 const { ImagesModel, activateChannel, activateServer, deactivateChannel, deactivateServer, filterData } = require('../modules/getImage')
 const Fuse = require('fuse.js')
@@ -6,7 +6,7 @@ const Fuse = require('fuse.js')
 exports.info = {
   name: 'image',
   category: 'Commands',
-  description: 'Search for text in images. By default, it searches for images sent until 7 days ago and from the current channel only.',
+  description: 'Search for text in images. {{By default, it searches for images sent until 7 days ago and from the current channel only.}}',
   usage: '`$$image [options] <words>`\n',
   option: '`--server` to search on all channels\n' +
   '`--all` to search images regardless of how old it is\n' +
@@ -14,14 +14,64 @@ exports.info = {
   '`--activate <channel|server>`',
   aliases: ['images'],
   permLevel: 'User',
-  requiredArgs: true
+  requiredArgs: true,
+  options: [
+    {
+      type: 3,
+      name: 'words',
+      description: 'The words to search'
+    },
+    {
+      type: 5,
+      name: '--server',
+      description: 'Search on all channels',
+      choices: []
+    },
+    {
+      type: 5,
+      name: '--all',
+      description: 'Search images regardless of how old it is',
+      choices: []
+    },
+    {
+      type: 3,
+      name: '--deactivate',
+      description: 'Deactivate the command in the current server or channel',
+      choices: [
+        {
+          name: 'server',
+          value: 'Deactivate the command for the whole server. WILL REMOVE ALL DATA.'
+        },
+        {
+          name: 'channel',
+          value: 'Stop searching for images in the current channel'
+        }
+      ]
+    },
+    {
+      type: 3,
+      name: '--activate',
+      description: 'Activate the command in the current server or channel',
+      choices: [
+        {
+          name: 'channel',
+          value: 'Enable searching for images in the current channel'
+        },
+        {
+          name: 'server',
+          value: 'Enable the command for the whole server'
+        }
+      ]
+    }
+  ]
 }
 
 /**
- * @param {Message} message Message
- * @param {Array} args Arguments
+ * @param {Message} message
+ * @param {Interaction} interaction
+ * @param {Array} args
  */
-exports.run = async (message, args) => {
+exports.run = async (message, interaction, args) => {
   const { channelId, guildId } = message
 
   // get server data, if any

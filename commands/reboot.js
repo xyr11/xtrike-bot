@@ -1,11 +1,11 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { presence, time } = require('../config')
 
 exports.info = {
   name: 'reboot',
   category: 'Developer',
-  description: '',
+  description: 'Reboot',
   usage: '`$$reboot`',
   aliases: [],
   permLevel: 'lmao'
@@ -15,8 +15,9 @@ exports.info = {
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  */
-exports.run = async message => {
+exports.run = async (message, interaction) => {
   const client = message.client
   console.log(chalk.red(`Bot is shutting down. ${time()}  🤖`))
   await client.user.setActivity('none. Rebooting...', { type: presence.activityType })

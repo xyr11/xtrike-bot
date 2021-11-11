@@ -1,4 +1,4 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const fs = require('fs')
 const { prefix, time } = require('../config')
@@ -15,9 +15,10 @@ exports.info = {
 
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  * @param {Array} args
  */
-exports.run = (message, args) => {
+exports.run = async (message, interaction, args) => {
   const client = message.client
   const commandName = args[0]
 

@@ -5,7 +5,7 @@
  * under the MIT License
  */
 
-const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const { reactionSnipes } = require('../modules/sniper')
 
 exports.info = {
@@ -13,21 +13,29 @@ exports.info = {
   category: 'General',
   thumbnail: 'https://imgur.com/dRSYp1f.png',
   description: 'Give the most recently removed reaction in the current or given channel.\n\n' +
-    '[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)',
+    '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$reactionsnipe [channel]`',
   similar: '`$$snipe` `$$editsnipe`',
   permLevel: 'User',
-  dank: true
+  dank: true,
+  options: [
+    {
+      type: 7, // text channel
+      name: 'channel',
+      description: 'The channel to snipe'
+    }
+  ]
 }
 
 /**
  * @param {Message} message
+ * @param {Interaction} interaction
  * @param {Array} args
  */
-exports.run = async (message, args, isSlash = false) => {
+exports.run = async (message, interaction, args) => {
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
-  const channel = isSlash
+  const channel = interaction
     // if slash command
     ? (args.options.getChannel('channel') || args.channel)
     // if normal message
