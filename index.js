@@ -6,15 +6,16 @@ const chalk = require('chalk')
 const dotenv = require('dotenv')
 dotenv.config()
 
-// handle errors
-const { sendErr } = require('./modules/errorCatch')
-process.on('unhandledRejection', error => sendErr(error, client))
-
 // get needed intents and partials
 const { intents, partials } = require('./config')
 
 // initialize client
 const client = new Client({ intents, partials, ws: { properties: process.env.ISMOBILE === 'true' ? { $browser: 'Discord iOS' } : {} } })
+
+// handle errors
+const outputErr = require('./modules/errorCatch')
+process.on('unhandledRejection', error => outputErr(error, client))
+client.on('error', error => outputErr(error, client))
 
 // read the commands folder
 client.commands = new Collection()
