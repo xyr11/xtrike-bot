@@ -140,7 +140,7 @@ The bare bones of the bot, with very limited features.
    OCRSPACE_KEY=your-ocrspace-key
    ```
 
-3. On the `config.json` file, add values to the `exports.botSupport`, `exports.devs`, and `exports.errLog` variables. Read the comments to see what they do.
+3. On the `config.json` file, add values to the `exports.botSupport`, and `exports.devs` variables. Read the comments to see what they do.
 
 ### Run repository
 *If you're on Replit*, you should press the big "Run" button.
@@ -172,6 +172,10 @@ TIMEZONE=Antarctica/South_Pole
 DEPLOY_SLASH=false
 # The id of the testing server if DEPLOY_SLASH is not true. If DEPLOY_SLASH is not true, the bot will only deploy slash commands in the test server.
 BOT_SERVER=777777777777777777
+
+# Error logging channel id
+# All errors encountered and caught by the bot or process will be send in the specified channel. Note that this may include personal info such as folder names if you're developing this locally.
+ERR_LOG=777777777777777777
 
 # Presence
 # Status: online/idle/dnd/invisible

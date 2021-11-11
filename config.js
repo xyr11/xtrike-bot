@@ -22,10 +22,6 @@ exports.botSupport = []
 /** Bot developer user ids */
 exports.devs = ['681766482304434187']
 
-// Special channels and their channel ids (all can be found on official support server!)
-/** Channel id of error log channel */
-exports.errLog = '781136504382160898'
-
 /** Bot presence based on env variables */
 exports.presence = {
   status: process.env.STATUS ?? 'online',

@@ -1,7 +1,7 @@
 const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { serializeError } = require('serialize-error')
-const { errLog, time, colors } = require('../config')
+const { time, colors } = require('../config')
 
 /** Some cute error emotes for the damned */
 const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
@@ -72,7 +72,7 @@ exports.sendErr = (error, client, message = null, title = error.name) => {
   // Send the error embed to error logging channel
   if (!error500 && !dontSend) {
     try {
-      client.channels.cache.get(errLog).send({ embeds })
+      client.channels.cache.get(process.env.ERR_LOG).send({ embeds })
     } catch (err) {
       console.error(err)
     }
