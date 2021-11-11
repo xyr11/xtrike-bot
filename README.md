@@ -1,9 +1,77 @@
 # Xtrike Bot
-a multi-purpose Discord bot written in [discord.js](https://discord.js.org) that does all sorts of bot stuff
+A multi-purpose Discord bot written in [Discord.js](https://discord.js.org) that does all sorts of bot stuff. \
+And it's open-source!
 
-[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) ![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)
+[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
+
+## Features
+### Search for text in images!
+Can't find the image that your friend send? Well, you can now search for them by using words! Powered by [OCRSpace](https://ocr.space/) and [Fuse.js](https://fusejs.io/).
+
+### Send a Twitter or TikTok link and the bot will extract the raw video!
+It's a real inconvenience if someone sent an external link to a video. But now, it wouldn't be anymore! Powered by [youtube-dl](http://ytdl-org.github.io/youtube-dl/).
+
+### And More In The Future!
+Hang tight.
 
 ## Versions
+
+### 0.2 ***(Dev To-do List)***
+Big changes! Slash commands beta, changed the events handler, added & updated many commands, new auto responses
+
+General
+- [ ] Beta support for dual command handlers, `messageCreate` and `interactionCreate` (at the same time!)
+- [x] Replaced events handler to accommodate different arguments required by each of the events (8f0e007)
+- [x] Added helpful [JSDoc](https://en.wikipedia.org/wiki/JSDoc) comments to help with development (8f0e007)
+- [x] More `test` options (92c19f9, a27febc)
+- [x] Removed old README.md and integrated it to the current one (5111b52) and added more shields (2d881ea)
+
+Help
+- [x] Added a "Did you mean" part if there aren't any matches (d102252, 2f9e75a)
+- [x] Added a `thumbnail` option for the help embed (97ca5ce)
+- [x] Instead of adding the prefix per line, `$$` will now be used instead to substitute the current prefix (61da3cc)
+- [x] Added "Options" and "Similar" to its own embed field (f47146b)
+
+hmm
+- [x] Won't reply to messages anymore (5111b52)
+
+Image search
+- [x] *New defaults*: It will search for images at most 7 days old and from the current channel only. (a6a6be5, a5af925)
+- [x] Updated the help embed (a6a6be5)
+- [x] Fixed search parameters for optimal results (a6a6be5)
+- [x] Cut the amount of results to 10 because Discord messages only support up to 10 embeds (a27912a, 240db89)
+- [x] Automatically retry if script encounters a FetchError (548a61b)
+- [ ] Significantly changed the way how data is saved on database
+- [ ] Limited the author data that will be stored on database (12bab96)
+
+Ping
+- [x] Removed reliance on a custom `pingArea` channel and instead it will just edit the message in the current channel. (34bf75c)
+
+Reboot
+- [x] Will log to console and change the activity text if bot is rebooting (e4561b8)
+
+Sniper
+- [x] Added `pls snipe`, `editsnipe`, and `reactionsnipe` from [DankMemer/sniper](https://github.com/DankMemer/sniper) (cc4e0b4, 18e8e0d, b84a868)
+- [x] Added dank mode to support `pls` as a valid prefix (cc4e0b4)
+- [ ] Variables will now be stored in the database so that it won't get lost if the bot restarts
+
+Autoresponses
+- [x] Modularized autoresponses (88dcf6b)
+- [x] Added: Extract Twitter video from link and send it to current channel (6837ed6)
+
+Command handler
+- [x] `requiredArgs: true`: If a user doesn't give arguments, it will instead give the help embed of that command. (8dca861)
+- [ ] Will now record statistics of how many times commands are used
+
+Config.js
+- [x] Added more intents and partials (a084ef0, 5e432df)
+- [x] Removed `botId` (a084ef0)
+- [x] `hasPerms()`: require the command object instead of just the name (8ab8478)
+
+Error catching
+- [x] Added filters when error needs to be sent in error logging channel or nah (c3580eb, b0c88f2)
+- [x] Removed last channel tracking (2d321c1)
+- [x] Added current time as fallback (44d469b)
 
 ### 0.1.4
 Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging
@@ -62,12 +130,7 @@ Introducing databases and the beta version of the `image` command which finds te
 </details>
 
 ### 0.1.0
-<details>
-<summary>Changelog</summary>
-
 Rewrite for Discord.js v13 and replaced spaghetti code to an actual command handler. Also, modules, arrow functions, and more Modern Javascript™.
-
-</details>
 
 ### 0.0.5
 <details>
