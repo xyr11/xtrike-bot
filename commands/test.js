@@ -37,5 +37,9 @@ exports.run = async (message, interaction, args) => {
         description: '```' + JSON.stringify(message.client.user, undefined, 2) + '```'
       }]
     })
+  } else if (args[0] === 'commands') {
+    console.log(message.client.commands)
+  } else if (args[0] === 'help') {
+    for (const cmd of message.client.commands.map(a => a.info.name)) message.client.commands.get('help').run(message, false, [cmd])
   }
 }
