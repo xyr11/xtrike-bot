@@ -56,6 +56,6 @@ for (const file of events) {
 }
 
 // express
-require('./modules/express')
+require('./modules/express')(client)
 
 client.login(process.env.DISCORD_TOKEN)
