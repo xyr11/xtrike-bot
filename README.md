@@ -11,7 +11,7 @@ Can't find the image that your friend send? Well, you can now search for them by
 ### Send a Twitter or TikTok link and the bot will extract the raw video!
 It's a real inconvenience if someone sent an external link to a video. But now, it wouldn't be anymore! Powered by [youtube-dl](http://ytdl-org.github.io/youtube-dl/).
 
-### And More In The Future!
+### And more in the future!
 Hang tight.
 
 ## Versions
@@ -25,6 +25,7 @@ General
 - [x] Added helpful [JSDoc](https://en.wikipedia.org/wiki/JSDoc) comments to help with development (8f0e007)
 - [x] More `test` options (92c19f9, a27febc)
 - [x] Removed old README.md and integrated it to the current one (5111b52) and added more shields (2d881ea)
+- [x] Serve http requests for status checking (fb173ee)
 
 Help
 - [x] Added a "Did you mean" part if there aren't any matches (d102252, 2f9e75a)
@@ -72,6 +73,9 @@ Error catching
 - [x] Added filters when error needs to be sent in error logging channel or nah (c3580eb, b0c88f2)
 - [x] Removed last channel tracking (2d321c1)
 - [x] Added current time as fallback (44d469b)
+
+Statistics
+- [ ] Record statistics of the bot, like total number of commands, total number of messages, uptime, etc.
 
 ### 0.1.4
 Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging
