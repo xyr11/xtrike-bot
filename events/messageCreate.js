@@ -5,7 +5,8 @@ const { prefix, getUserPerms, hasPerms } = require('../config')
 exports.execute = message => {
   const client = message.client
 
-  if (message.author.id === client.id) return // NEVER acknowledge your own message
+  // Never acknowledge your own message
+  if (message.author.id === client.user.id) return
 
   // Trigger all autoresponses
   for (const i of client.autoresponses) i(message)
