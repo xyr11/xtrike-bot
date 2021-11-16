@@ -95,9 +95,9 @@ exports.fetchImage = async message => {
   // if the server hasn't enabled the command or if the channel is excluded then silently return
   if (!serverData || serverData.excludedChannels.indexOf(channelId) > -1) return
 
-  // get images in message.attachments
-  // for ;image and ;text functionality
+  // get images from messages
   const linksFromMessage = []
+
   // attachments
   if (message.attachments.size > 0) {
     for (const attachment of message.attachments) {
@@ -113,10 +113,11 @@ exports.fetchImage = async message => {
   const links = message.content.match(/(?<=.|^|\s)https?:\/\/[^\s]*/g)
   if (links) {
     for (const link of links) {
-      // get file extension
-      const fileExtension = link.match(/(?<!https?:\/\/[^/]+)(?<=\.).*/g)
-      // don't push() if link is repeated!
-      if (fileExtension && ['png', 'jpg', 'jpeg', 'tif', 'bmp'].indexOf(fileExtension) && linksFromMessage.indexOf(link) === -1) linksFromMessage.push(link)
+      // get file type
+      let fileType = link.match(/[^.]+$/)
+      fileType = fileType[0] || ''
+      // check if file type is an image (that OCRSpace can process) and check if link is repeated
+      if (['png', 'jpg', 'jpeg', 'tif', 'bmp'].indexOf(fileType) > -1 && linksFromMessage.indexOf(link) === -1) linksFromMessage.push(link)
     }
   }
 
