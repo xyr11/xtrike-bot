@@ -1,4 +1,4 @@
-const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { presence, time } = require('../config')
 
@@ -15,9 +15,8 @@ exports.info = {
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
 /**
  * @param {Message} message
- * @param {Interaction} interaction
  */
-exports.run = async (message, interaction) => {
+exports.run = async message => {
   const client = message.client
   console.log(chalk.red(`Bot is shutting down. ${time()}  🤖`))
   await client.user.setActivity('none. Rebooting...', { type: presence.activityType })

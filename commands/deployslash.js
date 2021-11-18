@@ -1,4 +1,4 @@
-const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
@@ -15,9 +15,8 @@ exports.info = {
 
 /**
  * @param {Message} message
- * @param {Interaction} interaction
  */
-exports.run = async (message, interaction) => {
+exports.run = async message => {
   const { DISCORD_TOKEN, CLIENT_ID, DEPLOY_SLASH, BOT_SERVER } = process.env
   if (DEPLOY_SLASH !== 'true' && BOT_SERVER === '') throw new Error('No test server id was found in your .env')
 
