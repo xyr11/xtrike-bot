@@ -28,8 +28,6 @@ exports.run = async (message, interaction, args) => {
   const thing = message || interaction
   const client = thing.client
 
-  const bot = await client.user.fetch() // for the bot avatar
-
   // if there are no args, get the help command of the help command itself
   if (args.length === 0) args[0] = 'help'
 
@@ -37,7 +35,7 @@ exports.run = async (message, interaction, args) => {
   const cmd = client.commands.get(args[0])
 
   // embed variable
-  const embed = new MessageEmbed().setFooter(`Xtrike Bot v${process.env.npm_package_version}`, bot.avatarURL())
+  const embed = new MessageEmbed().setFooter(`Xtrike Bot v${process.env.npm_package_version}`)
 
   if (!cmd || !hasPerms(cmd, thing)) {
     // if that command doesn't exist or if they dont have proper permission levels
