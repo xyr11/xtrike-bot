@@ -33,32 +33,31 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {
+  const thing = message || interaction
+
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
-  const channel = interaction
-    // if slash command
-    ? (args.options.getChannel('channel') || args.channel)
-    // if normal message
-    : (args[0] && args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)
-        ? { id: args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)[0] }
-        : message.channel)
+  const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
   // get the snipe data
-  const edit = editSnipes()[channel.id]
+  const edit = editSnipes()[channel]
 
   // if there's no value
-  if (!edit) return message.reply("There's nothing to snipe!")
+  if (!edit) return thing.reply("There's nothing to snipe!")
 
   // get user
-  const author = await message.client.users.cache.get(edit.id)
+  const author = await thing.client.users.cache.get(edit.id)
 
   // create embed
-  const embed = new MessageEmbed()
+  const embeds = []
+  embeds.push(new MessageEmbed()
     .setAuthor(edit.author, author.avatarURL(), edit.url)
     .setColor(author.hexAccentColor)
-    .setFooter(`#${message.channel.name}`)
-    .setTimestamp(edit.time)
-  if (edit.content) embed.setDescription(edit.content)
-  if (edit.attachments.length > 0) embed.setImage(edit.attachments[0])
-  await message.reply({ embeds: [embed] })
+    .setDescription((edit.content ?? '[Message has no content]') + (edit.embeds.length ? ' [Message has embeds, see below]' : ''))
+    .setFooter(`#${thing.channel.name}`)
+    .setTimestamp(edit.time))
+  if (edit.attachments.length > 0) embeds[0].setImage(edit.attachments[0])
+  // check if there are any removed embeds and include them
+  if (edit.embeds) edit.embeds.forEach(e => embeds.push(e))
+  await thing.reply({ embeds })
 }

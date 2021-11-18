@@ -11,8 +11,7 @@ exports.info = {
     {
       type: 3,
       name: 'text',
-      description: 'Add extra text',
-      choices: []
+      description: 'Extra text'
     }
   ]
 }
@@ -24,8 +23,10 @@ exports.info = {
  */
 exports.run = async (message, interaction, args) => {
   if (!args.length) {
-    message.channel.send(`${message.author} hmmmm... :thinking:`)
+    if (message) message.channel.send(`${message.author} hmmmm... :thinking:`)
+    else interaction.reply(`${interaction.user} hmmmm... :thinking:`)
   } else {
-    message.channel.send(`${message.author} ${args.join(' ')} hmmmm... :thinking:`)
+    if (message) message.channel.send(`${message.author} ${args.join(' ')} hmmmm... :thinking:`)
+    else interaction.reply(`${interaction.user} ${args.join(' ')} hmmmm... :thinking:`)
   }
 }

@@ -33,34 +33,31 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {
+  const thing = message || interaction
+
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
-  const channel = interaction
-    // if slash command
-    ? (args.options.getChannel('channel') || args.channel)
-    // if normal message
-    : (args[0] && args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)
-        ? { id: args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)[0] }
-        : message.channel)
+  const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
   // get the snipe data
-  const deleted = snipes()[channel.id]
+  const deleted = snipes()[channel]
 
   // if there's no value
-  if (!deleted) return message.reply("There's nothing to snipe!")
-
-  console.log(deleted)
+  if (!deleted) return thing.reply("There's nothing to snipe!")
 
   // get user
-  const author = await message.client.users.cache.get(deleted.id)
+  const author = await thing.client.users.cache.get(deleted.id)
 
   // create embed
-  const embed = new MessageEmbed()
+  const embeds = []
+  embeds.push(new MessageEmbed()
     .setAuthor(deleted.author, author.avatarURL())
     .setColor(author.hexAccentColor)
-    .setFooter(`#${message.channel.name}`)
-    .setTimestamp(deleted.time)
-  if (deleted.content) embed.setDescription(deleted.content)
-  if (deleted.attachments.length > 0) embed.setImage(deleted.attachments[0])
-  await message.reply({ embeds: [embed] })
+    .setDescription((deleted.content ?? '[Message has no content]') + (deleted.embeds.length ? ' [Message has embeds, see below]' : ''))
+    .setFooter(`#${thing.channel.name}`)
+    .setTimestamp(deleted.time))
+  if (deleted.attachments.length > 0) embeds[0].setImage(deleted.attachments[0])
+  // check if there are any deleted embeds and include them
+  if (deleted.embeds) deleted.embeds.forEach(e => embeds.push(e))
+  await thing.reply({ embeds })
 }

@@ -6,7 +6,14 @@ exports.info = {
   description: 'Test',
   usage: '`$$test`',
   aliases: ['tests'],
-  permLevel: 'User'
+  permLevel: 'User',
+  options: [
+    {
+      type: 3,
+      name: 'test',
+      description: 'Test'
+    }
+  ]
 }
 
 /**
@@ -14,32 +21,23 @@ exports.info = {
  * @param {Interaction} interaction
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  message.channel.send(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
+exports.run = (message, interaction, args) => {
+  const thing = message || interaction
+  if (interaction) console.log(interaction)
+
+  thing.reply(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
   if (args[0] === 'embed') {
     // should produce a ReferenceError error
-    message.channel.send(testing_the_error_embed_dont_mind) // eslint-disable-line no-undef
+    thing.reply(testing_the_error_embed_dont_mind) // eslint-disable-line no-undef
   } else if (args[0] === 'debug') {
-    message.channel.send({
-      embeds: [{
-        description: '```' + JSON.stringify(message, undefined, 2) + '```'
-      }]
-    })
+    thing.reply({ embeds: [{ description: '```' + JSON.stringify(thing, undefined, 2) + '```' }] })
   } else if (args[0] === 'author') {
-    message.channel.send({
-      embeds: [{
-        description: '```' + JSON.stringify(message.author, undefined, 2) + '```'
-      }]
-    })
+    thing.reply({ embeds: [{ description: '```' + JSON.stringify(thing.author, undefined, 2) + '```' }] })
   } else if (args[0] === 'bot') {
-    message.channel.send({
-      embeds: [{
-        description: '```' + JSON.stringify(message.client.user, undefined, 2) + '```'
-      }]
-    })
+    thing.reply({ embeds: [{ description: '```' + JSON.stringify(thing.client.user, undefined, 2) + '```' }] })
   } else if (args[0] === 'commands') {
-    console.log(message.client.commands)
+    console.log(thing.client.commands)
   } else if (args[0] === 'help') {
-    for (const cmd of message.client.commands.map(a => a.info.name)) message.client.commands.get('help').run(message, false, [cmd])
+    for (const cmd of thing.client.commands.map(a => a.info.name)) thing.client.commands.get('help').run(thing, false, [cmd])
   }
 }

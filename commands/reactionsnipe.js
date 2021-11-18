@@ -33,24 +33,20 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {
+  const thing = message || interaction
+
   // by default, it will choose the current channel
   // if there is a specified channel, it will choose that channel
-  const channel = interaction
-    // if slash command
-    ? (args.options.getChannel('channel') || args.channel)
-    // if normal message
-    : (args[0] && args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)
-        ? { id: args[0].match(/(?<=<#)[0-9]{18}(?=>)/gm)[0] }
-        : message.channel)
+  const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
   // get the snipe data
-  const reaction = reactionSnipes()[channel.id]
+  const reaction = reactionSnipes()[channel]
 
   // if there's no value
-  if (!reaction) return message.reply("There's nothing to snipe!")
+  if (!reaction) return thing.reply("There's nothing to snipe!")
 
   // get user
-  const author = await message.client.users.cache.get(reaction.id)
+  const author = await thing.client.users.cache.get(reaction.id)
 
   // format emoji
   const formatEmoji = emoji => {
@@ -64,7 +60,7 @@ exports.run = async (message, interaction, args) => {
     .setAuthor(reaction.author, author.avatarURL(), reaction.url)
     .setColor(author.hexAccentColor)
     .setDescription(`reacted with ${formatEmoji(reaction.emoji)} on [this message](${reaction.url})`)
-    .setFooter(`#${message.channel.name}`)
+    .setFooter(`#${thing.channel.name}`)
     .setTimestamp(reaction.time)
-  await message.reply({ embeds: [embed] })
+  await thing.reply({ embeds: [embed] })
 }

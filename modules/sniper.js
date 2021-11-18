@@ -43,6 +43,7 @@ exports.msgEdit = async (oldMessage, newMessage) => {
     author: oldMessage.author.tag,
     id: oldMessage.author.id,
     content: oldMessage.content,
+    embeds: oldMessage.embeds,
     attachments: [...oldMessage.attachments.values()].map((a) => a.proxyURL),
     url: oldMessage.url,
     time: newMessage.editedTimestamp

@@ -1,5 +1,5 @@
+const { Message, Interaction, Intents } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
-const { Intents } = require('discord.js')
 
 // Inspired by https://github.com/AnIdiotsGuide/guidebot (config.js.example)
 // License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
@@ -59,24 +59,29 @@ exports.time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us
  */
 exports.discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
 
+/**
+ * Get user from Message or Interaction
+ * @param {(Message|Interaction)} thing
+ * @returns User object
+ */
+exports.getUser = thing => thing.author ?? thing.user
+
 /** The different permission levels and their checks */
 exports.permLevels = [
   {
     level: 5,
     name: 'lmao',
     check: message => {
-      const user = message.author ?? message.user
       // Check the list of developer user ids
-      return exports.devs.includes(user.id)
+      return exports.devs.includes(exports.getUser(message).id)
     }
   },
   {
     level: 4,
     name: 'Bot Support',
     check: message => {
-      const user = message.author ?? message.user
       // Check the list of botSupport user ids
-      return exports.botSupport.includes(user.id)
+      return exports.botSupport.includes(exports.getUser(message).id)
     }
   },
   {
@@ -84,8 +89,7 @@ exports.permLevels = [
     name: 'Server Owner',
     // If the guild owner id matches the message author's ID, then it will return true.
     check: message => {
-      const user = message.author ?? message.user
-      return message.guild?.ownerId === user.id
+      return message.guild?.ownerId === exports.getUser(message).id
     }
   },
   {

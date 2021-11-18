@@ -20,8 +20,9 @@ const randNo = max => Math.floor(Math.random() * max)
  * @param {Interaction} interaction
  */
 module.exports = (error, client, message = null, interaction = null) => {
+  const thing = message || interaction
   const errEmote = errEmotes[randNo(errEmotes.length)]
-  const timeSent = message ? message.createdTimestamp : Date.now()
+  const timeSent = thing ? thing.createdTimestamp : Date.now()
 
   // Display it to console first
   console.error(chalk.red(`${error.name || 'Error'} (${time()})`))
@@ -34,24 +35,28 @@ module.exports = (error, client, message = null, interaction = null) => {
   // ignore error and move on
   const dontSend =
     (error.code >= 500 && error.code < 600) || // 500 error codes
-    err.stderr === "ERROR: There's no video in this tweet.; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output." // youtube-dl typical error
+    err.stderr === "ERROR: There's no video in this tweet.; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output." || // youtube-dl typical error
+    err.code === 10062 // DiscordAPIError: Unknown interaction
+
   // errors that shouldn't be sent to the current channel
   const dontSendToChannel =
     dontSend ||
     error.name === 'FetchError' // something to do with await fetch() which is async
 
   // Send the error embed to corresponding channel, if there are any
-  if (message && !dontSendToChannel) {
+  if (!dontSendToChannel && thing) {
     try {
-      message.channel.send({
+      const err = {
         content: 'Sorry, seems like I have encountered an error.',
         embeds: [{
           color: colors.red,
           title: `${errEmote} I have encountered an error!`,
-          description: `From \`${message.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``,
+          description: `From \`${thing.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``,
           footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
         }]
-      })
+      }
+      if (message) message.reply(err)
+      if (interaction) interaction.followUp(err)
     } catch (err) { }
   }
 
@@ -63,7 +68,7 @@ module.exports = (error, client, message = null, interaction = null) => {
   for (const i in fullErr) {
     embeds.push({
       color: colors.red,
-      title: i === '0' ? `${errEmote} New error ${message ? `from \`${message.content}\` ` : ''}at ${discordTime(timeSent)}` : '',
+      title: i === '0' ? `${errEmote} New error ${thing ? `from \`${thing.content}\` ` : ''}at ${discordTime(timeSent)}` : '',
       description: `\`\`\`\n${fullErr[i]}\`\`\``
     })
   }

@@ -25,7 +25,8 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {
-  const client = message.client
+  const thing = message || interaction
+  const client = thing.client
 
   const bot = await client.user.fetch() // for the bot avatar
 
@@ -38,12 +39,12 @@ exports.run = async (message, interaction, args) => {
   // embed variable
   const embed = new MessageEmbed().setFooter(`Xtrike Bot v${process.env.npm_package_version}`, bot.avatarURL())
 
-  if (!cmd || !hasPerms(cmd, message)) {
+  if (!cmd || !hasPerms(cmd, thing)) {
     // if that command doesn't exist or if they dont have proper permission levels
     const fuse = new Fuse(client.commands.map(a => a.info), { keys: ['name'] }) // search options
     const results = fuse.search(args[0]) // search
       .map(a => a.item.name) // get the command name only
-      .filter(a => hasPerms(client.commands.get(a), message)) // check if user has perms to view that command
+      .filter(a => hasPerms(client.commands.get(a), thing)) // check if user has perms to view that command
     // set the embed
     embed.setColor(colors.main)
       .setDescription('Sorry, we didn\'t find any commands with\n' +
@@ -62,5 +63,5 @@ exports.run = async (message, interaction, args) => {
     if (option) embed.addFields({ name: 'Options', value: option })
     if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })
   }
-  message.reply({ embeds: [embed] })
+  thing.reply({ embeds: [embed] })
 }

@@ -15,7 +15,7 @@ exports.info = {
  * @param {Interaction} interaction
  */
 exports.run = (message, interaction) => {
-  message.channel.send({
+  (message || interaction).reply({
     embeds: [{
       color: colors.main,
       title: 'Xtrike Bot',
