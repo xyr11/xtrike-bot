@@ -66,8 +66,8 @@ module.exports = async message => {
       let notDownloaded = true
       while (notDownloaded) {
         try {
-          // download the video from the link given. (the zero index is the lowest quality version.)
-          data = await download(videoLink[1] ?? videoLink[0], { headers: output.http_headers })
+          // download the video from the link given (the zero index is the lowest quality version)
+          data = await download(videoLink[0], { headers: output.http_headers })
           notDownloaded = false // stop the infinite loop
         } catch (err) {
           // retry if error is error 500
