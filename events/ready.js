@@ -2,6 +2,7 @@ const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const { presence, time } = require('../config')
 const chalk = require('chalk')
 const Amongoose = require('mongoose')
+const { storeInfo, getInfo } = require('../modules/botInfo')
 
 /** @param {Client} client */
 exports.execute = async client => {
@@ -18,4 +19,10 @@ exports.execute = async client => {
 
   // mongodb
   await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
+
+  // uptime
+  const upSince = (await getInfo('upSince')) || 0 // get time when bot started
+  const now = Date.now()
+  // don't update if the bot is down for <40 seconds only
+  if (now - upSince > 40000) storeInfo('upSince', now)
 }
