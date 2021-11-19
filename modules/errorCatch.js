@@ -36,7 +36,8 @@ module.exports = (error, client, message = null, interaction = null) => {
   const dontSend =
     (error.code >= 500 && error.code < 600) || // 500 error codes
     err.stderr === "ERROR: There's no video in this tweet.; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output." || // youtube-dl typical error
-    err.code === 10062 // DiscordAPIError: Unknown interaction
+    err.code === 10062 || //  DiscordAPIError: Unknown interaction
+    err.code === 50035 //     Embed size exceeds maximum size of 6000 (DiscordAPIError: Invalid Form Body)
 
   // errors that shouldn't be sent to the current channel
   const dontSendToChannel =
