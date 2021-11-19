@@ -5,8 +5,8 @@
  * under the MIT License
  */
 
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const { reactionSnipes } = require('../modules/sniper')
+const { Message, Interaction, MessageEmbed, ReactionEmoji, GuildEmoji } = require('discord.js') // eslint-disable-line no-unused-vars
+const { sniper } = require('../modules/sniper')
 
 exports.info = {
   name: 'reactionsnipe',
@@ -39,28 +39,40 @@ exports.run = async (message, interaction, args) => {
   // if there is a specified channel, it will choose that channel
   const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
-  // get the snipe data
-  const reaction = reactionSnipes()[channel]
+  // get reactionsnipe data
+  /**
+   * @typedef {Object} ReactRemove
+   * @property {String} a Author id
+   * @property {ReactionEmoji|GuildEmoji} e Emoji
+   * @property {String} i Message id
+   * @property {String} t Removed timestamp
+   */
+  /** @type {ReactRemove} */
+  const reacted = await sniper('c', channel)
 
   // if there's no value
-  if (!reaction) return thing.reply("There's nothing to snipe!")
+  if (!reacted) return thing.reply("There's nothing to snipe!")
 
-  // get user
-  const author = await thing.client.users.cache.get(reaction.id)
+  // message url
+  const messageUrl = `https://discord.com/channels/${thing.guildId}/${channel}/${reacted.i}`
 
-  // format emoji
-  const formatEmoji = emoji => {
-    return !emoji.id || emoji.available
-      ? emoji.toString() // bot has access or unicode emoji
-      : `[:${emoji.name}:](${emoji.url})` // bot cannot use the emoji
-  }
+  // get author
+  const author = await thing.client.users.cache.get(reacted.a)
+
+  /**
+   * @param {ReactionEmoji|GuildEmoji} emoji
+   * @returns Emoji string
+   */
+  const formatEmoji = emoji => !emoji.id || emoji.available
+    ? emoji.s // bot has access or unicode emoji
+    : `[:${emoji.name}:](${emoji.url})` // bot cannot use the emoji
 
   // create embed
   const embed = new MessageEmbed()
-    .setAuthor(reaction.author, author.avatarURL(), reaction.url)
+    .setAuthor(author.tag, author.avatarURL(), messageUrl)
     .setColor(author.hexAccentColor)
-    .setDescription(`reacted with ${formatEmoji(reaction.emoji)} on [this message](${reaction.url})`)
-    .setFooter(`#${thing.channel.name}`)
-    .setTimestamp(reaction.time)
+    .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${messageUrl})`)
+    .setFooter(`#${thing.client.channels.cache.get(channel).name}`)
+    .setTimestamp(reacted.t)
   await thing.reply({ embeds: [embed] })
 }

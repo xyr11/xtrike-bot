@@ -6,7 +6,7 @@
  */
 
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const { snipes } = require('../modules/sniper')
+const { sniper } = require('../modules/sniper')
 
 exports.info = {
   name: 'snipe',
@@ -39,25 +39,36 @@ exports.run = async (message, interaction, args) => {
   // if there is a specified channel, it will choose that channel
   const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
-  // get the snipe data
-  const deleted = snipes()[channel]
+  // get snipe data
+  /**
+   * @typedef {Object} Deleted
+   * @property {String} a Author id
+   * @property {String} c Message content
+   * @property {Array} e Embeds
+   * @property {Array} f File attachments
+   * @property {String} t Created timestamp
+   */
+  /** @type {Deleted} */
+  const deleted = await sniper('a', channel)
 
   // if there's no value
   if (!deleted) return thing.reply("There's nothing to snipe!")
 
-  // get user
-  const author = await thing.client.users.cache.get(deleted.id)
+  // get author
+  const author = await thing.client.users.cache.get(deleted.a)
 
   // create embed
   const embeds = []
   embeds.push(new MessageEmbed()
-    .setAuthor(deleted.author, author.avatarURL())
+    .setAuthor(author.tag, author.avatarURL())
     .setColor(author.hexAccentColor)
-    .setDescription((deleted.content ?? '[Message has no content]') + (deleted.embeds.length ? ' [Message has embeds, see below]' : ''))
-    .setFooter(`#${thing.channel.name}`)
-    .setTimestamp(deleted.time))
-  if (deleted.attachments.length > 0) embeds[0].setImage(deleted.attachments[0])
+    .setDescription((deleted.c || '[Message has no content]') +
+      (deleted.e.length ? ' [Message has embeds, see below]' : '') +
+      (deleted.e.length > 9 ? ' [Too many embeds, only 9 will be shown]' : ''))
+    .setFooter(`#${thing.client.channels.cache.get(channel).name}`)
+    .setTimestamp(deleted.t))
+  if (deleted.f.length > 0) embeds[0].setImage(deleted.f[0])
   // check if there are any deleted embeds and include them
-  if (deleted.embeds) deleted.embeds.forEach(e => embeds.push(e))
+  if (deleted.e) deleted.e.slice(0, 9).forEach(e => embeds.push(e))
   await thing.reply({ embeds })
 }

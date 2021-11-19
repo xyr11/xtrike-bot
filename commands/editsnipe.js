@@ -6,7 +6,7 @@
  */
 
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const { editSnipes } = require('../modules/sniper')
+const { sniper } = require('../modules/sniper')
 
 exports.info = {
   name: 'editsnipe',
@@ -39,25 +39,41 @@ exports.run = async (message, interaction, args) => {
   // if there is a specified channel, it will choose that channel
   const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
 
-  // get the snipe data
-  const edit = editSnipes()[channel]
+  // get editSnipe data
+  /**
+   * @typedef {Object} Edited
+   * @property {String} a Author id
+   * @property {String} c Message old content
+   * @property {Array} e Old embeds
+   * @property {Array} f Old file attachments
+   * @property {String} i Message id
+   * @property {String} t Edited timestamp
+   */
+  /** @type {Edited} */
+  const edited = await sniper('b', channel)
 
   // if there's no value
-  if (!edit) return thing.reply("There's nothing to snipe!")
+  if (!edited) return thing.reply("There's nothing to snipe!")
 
-  // get user
-  const author = await thing.client.users.cache.get(edit.id)
+  // message url
+  const editedUrl = `https://discord.com/channels/${thing.guildId}/${channel}/${edited.i}`
+
+  // get author
+  const author = await thing.client.users.cache.get(edited.a)
 
   // create embed
   const embeds = []
   embeds.push(new MessageEmbed()
-    .setAuthor(edit.author, author.avatarURL(), edit.url)
+    .setAuthor(author.tag, author.avatarURL(), editedUrl)
     .setColor(author.hexAccentColor)
-    .setDescription((edit.content ?? '[Message has no content]') + (edit.embeds.length ? ' [Message has embeds, see below]' : ''))
-    .setFooter(`#${thing.channel.name}`)
-    .setTimestamp(edit.time))
-  if (edit.attachments.length > 0) embeds[0].setImage(edit.attachments[0])
+    .setDescription((edited.c || '[Message has no content]') +
+      (edited.e.length ? ' [Message has embeds, see below]' : '') +
+      (edited.e.length > 9 ? ' [Too many embeds, only 9 will be shown]' : '') +
+      ` [(go to original message)](${editedUrl})`)
+    .setFooter(`#${thing.client.channels.cache.get(channel).name}`)
+    .setTimestamp(edited.t))
+  if (edited.f.length > 0) embeds[0].setImage(edited.f[0])
   // check if there are any removed embeds and include them
-  if (edit.embeds) edit.embeds.forEach(e => embeds.push(e))
+  if (edited.e) edited.e.slice(0, 9).forEach(e => embeds.push(e))
   await thing.reply({ embeds })
 }
