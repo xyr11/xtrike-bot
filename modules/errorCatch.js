@@ -21,28 +21,30 @@ const randNo = max => Math.floor(Math.random() * max)
  */
 module.exports = (error, client, message = null, interaction = null) => {
   const thing = message || interaction
-  const errEmote = errEmotes[randNo(errEmotes.length)]
   const timeSent = thing ? thing.createdTimestamp : Date.now()
+  const errEmote = errEmotes[randNo(errEmotes.length)]
+
+  // serialize the error object
+  const err = serializeError(error)
+
+  // absolutely ignore these error
+  if (
+    (err.stderr && err.stderr.search("ERROR: There's no video in ") === 0) // youtube-dl no video error
+  ) return
 
   // Display it to console first
   console.error(chalk.red(`${error.name || 'Error'} (${time()})`))
   console.error(error)
 
-  // serialize the error object
-  const err = serializeError(error)
-
-  // Filter error codes
-  // ignore error and move on
+  // dont send to error logging channel
   const dontSend =
     (error.code >= 500 && error.code < 600) || // 500 error codes
-    err.stderr === "ERROR: There's no video in this tweet.; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output." || // youtube-dl typical error
-    err.code === 10062 || //  DiscordAPIError: Unknown interaction
-    err.code === 50035 //     Embed size exceeds maximum size of 6000 (DiscordAPIError: Invalid Form Body)
-
-  // errors that shouldn't be sent to the current channel
+    err.code === 50035 //                         Embed size exceeds maximum size of 6000
+  // dont sent to the current channel
   const dontSendToChannel =
     dontSend ||
-    error.name === 'FetchError' // something to do with await fetch() which is async
+    err.code === 10062 || //        DiscordAPIError: Unknown interaction
+    error.name === 'FetchError' //  something to do with fetch() which is async
 
   // Send the error embed to corresponding channel, if there are any
   if (!dontSendToChannel && thing) {
