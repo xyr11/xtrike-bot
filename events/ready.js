@@ -21,8 +21,6 @@ exports.execute = async client => {
   await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
 
   // uptime
-  const upSince = (await getInfo('upSince')) || 0 // get time when bot started
-  const now = Date.now()
-  // don't update if the bot is down for <40 seconds only
-  if (now - upSince > 40000) storeInfo('upSince', now)
+  const upSince = (await getInfo('upSince')) || null
+  if (!upSince) storeInfo('upSince', Date.now()) // dont update if there is already a value
 }
