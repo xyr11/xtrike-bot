@@ -1,5 +1,6 @@
 const { Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const { getUserPerms, hasPerms } = require('../config')
+const recordStats = require('../modules/recordStatistics')
 
 /** @param {Interaction} interaction */
 exports.execute = async interaction => {
@@ -33,6 +34,7 @@ exports.execute = async interaction => {
 
   try {
     cmd.run(null, interaction, args)
+    recordStats(cmd.name)
   } catch (error) {
     require('../modules/errorCatch')(error, interaction.client, null, interaction)
   }

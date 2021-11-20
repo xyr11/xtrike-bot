@@ -1,6 +1,6 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const { prefix, getUserPerms, hasPerms } = require('../config')
-const recordStatistics = require('../modules/recordStatistics')
+const recordStats = require('../modules/recordStatistics')
 
 /** @param {Message} message */
 exports.execute = message => {
@@ -47,12 +47,12 @@ exports.execute = message => {
       // If the command requires arguments and there are no given arguments then return the help entry instead
       message.channel.sendTyping()
       client.commands.get('help').run(message, null, [cmd.info.name])
-      recordStatistics('help')
+      recordStats('help')
     } else if (!dank || (dank && cmd.info.dank)) {
       // Check if command is a dank command and accepts 'pls'
       message.channel.sendTyping()
       cmd.run(message, null, args)
-      recordStatistics(command)
+      recordStats(cmd.name)
     }
   } catch (error) {
     require('../modules/errorCatch')(error, client, message)
