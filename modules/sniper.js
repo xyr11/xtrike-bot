@@ -75,9 +75,10 @@ exports.e = async (n, arg1, arg2 = null) => {
   _id += n
 
   // check if there are any previous entries with the same id
-  const results = await SnipesModel.find({ _id })
-  // if yes then update that one
-  if (results.length) await SnipesModel.updateOne({ _id }, { d })
-  // if no then create a new one instead
-  else await new SnipesModel({ _id, d }).save()
+  SnipesModel.findOne({ _id }).then(async results => {
+    // if yes then update that one
+    if (results) await SnipesModel.updateOne({ _id }, { d })
+    // if no then create a new one instead
+    else await new SnipesModel({ _id, d }).save()
+  })
 }
