@@ -52,7 +52,7 @@ exports.execute = message => {
       // Check if command is a dank command and accepts 'pls'
       message.channel.sendTyping()
       cmd.run(message, null, args)
-      recordStats(cmd.name)
+      recordStats(cmd.info.name)
     }
   } catch (error) {
     require('../modules/errorCatch')(error, client, message)

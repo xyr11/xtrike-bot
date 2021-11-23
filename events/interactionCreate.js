@@ -34,7 +34,7 @@ exports.execute = async interaction => {
 
   try {
     cmd.run(null, interaction, args)
-    recordStats(cmd.name)
+    recordStats(cmd.info.name)
   } catch (error) {
     require('../modules/errorCatch')(error, interaction.client, null, interaction)
   }
