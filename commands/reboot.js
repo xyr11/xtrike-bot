@@ -21,7 +21,7 @@ exports.run = async message => {
   const client = message.client
 
   // log to console
-  console.log(chalk.red(`Bot is shutting down. ${time()}  🤖`))
+  console.log(chalk.red('Bot is shutting down. 🤖'), chalk.bgRedBright.black(`(${time()})`))
 
   // set activity
   await client.user.setActivity('none. Rebooting...', { type: presence.activityType })

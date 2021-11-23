@@ -59,7 +59,7 @@ exports.run = async (message, interaction, args) => {
       reloadedName = `The command \`${prefix}${commandName}\``
     }
     message.reply(`${reloadedName} has been reloaded`)
-    console.log(chalk.green(`${reloadedName} has been reloaded (${time()})`))
+    console.log(chalk.green(`${reloadedName} has been reloaded`, chalk.bgGreenBright.black(`(${time()})`)))
   } catch (error) {
     await require('../modules/errorCatch')(error, message.client, message)
     await message.reply('I have encountered an error while trying to reload. \n⚠️ Because the reload command is very powerful, this error can cause massive disruption. Therefore, the bot will REBOOT shortly. ⚠️')

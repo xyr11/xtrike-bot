@@ -33,7 +33,7 @@ module.exports = (error, client, message = null, interaction = null) => {
   ) return
 
   // Display it to console first
-  console.error(chalk.red(`${error.name || 'Error'} (${time()})`))
+  console.error(chalk.red(`${error.name || 'Error'}`), chalk.bgRedBright.black(`(${time()})`))
   console.error(error)
 
   // dont send to error logging channel

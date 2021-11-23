@@ -43,7 +43,7 @@ exports.run = async message => {
     { body: slashCommands }
   )
     .then(() => {
-      console.log(chalk.blue(`Successfully registered application commands. (${time()})`))
+      console.log(chalk.blue('Successfully registered application commands.'), chalk.bgBlueBright.black(`(${time()})`))
       message.channel.send('Successfully registered application commands.')
     })
     .catch(console.error)
