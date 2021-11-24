@@ -15,6 +15,9 @@ exports.execute = async client => {
     })
   }
 
+  // server
+  require('../modules/express')()
+
   // mongodb
   await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
 
