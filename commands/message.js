@@ -32,5 +32,10 @@ exports.run = async (message, interaction, args) => {
     // normal message
     await channel.send(text)
   }
-  message.delete()
+  message.delete().catch(err => {
+    if (err.message === 'Missing Permissions') {
+      return message.author.send(`I cannot delete your message because I have missing permissions in <#${message.channelId}>. You can delete your own message instead.`)
+    }
+    require('../modules/errorCatch')(err, message.client, message)
+  })
 }
