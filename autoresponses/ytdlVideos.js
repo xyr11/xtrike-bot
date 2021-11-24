@@ -50,7 +50,8 @@ module.exports = async message => {
 
     // get the formats object
     let videoLink = []
-    if (output) {
+    if (!output.formats) console.log(output) // debug output if there is no formats
+    if (output && output.formats) {
       videoLink = output.formats
         .filter(a => a.protocol === 'https') // filter the .mp4 links
         .map(a => a.url) // get the url of what's left
