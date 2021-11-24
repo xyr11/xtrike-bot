@@ -23,3 +23,9 @@ exports.getInfo = async (_id) => {
   const result = await BotInfo.findOne({ _id })
   if (result) return result.d
 }
+
+/** Get keys */
+exports.keys = async () => await BotInfo.find().distinct('_id')
+
+/** Get all */
+exports.all = async () => await BotInfo.find()

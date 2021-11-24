@@ -205,6 +205,30 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 ### 0.0.2 and 0.0.1
 The bare bones of the bot, with very limited features.
 
+## Endpoints
+You can either use `GET` or `POST`.
+
+Endpoint url: https://xtrike-bot.xyr11.repl.co
+
+Endpoint | Description | Returns
+-- | -- | --
+/stats | Get all bot statistics | `Object`
+/stats/keys | Get the different statistics keys | `Array`
+/stats/`commandName` <br> /stats/`key` | Get the individual values of the given command name or property | `String`
+
+### Sample code
+#### Check if bot is up
+```js
+const isUp = await fetch('https://xtrike-bot.xyr11.repl.co').then(res => res.text()).catch(console.error)
+console.log('The bot is up:', !!isUp)
+```
+
+#### Get all statistics
+```js
+const stats = await fetch('http://localhost:3000/stats').then(res => res.json()).catch(console.error)
+console.log(stats)
+```
+
 ## Develop
 ### Prerequisites
 + [Git](https://git-scm.com/downloads)
