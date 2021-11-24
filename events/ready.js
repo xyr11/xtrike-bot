@@ -7,8 +7,6 @@ const { storeInfo, getInfo } = require('../modules/botInfo')
 /** @param {Client} client */
 exports.execute = async client => {
   console.log(chalk.green(`Ready as ${client.user.tag}! 🤖`, chalk.bgGreenBright.black(`(${time()})`)))
-  console.log(chalk.blue(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`))
-
   // presence
   if (presence.activity) {
     client.user.setPresence({
@@ -20,7 +18,12 @@ exports.execute = async client => {
   // mongodb
   await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
 
+  // statistics
+  // server count
+  console.log(chalk.blue(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`))
+  storeInfo('serverCount', client.guilds.cache.size)
   // uptime
-  const upSince = (await getInfo('upSince')) || null
-  if (!upSince) storeInfo('upSince', Date.now()) // dont update if there is already a value
+  if (!await getInfo('upSince')) storeInfo('upSince', Date.now()) // dont update if there is already a value
+  // bot ready
+  storeInfo('botReady', (await getInfo('botReady') || 0) + 1)
 }
