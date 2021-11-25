@@ -116,6 +116,44 @@ exports.permLevels = [
   }
 ]
 
+exports.PermLevels = {
+  lmao: {
+    level: 5,
+    // Check the list of developer user ids
+    check: message => exports.devs.includes(exports.getUser(message).id)
+  },
+  'Bot Support': {
+    level: 4,
+    // Check the list of botSupport user ids
+    check: message => exports.botSupport.includes(exports.getUser(message).id)
+  },
+  'Server Owner': {
+    level: 3,
+    // If the guild owner id matches the message author's ID, then it will return true.
+    check: message => message.guild?.ownerId === exports.getUser(message).id
+  },
+  Moderator: {
+    level: 2,
+    // The following lines check the guild the message came from for the roles.
+    // Then it checks if the member that authored the message has the role.
+    // If they do return true, which will allow them to execute the command in question.
+    // If they don't then return false, which will prevent them from executing the command.
+    check: message => {
+      try {
+        const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase()) ||
+          message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase())
+        if (modRole && message.member.roles.cache.has(modRole.id)) return true
+      } catch (e) {
+        return false
+      }
+    }
+  },
+  User: {
+    level: 1,
+    check: () => true
+  }
+}
+
 /**
  * Get the user permission level
  * @param {Client} message Client message

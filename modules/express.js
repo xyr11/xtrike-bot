@@ -2,7 +2,7 @@ const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const express = require('express')
 const cors = require('cors')
-const { getInfo, keys, all } = require('../modules/botInfo')
+const { getInfo, getKeys, getAll } = require('../modules/botInfo')
 
 const app = express()
 
@@ -26,7 +26,7 @@ app.all('/', (req, res) => {
 // get bot statistics
 app.all('/stats', async (req, res) => {
   const stats = {};
-  (await all()).forEach(e => { stats[e._id] = e.d })
+  (await getAll()).forEach(e => { stats[e._id] = e.d })
   res.send({
     ...stats,
     timeSent: Date.now(),
@@ -35,7 +35,7 @@ app.all('/stats', async (req, res) => {
 })
 
 app.all('/stats/keys', async (req, res) => {
-  res.send(await keys())
+  res.send(await getKeys())
 })
 
 app.all('/stats/:id', async (req, res) => {

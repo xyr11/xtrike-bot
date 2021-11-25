@@ -17,15 +17,23 @@ exports.storeInfo = async (_id, d) => {
 /**
  * Get bot info
  * @param {String} _id Entry name
- * @returns Stored data
+ * @returns {Any} stored data
  */
 exports.getInfo = async (_id) => {
   const result = await BotInfo.findOne({ _id })
   if (result) return result.d
 }
 
-/** Get keys */
-exports.keys = async () => await BotInfo.find().distinct('_id')
+/**
+ * Get keys
+ * @function
+ * @returns {[String]}
+ */
+exports.getKeys = async () => await BotInfo.find().distinct('_id')
 
-/** Get all */
-exports.all = async () => await BotInfo.find()
+/**
+ * Get all
+ * @function
+ * @returns {[Object<String, Any>]}
+ */
+exports.getAll = async () => await BotInfo.find()
