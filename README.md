@@ -7,7 +7,7 @@ And it's open-source!
 
 ## Features
 ### Search for text in images!
-Can't find that one image your friend sent that got buried by a day's worth of messages? Well, you can now search for them! Powered by [OCRSpace](https://ocr.space/) and [Fuse.js](https://fusejs.io/). (Enter `;image`for more info.)
+Can't find that one image your friend sent that got buried by a day's worth of messages? Well, you can now search for them! Powered by [OCRSpace](https://ocr.space/) and [Fuse.js](https://fusejs.io/). (Enter `;image` for more info.)
 
 ### Extract the raw video from external links!
 It's a real inconvenience when you need to open links just to watch epic fails or low quality memes. So now, the bot will automatically extract and send the video whenever someone sends a link! Powered by [youtube-dl](http://ytdl-org.github.io/youtube-dl/). (Supported sites: Twitter, Tiktok.)
@@ -32,7 +32,7 @@ Big changes! Slash commands beta, dual command handlers, added & updated many co
 #### Commands
 - [x] Support for dual command handlers, `messageCreate` and `interactionCreate` at the same time! (8bf55c3, 8f0e007)
 - [x] `requiredArgs: true`: If a user doesn't give arguments, it will instead give the help embed of that command. (8dca861)
-- [x] Never acknowledge the bot's own messages  (27ff8dc)
+- [x] Never acknowledge the bot's own messages (27ff8dc)
 
 Help
 - [x] Added a "Did you mean" part if there aren't any matches (d102252, 2f9e75a)
@@ -52,10 +52,13 @@ Image search
 - [x] Better link checking (6c3632f)
 - [ ] Optimize data storage (12bab96)
 
+message
+- [x] Added the `message` command back (2a7c020, 0a27337, 3010261)
+
 ping
 - [x] Removed reliance on custom `pingArea` channel, instead it will just edit its own message (34bf75c)
 
-Reboot
+reboot
 - [x] Will log to console and change the activity text if bot is rebooting (e4561b8)
 - [x] Uptime logs will be cleared if `reboot` is run. (aabb3c8)
 
@@ -66,6 +69,9 @@ Sniper
 - [x] Added `pls snipe`, `editsnipe`, and `reactionsnipe` from [DankMemer/sniper](https://github.com/DankMemer/sniper) (cc4e0b4, 18e8e0d, b84a868)
 - [x] Added dank mode to support `pls` as a valid prefix (cc4e0b4)
 - [x] Data is now stored in the database so that it won't get lost if the bot restarts (51e0446)
+
+stats
+- [x] Added stats to get bot commands statistics (2dc84d2)
 
 test
 - [x] More `test` options (92c19f9, a27febc)
@@ -85,12 +91,15 @@ ytdlVideos Autoresponse
 
 #### Others
 Bot config
-- [ ] Switched all config settings to .env
+- [ ] Switch all config settings to .env
 
 Config.js
 - [x] Added more intents and partials (a084ef0, 5e432df)
 - [x] Removed `botId` (a084ef0)
 - [x] `hasPerms()`: require the command object instead of just the name (8ab8478)
+
+Endpoint
+- [x] Added endpoints (basically unofficial bot API) to get bot statistics (fb173ee, e695778)
 
 Error catching
 - [x] Added filters if and when an error needs to be sent in the error logging channel or be ignored entirely (c3580eb, b0c88f2, d6b14f9)
@@ -204,6 +213,15 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 
 ### 0.0.2 and 0.0.1
 The bare bones of the bot, with very limited features.
+
+## To-do's for future versions
+- [ ] Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
+- [ ] Support for command aliases
+- [ ] Switch commands and autoresponses to Class
+- [ ] Auto-generate `Options` field in the help embed from the options property for slash commands
+- [ ] Unified and modularized logger
+- [ ] Unified and modularized message sender for both `message` and `interaction`
+- [ ] Re-add `oxford` command
 
 ## Endpoints
 You can either use `GET` or `POST`.
