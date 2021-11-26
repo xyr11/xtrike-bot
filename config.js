@@ -1,136 +1,89 @@
-const { Message, Interaction, Intents } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Intents, Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
+const { PREFIX, STATUS, ACTIVITYTYPE, PRESENCE, TIMEZONE } = process.env
 
-// Inspired by https://github.com/AnIdiotsGuide/guidebot (config.js.example)
-// License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
+// Inspired by https://github.com/AnIdiotsGuide/guidebot (config.js.example), MIT License
 
 /** Bot intents */
-exports.intents = [
+const intents = [
   Intents.FLAGS.GUILDS,
   Intents.FLAGS.GUILD_MESSAGES,
   Intents.FLAGS.GUILD_MESSAGE_REACTIONS
 ]
 /** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
-exports.partials = ['MESSAGE', 'REACTION', 'USER']
+const partials = ['MESSAGE', 'REACTION', 'USER']
 
 /** Prefix of the bot */
-exports.prefix = process.env.PREFIX || ';'
+const prefix = PREFIX || ';'
 
 // User ids of various important people
-/** Bot support user ids */
-exports.botSupport = []
 /** Bot developer user ids */
-exports.devs = ['681766482304434187']
+const devs = ['681766482304434187']
+/** Bot support user ids */
+const botSupport = []
 
 /** Bot presence based on env variables */
-exports.presence = {
-  status: process.env.STATUS ?? 'online',
-  activityType: process.env.ACTIVITYTYPE ?? 'Playing',
-  activity: process.env.PRESENCE ?? ';info'
+const presence = {
+  status: STATUS ?? 'online',
+  activityType: ACTIVITYTYPE ?? 'Playing',
+  activity: PRESENCE ?? ';info'
 }
 
 /** Common color codes in hex */
-exports.colors = {
+const colors = {
+  /** Xtrike blue */
   main: '#77e4ff',
   red: '#F04848',
   green: '#2ecc71'
 }
 
 /**
- * Return a date and time string formatted using `process.env.TIMEZONE`
- * @param {String} unixTime Unix time
- * @returns Date and time string
+ * Get date and time string formatted using the timezone given in .env
+ * @param {String} [unixTime] Unix time
+ * @returns {String} Date and time string
  */
-exports.time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: process.env.TIMEZONE ?? 'Etc/UTC' })
+const time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: TIMEZONE ?? 'Etc/UTC' })
 
 /**
  * Return a formatted Discord time string
- * @param {String} unixTime Unix time
- * @param {String} suffix
- * Custom suffix.
- * + None: Short date time  ("June 27, 2021 9:48 PM")
- * + `F`: Long date time   ("Sunday, June 27, 2021 9:48 PM")
- * + `d`: Short date       ("06/27/2021")
- * + `D`: Long date        ("June 27, 2021")
- * + `t`: Short time       ("9:48 PM")
- * + `T`: Long time        ("9:48:37 PM")
- * + `R`: Relative time    ("2 days ago")
+ * @param {String} [unixTime] Unix time
+ * @param {String} [suffix] Custom suffix.
+ * + Default: short date time (`June 27, 2021 9:48 PM`)
+ * + `F`: long date time      (`Sunday, June 27, 2021 9:48 PM`)
+ * + `d`: short date          (`06/27/2021`)
+ * + `D`: long date           (`June 27, 2021`)
+ * + `t`: short time          (`9:48 PM`)
+ * + `T`: long time           (`9:48:37 PM`)
+ * + `R`: relative time       (`2 days ago`)
+ *
+ * (from https://pastebin.com/rJFE9yxq)
  * @returns date and time string
  */
-exports.discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
+const discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
 
 /**
  * Get user from Message or Interaction
- * @param {(Message|Interaction)} thing
+ * @param {Message|Interaction} thing
  * @returns User object
  */
-exports.getUser = thing => thing.author ?? thing.user
+const user = thing => thing.author ?? thing.user
 
 /** The different permission levels and their checks */
-exports.permLevels = [
-  {
-    level: 5,
-    name: 'lmao',
-    check: message => {
-      // Check the list of developer user ids
-      return exports.devs.includes(exports.getUser(message).id)
-    }
-  },
-  {
-    level: 4,
-    name: 'Bot Support',
-    check: message => {
-      // Check the list of botSupport user ids
-      return exports.botSupport.includes(exports.getUser(message).id)
-    }
-  },
-  {
-    level: 3,
-    name: 'Server Owner',
-    // If the guild owner id matches the message author's ID, then it will return true.
-    check: message => {
-      return message.guild?.ownerId === exports.getUser(message).id
-    }
-  },
-  {
-    level: 2,
-    name: 'Moderator',
-    // The following lines check the guild the message came from for the roles.
-    // Then it checks if the member that authored the message has the role.
-    // If they do return true, which will allow them to execute the command in question.
-    // If they don't then return false, which will prevent them from executing the command.
-    check: message => {
-      try {
-        const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase()) ||
-          message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase())
-        if (modRole && message.member.roles.cache.has(modRole.id)) return true
-      } catch (e) {
-        return false
-      }
-    }
-  },
-  {
-    level: 1,
-    name: 'User',
-    check: () => true
-  }
-]
-
-exports.PermLevels = {
+const PermLevels = {
   lmao: {
     level: 5,
     // Check the list of developer user ids
-    check: message => exports.devs.includes(exports.getUser(message).id)
+    check: message => devs.includes(user(message).id)
   },
   'Bot Support': {
     level: 4,
     // Check the list of botSupport user ids
-    check: message => exports.botSupport.includes(exports.getUser(message).id)
+    check: message => botSupport.includes(user(message).id)
   },
   'Server Owner': {
     level: 3,
     // If the guild owner id matches the message author's ID, then it will return true.
-    check: message => message.guild?.ownerId === exports.getUser(message).id
+    check: message => message.guild?.ownerId === user(message).id
   },
   Moderator: {
     level: 2,
@@ -157,15 +110,15 @@ exports.PermLevels = {
 /**
  * Get the user permission level
  * @param {Client} message Client message
- * @returns The permission level (1, 2, 3, 4, 5)
+ * @returns {Number} The permission level
  */
-exports.getUserPerms = message => {
+const userPerms = message => {
   // get the user perm level
-  let userPermLevel = 0
+  let userPermLevel = 1
   // by checking each permission
-  for (const permLevel of exports.permLevels) {
+  for (const perm of Object.values(PermLevels)) {
     // record the *highest* perm level the user have
-    if (permLevel.check(message) && userPermLevel < permLevel.level) userPermLevel = permLevel
+    if (perm.check(message) && userPermLevel < perm.level) userPermLevel = perm.level
   }
   return userPermLevel
 }
@@ -174,18 +127,19 @@ exports.getUserPerms = message => {
  * Check if user has the appropriate permission level for a certain command
  * @param {Object} command The command object
  * @param {Discord} message Discord  message
- * @returns True or false
+ * @returns {Boolean} True or false
  */
-exports.hasPerms = (command, message) => {
+const hasPerms = (command, message) => {
   // find the object that has the same name as the permName
-  const perm = exports.permLevels.find(l => l.name === command.info.permLevel)
-  // get the user perm level
-  const userPermLevel = exports.getUserPerms(message).level
-  // check if the user perm level is equal to or greater than the perm given
-  if (!perm) {
-    console.log(chalk.red(`Error: No ${command.info.permLevel} permLevel! \n${command}`))
-    return false
+  const perm = PermLevels[command.info.permLevel]
+  if (perm) {
+    // check if the user perm level is equal to or greater than the perm given
+    return userPerms(message) >= perm.level
   } else {
-    return userPermLevel >= perm.level
+    console.log(chalk.red(`Error: No ${command.info.permLevel} permLevel for ${command}!`))
+    return false
   }
 }
+
+// export the variables
+module.exports = { intents, partials, prefix, botSupport, devs, presence, colors, time, discordTime, user, PermLevels, userPerms, hasPerms }

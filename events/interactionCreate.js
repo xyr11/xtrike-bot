@@ -1,19 +1,20 @@
 const { Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const { getUserPerms, hasPerms } = require('../config')
+const { userPerms, hasPerms } = require('../config')
 const recordStats = require('../modules/recordStatistics')
 
 /** @param {Interaction} interaction */
 exports.execute = async interaction => {
   if (!interaction.isCommand()) return
+  const { client } = interaction
 
-  const cmd = interaction.client.commands.get(interaction.commandName)
+  const cmd = client.commands.get(interaction.commandName)
 
   // If that command doesn't exist, silently exit and do nothing
   // If they dont have proper permLevels, do nothing too
   if (!cmd || !hasPerms(cmd, interaction)) return
 
   // Check if beta
-  if (cmd.info.isBeta === true && getUserPerms(interaction) < 4) {
+  if (cmd.info.isBeta === true && userPerms(interaction) < 4) {
     interaction.reply('This command isn\'t really done yet, check back later.')
     return
   }
@@ -36,6 +37,6 @@ exports.execute = async interaction => {
     cmd.run(null, interaction, args)
     recordStats(cmd.info.name)
   } catch (error) {
-    require('../modules/errorCatch')(error, interaction.client, null, interaction)
+    require('../modules/errorCatch')(error, client, null, interaction)
   }
 }

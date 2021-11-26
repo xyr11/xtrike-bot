@@ -12,11 +12,8 @@ exports.info = {
   permLevel: 'lmao'
 }
 
-// from https://github.com/AnIdiotsGuide (commands/reboot.js)
-// License: MIT License (https://github.com/AnIdiotsGuide/guidebot/blob/master/LICENSE)
-/**
- * @param {Message} message
- */
+// from https://github.com/AnIdiotsGuide (commands/reboot.js), MIT License
+/** @param {Message} message */
 exports.run = async message => {
   const client = message.client
 

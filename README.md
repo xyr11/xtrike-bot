@@ -91,7 +91,8 @@ ytdlVideos Autoresponse
 
 #### Others
 Bot config
-- [ ] Switch all config settings to .env
+- [ ] Switch all config settings to `config.js`
+- [ ] Remove unnecessary variables
 
 Config.js
 - [x] Added more intents and partials (a084ef0, 5e432df)
@@ -109,7 +110,6 @@ Error catching
 Statistics
 - [x] Get the bot uptime (aabb3c8)
 - [x] Get the number of times the bot executes user commands (aabb3c8)
-- [ ] Get the total number of messages the bot has sent
 
 ### 0.1.4
 Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging
@@ -221,6 +221,7 @@ The bare bones of the bot, with very limited features.
 - [ ] Auto-generate `Options` field in the help embed from the options property for slash commands
 - [ ] Unified and modularized logger
 - [ ] Unified and modularized message sender for both `message` and `interaction`
+- [ ] Get the total number of messages the bot has sent
 - [ ] Re-add `oxford` command
 
 ## Endpoints

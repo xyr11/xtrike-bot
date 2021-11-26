@@ -1,8 +1,6 @@
 /**
  * pls snipe
- * Graciously given by Dank Memer <3
- * https://github.com/DankMemer/sniper
- * under the MIT License
+ * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
  */
 
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars

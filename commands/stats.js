@@ -18,7 +18,7 @@ exports.info = {
 exports.run = async (message, interaction) => {
   const thing = message || interaction
 
-  // filter command names available under level 4
+  // filter command names available to bot admins and below
   /** @type {Map} */
   const cmdsMap = thing.client.commands.filter(a => PermLevels[a.info.permLevel].level < 4).keys()
   const [...cmds] = cmdsMap // convert to array
