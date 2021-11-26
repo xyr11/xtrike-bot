@@ -34,7 +34,7 @@ exports.run = async (message, interaction, args) => {
   const replyMsg = text.search(/[0-9]{17,21}/) === 0 ? text.match(/[0-9]{8,25}\s*/g)[0] : ''
 
   // get message content
-  let content = text.substring(replyMsg.length).match(/^((?!\$[A-z]).)+((?=\$[A-z])|$)/)
+  let content = text.substring(replyMsg.length).match(/^((?!\$[A-z]).)+((?=\$[A-z])|$)/s)
   content = content ? content[0] : ''
 
   // setup embed
