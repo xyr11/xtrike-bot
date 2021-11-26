@@ -7,8 +7,8 @@ exports.info = {
   usage: '`$$message [messageId] <content> <embed>`',
   option: '`[messageId]` is the message you want to reply to (optional)\n' +
     '`<content>` is the content of the message\n' +
-    '`<embed>` is an embed constructor. Example: `$t Title $d Description $a Author $u Url (link) $c Color (hex) $i Image (link) $h Thumbnail (link) $f Footer $s Timestamp (Unix time)`. You can remove extra options, but a title (`$t`) or a description (`$d`) must be present. \n\n' +
-    'Sample command: `;message Content $d Description $a Author $f Footer $s`',
+    '`<embed>` is an embed constructor. Options: `$t Title $d Description $a Author $n Author Icon (link) $u Url (link) $c Color (hex) $i Image (link) $h Thumbnail (link) $f Footer $s Timestamp (Unix time)`. You can remove extra options, but a title (`$t`), a description (`$d`), or an author (`$a`) must be present. \n\n' +
+    'Example: `;message Content $d Description $a Author $f Footer $s`',
   aliases: ['msg'],
   permLevel: 'lmao',
   requiredArgs: true
@@ -51,18 +51,27 @@ exports.run = async (message, interaction, args) => {
     // TODO: fields
   }
   let embed
-  if (textEmbed.match(/(?<=\$(t|d) *(?=[A-z]))/s)) {
+  if (textEmbed.match(/(?<=\$(t|d|a) *(?=\S))/s)) {
     embed = new MessageEmbed()
     // check each property of embRgx
     for (const key of Object.keys(embRgx)) {
-      const regex = new RegExp(`(?<=\\$${key} *(?=[A-z]))((?!\\$[A-z]).)+`, 's')
+      const regex = new RegExp(`(?<=\\$${key} *)((?!\\$[A-z]).)+`, 's')
+      // get matches
       const match = textEmbed.match(regex)
+      // if there is a match then get the value
+      const value = match ? match[0].replace(/^\s*|\s*$/gs, '') : ''
       // if there is a match then set that value to the embed
-      if (match && match[0].replace(/^\s*|\s*$/gs, '')) embed[embRgx[key]](match[0].replace(/^\s*|\s*$/gs, ''))
+      if (value) embed[embRgx[key]](value)
     }
+
     // manually set the timestamp option
-    const textEmbHasTime = textEmbed.match(/(?<=\$s *)((?!\$[A-z]).)*/s) // check if there is $s
-    if (textEmbHasTime) embed.setTimestamp(textEmbHasTime[0].replace(/^\s*|\s*$/gs, '') || Date.now()) // if there is a value after $s then use that value, if there are no values then use the current time
+    const embedTime = textEmbed.match(/(?<=\$s *)((?!\$[A-z]).)*/s) // check if there is `$s`
+    if (embedTime) embed.setTimestamp(embedTime[0].replace(/^\s*|\s*$/gs, '') || Date.now()) // if there is a value after `$s` then use that value, if there are no values then use the current time
+
+    // manually set the author icon option
+    const embedIcon = textEmbed.match(/(?<=\$n *)((?!\$[A-z]).)*/s) // check if there is `$n`
+    // set author icon if author name is present
+    if (embed.author?.name && embedIcon) embed.setAuthor(embed.author.name, embedIcon[0].replace(/^\s*|\s*$/gs, ''))
   }
 
   // prepare message
