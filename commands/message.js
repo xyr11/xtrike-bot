@@ -34,30 +34,31 @@ exports.run = async (message, interaction, args) => {
   const replyMsg = text.search(/[0-9]{17,21}/) === 0 ? text.match(/[0-9]{8,25}\s*/g)[0] : ''
 
   // get message content
-  let content = text.substring(replyMsg.length).match(/^((?!\$[A-z]).)+(?=\$[A-z])/)
+  let content = text.substring(replyMsg.length).match(/^((?!\$[A-z]).)+((?=\$[A-z])|$)/)
   content = content ? content[0] : ''
 
   // setup embed
   const textEmbed = text.substring(replyMsg.length + content.length)
   const embRgx = {
-    // always get the first option
-    setTitle: /(?<=\$t *)((?!\$[A-z]).)+/s, //       title:       $t
-    setDescription: /(?<=\$d *)((?!\$[A-z]).)+/s, // description: $d
-    setAuthor: /(?<=\$a *)((?!\$[A-z]).)+/s, //      author:      $a
-    setURL: /(?<=\$u *)((?!\$[A-z]).)+/s, //         Url:         $u
-    setColor: /(?<=\$c *)((?!\$[A-z]).)+/s, //       color:       $c
-    setFooter: /(?<=\$f *)((?!\$[A-z]).)+/s, //      footer:      $f
-    setImage: /(?<=\$i *)((?!\$[A-z]).)+/s, //       image:       $i
-    setThumbnail: /(?<=\$h *)((?!\$[A-z]).)+/s //    tHumbnails:  $h
+    t: 'setTitle',
+    d: 'setDescription',
+    a: 'setAuthor',
+    u: 'setURL',
+    c: 'setColor',
+    f: 'setFooter',
+    i: 'setImage',
+    h: 'setThumbnail'
     // TODO: fields
   }
   let embed
-  if (textEmbed.match(embRgx.setTitle) || textEmbed.match(embRgx.setDescription)) {
+  if (textEmbed.match(/(?<=\$(t|d) *(?=[A-z]))/s)) {
     embed = new MessageEmbed()
     // check each property of embRgx
-    for (const type of Object.keys(embRgx)) {
+    for (const key of Object.keys(embRgx)) {
+      const regex = new RegExp(`(?<=\\$${key} *(?=[A-z]))((?!\\$[A-z]).)+`, 's')
+      const match = textEmbed.match(regex)
       // if there is a match then set that value to the embed
-      if (textEmbed.match(embRgx[type])) embed[type](textEmbed.match(embRgx[type])[0].replace(/^\s*|\s*$/gs, ''))
+      if (match && match[0].replace(/^\s*|\s*$/gs, '')) embed[embRgx[key]](match[0].replace(/^\s*|\s*$/gs, ''))
     }
     // manually set the timestamp option
     const textEmbHasTime = textEmbed.match(/(?<=\$s *)((?!\$[A-z]).)*/s) // check if there is $s
@@ -77,10 +78,15 @@ exports.run = async (message, interaction, args) => {
     fetchedMsg = messages.get(replyMsg.replace(/^\s*|\s*$/gs, ''))
   }
 
-  // if the message is found
-  if (fetchedMsg) await fetchedMsg.reply(finalMessage)
-  // if the message is not found or there are no given message id
-  else await channel.send(finalMessage)
+  // check if input has valid content or embed
+  if (content || embed) {
+    // if the message is found
+    if (fetchedMsg) await fetchedMsg.reply(finalMessage)
+    // if the message is not found or there are no given message id
+    else await channel.send(finalMessage)
+  } else {
+    message.author.send("There's no valid content or embed found in your message.")
+  }
 
   // delete user message
   message.delete().catch(err => {
