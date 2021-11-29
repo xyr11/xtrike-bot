@@ -19,7 +19,7 @@ exports.info = {
  */
 exports.run = async message => {
   // check if there is a test server given
-  if (deploySlash && testingServer) throw new Error('No test server id was found in your .env')
+  if (deploySlash || testingServer) throw new Error('No test server id was found in your config.js')
 
   await message.reply('Deploying slash commands...')
 
