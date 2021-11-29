@@ -281,15 +281,19 @@ const fetchImage = async message => {
         fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + apiKeys[Math.floor(Math.random() * apiKeys.length)] + '&url=' + link).then(res => res.json()) // get the text inside the image using OCRSpace API
       } catch (err) {
         if (err.name !== 'FetchError') {
-          // stop the infinite loop if bot encountered an error NOT related
-          // to FetchError
+          // stop the infinite loop if bot encountered an error NOT related to FetchError
           noData = false
-          require('../modules/errorCatch')(err, message.client, message)
+          require('../modules/errorCatch')(err, message.client)
         }
       }
-      results = fetched.ParsedResults
-      // stop the infinite loop if there are no errors
-      if (!fetched.IsErroredOnProcessing) noData = false
+      // check if there are no errors
+      if (fetched && !fetched.IsErroredOnProcessing) {
+        noData = false // stop the infinite loop
+        results = fetched.ParsedResults // get the results
+      } else {
+        // log an error
+        require('../modules/errorCatch')(new Error(`OCRExitCode ${results.OCRExitCode}: ${results.ErrorMessage} \n${results}`), message.client)
+      }
     }
 
     // extract the text from the result
