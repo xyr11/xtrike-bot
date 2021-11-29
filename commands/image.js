@@ -80,7 +80,7 @@ exports.run = async (message, interaction, args) => {
 
   // ! rewrite
   // command config
-  if (userPerms(message) < 2) { // check user permission level
+  if (userPerms(thing) < 2) { // check user permission level
     thing.reply('You need to be a moderator or have a higher role to be able to do this.')
   } else {
     if (['--activate', '--enable'].indexOf(args[0]) > -1) {
@@ -99,7 +99,7 @@ exports.run = async (message, interaction, args) => {
         if (configEntry) {
           thing.reply('You have enabled this server already!')
         } else {
-          await activateServer(message)
+          await activateServer(thing)
           thing.reply({
             content: 'Success!',
             embeds: [{
