@@ -265,20 +265,19 @@ const fetchImage = async message => {
 
   for (const link of msgLinks) {
     // TODO: instead of just adding values blindingly, we should implement a check if the image (url) to be inserted already exists in the array [https://www.npmjs.com/package/pixelmatch]
-
-    // request to api
-    let noData = true
-    const apiKeys = process.env.OCRSPACE_KEY.split('|') // multiple API keys for OCRSpace 🤔
-
     let results
 
-    // infinite loop
-    // if fetch() gets a FetchError or if the API has IsErroredOnProcessing
-    // then repeat the fetch(), but if not then break the infinite loop
+    // get the text inside the image using OCR API
+    // this part is an infinite loop, so if fetch() gets a FetchError
+    // or if the API has IsErroredOnProcessing then it will repeat.
+    // if there are no errors then the infinite loop will break
+    let noData = true
+    const apiKeys = process.env.OCRSPACE_KEY.split('|') // multiple API keys for OCRSpace 🤔
     while (noData) {
       let fetched
+      // fetch
       try {
-        fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + apiKeys[Math.floor(Math.random() * apiKeys.length)] + '&url=' + link).then(res => res.json()) // get the text inside the image using OCRSpace API
+        fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + apiKeys[Math.floor(Math.random() * apiKeys.length)] + '&url=' + link).then(res => res.json())
       } catch (err) {
         if (err.name !== 'FetchError') {
           // stop the infinite loop if bot encountered an error NOT related to FetchError
@@ -286,13 +285,16 @@ const fetchImage = async message => {
           require('../modules/errorCatch')(err, message.client)
         }
       }
-      // check if there are no errors
+      // check if there are no errors returned
       if (fetched && !fetched.IsErroredOnProcessing) {
         noData = false // stop the infinite loop
         results = fetched.ParsedResults // get the results
       } else {
         // log an error
-        require('../modules/errorCatch')(new Error(`OCRExitCode ${results.OCRExitCode}: ${results.ErrorMessage} \n${results}`), message.client)
+        require('../modules/errorCatch')(new Error(results
+          ? `OCRExitCode ${results.OCRExitCode}: ${results.ErrorMessage} \n${results}`
+          : 'Error: no value for "results"'),
+        message.client)
       }
     }
 
