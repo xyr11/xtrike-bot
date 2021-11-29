@@ -1,163 +1,210 @@
-const { MessageEmbed } = require('discord.js')
-const { prefix, colors, getUserPerms, time } = require('../config')
-const { ImagesModel, activateChannel, activateServer, deactivateChannel, deactivateServer, filterData } = require('../modules/getImage')
+const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { prefix, colors, userPerms } = require('../modules/base')
+const { ImagesModel, getImageDb, activateChannel, activateServer, deactivateChannel, deactivateServer, updatePreV020, guildIdentifiers } = require('../modules/getImage')
 const Fuse = require('fuse.js')
 
 exports.info = {
   name: 'image',
   category: 'Commands',
-  description: 'Search for text in images',
-  usage: '`image <words>`\n' +
-    '`image --here <words>` to search on current channel only\n' +
-    '`image --deactivate <channel|server>`\n' +
-    '`image --activate <channel|server>`',
-  aliases: ['bot', 'version'],
-  permLevel: 'User'
+  description: 'Search for text in images. {{By default, it searches for images sent until 7 days ago and from the current channel only.}}',
+  usage: '`$$image [options] <words>`\n',
+  option: '`--server` to search on all channels\n' +
+    '`--all` to search images regardless of how old it is\n' +
+    '`--disable <channel|server>`\n' +
+    '`--enable <channel|server>`',
+  isBeta: true,
+  aliases: ['images'],
+  permLevel: 'User',
+  requiredArgs: true,
+  options: [
+    {
+      type: 3,
+      name: 'words',
+      description: 'The words to search'
+    },
+    {
+      type: 5,
+      name: '--server',
+      description: 'Search on all channels',
+      choices: []
+    },
+    {
+      type: 5,
+      name: '--all',
+      description: 'Search images regardless of how old it is',
+      choices: []
+    },
+    {
+      type: 3,
+      name: '--disable',
+      description: 'Disable the command in the current server or channel',
+      choices: [
+        { name: 'server', value: 'Disable the command for the whole server. WILL REMOVE ALL DATA.' },
+        { name: 'channel', value: 'Stop searching for images in the current channel' }
+      ]
+    },
+    {
+      type: 3,
+      name: '--enable',
+      description: 'Enable the command in the current server or channel',
+      choices: [
+        { name: 'channel', value: 'Enable searching for images in the current channel' },
+        { name: 'server', value: 'Enable the command for the whole server' }
+      ]
+    }
+  ]
 }
 
-exports.run = async (client, message, args) => {
-  // check if server has activated this command to their servers
+/**
+ * @param {Message} message
+ * @param {Interaction} interaction
+ * @param {Array} args
+ */
+exports.run = async (message, interaction, args) => {
+  const thing = message || interaction
+  const { channelId, guildId } = thing
 
-  const { channelId, guildId } = message
+  // Hello there! Please look at guides/fetchImage.md to know more about the
+  // specifications of the `;image` command. Thank you!
 
-  // get server data, if any
-  // ? only fetch ONCE, when the `;image` command is used
-  // const serverData = await ImagesModel.find({ guildId })
-  const serverData = filterData(await ImagesModel.find({ guildId }), message.guildId)
-  // if serverData has a value in it then it means that the server has activated the command
-  const activated = !!serverData
+  // backward compatibility for pre-v0.2.0 entries
+  await updatePreV020()
 
-  let excludedChannels = []
-  if (activated) excludedChannels = serverData.excludedChannels
-  const excluded = excludedChannels.indexOf(channelId) > -1
+  // get server data
+  const configEntry = await getImageDb({ f: true, g: guildId })
 
-  if (getUserPerms(message) < 2) {
-    message.reply('You need to be a moderator or have a higher role to be able to do this.')
+  // get list of excluded channels
+  const excludedChannels = configEntry ? configEntry.d.e : []
+  // check if current channel is excluded
+  const isExcluded = excludedChannels.indexOf(channelId) > -1
+
+  // ! rewrite
+  // command config
+  if (userPerms(thing) < 2) { // check user permission level
+    thing.reply('You need to be a moderator or have a higher role to be able to do this.')
   } else {
-    if (['--activate', '--enable', '--include'].indexOf(args[0]) > -1) {
+    if (['--activate', '--enable'].indexOf(args[0]) > -1) {
       if (args[1] === 'channel') {
-        if (!activated) {
-          message.reply(`A moderator or admin hasn't activated this command yet. \nTo enable it, enter \`${prefix}image --activate\``)
+        if (!configEntry) {
+          thing.reply(`A moderator or admin hasn't enabled this command yet. \nTo enable it, enter \`${prefix}image --enable\``)
         } else {
-          if (!excluded) {
-            message.reply(`This channel is already activated. By default, all channels are activated. \nTo deactivate a channel, try \`${prefix}image --deactivate channel\`.`)
+          if (!isExcluded) {
+            thing.reply(`This channel is already enabled. By default, all channels are enabled. \nTo disable a channel, try \`${prefix}image --disable channel\`.`)
           } else {
-            await activateChannel(guildId, channelId, excludedChannels)
-            message.reply('Successfully included this channel for image monitoring.')
+            await activateChannel(configEntry, channelId)
+            thing.reply('Successfully included this channel for image monitoring.')
           }
         }
       } else if (!args[1] || (args[1] && args[1] === 'server')) {
-        if (activated) {
-          message.reply('You have activated this server already!')
+        if (configEntry) {
+          thing.reply('You have enabled this server already!')
         } else {
-          await activateServer(message)
-          message.reply({
+          await activateServer(thing)
+          thing.reply({
             content: 'Success!',
             embeds: [{
               color: colors.green,
-              description: `:green_circle: Successfully activated the \`${prefix}image\` command for this server`,
-              footer: { text: 'Now send those images!' }
+              description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`
             }]
           })
         }
       }
       return
-    } else if (['--deactivate', '--disable', '--exclude'].indexOf(args[0]) > -1) {
-      if (!activated) {
-        message.reply(`A moderator or admin hasn't activated this command yet. \nTo enable it, enter \`${prefix}image --activate\``)
+    } else if (['--deactivate', '--disable'].indexOf(args[0]) > -1) {
+      if (!configEntry) {
+        thing.reply(`A moderator or admin hasn't enabled this command yet. \nTo enable it, enter \`${prefix}image --enable\``)
         return
       }
       if (args[1] === 'channel') {
-        if (excluded) {
-          message.reply('This channel is already excluded!')
+        if (isExcluded) {
+          thing.reply('This channel is already excluded!')
         } else {
-          await deactivateChannel(guildId, channelId, excludedChannels)
-          message.reply('Successfully excluded this channel for image monitoring.')
+          await deactivateChannel(configEntry, channelId)
+          thing.reply('Successfully excluded this channel for image monitoring.')
         }
       } else if (!args[1] || (args[1] && args[1] === 'server')) {
         if (args[1] === 'server' && args[2] === 'YES') {
           await deactivateServer(guildId)
-          message.reply('Successfully deactivated this command!')
+          thing.reply('Successfully disabled this command!')
         } else {
-          message.reply('```When you deactivate the image command, it will remove ALL data regarding sent images in this server shortly after (so if you plan to re-activate later, you cannot search for them.) \nAre you really sure about this? Please enter "image --deactivate server YES" if you\'re sure, and if not you can safely ignore this.```')
+          thing.reply('```When you disabled the image command, it will remove ALL data regarding sent images in this server shortly after (so if you plan to reenable later, you cannot search for them.) \nAre you really sure about this? Please enter "image --disable server YES" if you\'re sure, and if not you can safely ignore this.```')
         }
       }
       return
     }
   }
 
-  // ? now the fun stuff
-
-  // get all image data
-  let data = serverData.data
-
-  // debug
-  if (args[0] === 'debug' && getUserPerms(message) >= 4) {
-    message.reply('```json\n' + JSON.stringify(data, undefined, 2) + '\n```')
-    return
-  }
-
   // return silently if server hasn't activated the command yet
-  if (!activated || excluded) return
+  if (!configEntry || isExcluded) return
 
-  // if user wants to search on the current channel only
-  if (args[0] === '--here') {
-    args.shift() // remove the --here part
-    data = data.filter(obj => obj.channel === channelId) // remove all entries that aren't from the same channel
+  // get image data from collection entry
+  const guildIdentifier = guildIdentifiers().get(guildId)
+  let data = await ImagesModel.find({ g: guildIdentifier }, '-f -g')
+
+  /**
+   * Check if the given option is present in `args`
+   * @param {String} option
+   */
+  const hasOption = option => args.indexOf(option) > -1
+
+  // ? `--here`: search for images in the current channel (deprecated because it's already the default)
+  if (hasOption('--here')) {
+    args.splice(args.indexOf('--here'), 1) // remove `--here`
   }
 
-  // if there are no arguments passed
-  if (args.length === 0) {
-    message.reply('You need to give me words to search images on.')
-    return
+  // `--server`: search for images in the whole server
+  if (hasOption('--server')) {
+    args.splice(args.indexOf('--server'), 1) // remove `--server`
+  } else {
+    // search for images in the current channel only (default)
+    data = data.filter(obj => obj.c === channelId)
   }
 
+  // `--all`: search for images regardless of how old it is
+  if (hasOption('--all')) {
+    args.splice(args.indexOf('--all'), 1) // remove `--all`
+  } else {
+    // search for images sent 7 days (604800000 ms) or earlier (default)
+    data = data.filter(obj => obj.w >= (Date.now() - 604800000) / 1000 - 1635638400)
+  }
+
+  // search text
   const fuse = new Fuse(data, {
-    isCaseSensitive: false,
-    includeScore: false,
-    shouldSort: true,
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
     // includeMatches: false,
-    // findAllMatches: false,
     minMatchCharLength: 2,
+    // findAllMatches: false,
     // location: 0,
-    threshold: 0.75,
-    distance: 100,
-    // useExtendedSearch: false,
-    // ignoreLocation: false,
-    ignoreFieldNorm: false,
-    keys: [
-      'text',
-      {
-        name: 'author.username',
-        weight: 0.3
-      }
-    ]
+    threshold: 0.45,
+    // distance: 100,
+    ignoreLocation: true,
+    ignoreFieldNorm: true,
+    keys: ['d']
   })
-
   const result = fuse.search(args.join(' '))
 
-  if (result.length === 0) {
-    message.reply('Sorry, I wasn\'t able to find images that contains that text.')
-    return
-  }
-
+  // check if there are any results
+  if (!result.length) return thing.reply('Sorry, I wasn\'t able to find images that contains that text.')
+  // cut the results to 10
+  result.splice(10, result.length - 9)
+  // send the results
   const embeds = []
-  let content = `I was able to find ${result.length} image${result.length > 1 ? 's' : ''}:`
   for (const r in result) {
     // results
-    const { url, image, author, when } = result[r].item
-    // add link in content
-    content += `\n#${+r + 1} by ${author.tag}: ${url}`
-    // embed
+    const item = result[r].item
+    const { _id: id, c: channel, a: author, i: image, w: timestamp } = item
+    // fetch user data
+    const user = await thing.client.users.cache.get(author).fetch()
+    // create embed
     embeds.push(new MessageEmbed()
-      .setColor(author.hexAccentColor)
-      .setAuthor(`#${+r + 1} by ` + author.tag + (author.bot ? ' [Bot]' : ''), author.avatarURL, url)
+      .setAuthor(`#${+r + 1} by ${user.tag} (Link)`, user.avatarURL(), `https://discord.com/channels/${guildId}/${channel}/${id}`)
+      .setColor(user.hexAccentColor)
       .setImage(image)
-      .setFooter(`⏲ ${time(when)} • 🔍 "${args.join(' ')}" on ${time()}`)
+      .setFooter(`🔍 "${args.join(' ')}"`)
+      .setTimestamp((timestamp + 1635638400) * 1000)
     )
   }
-  message.reply({
-    content,
-    embeds
-  })
+  thing.reply({ content: `I was able to find ${result.length} images:`, embeds })
 }

@@ -1,45 +1,65 @@
-const { MessageEmbed } = require('discord.js')
-const { prefix, colors, hasPerms } = require('../config')
+const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const Fuse = require('fuse.js')
+const { prefix, colors, hasPerms } = require('../modules/base')
 
 exports.info = {
   name: 'help',
   category: 'Bot Info',
   description: 'Show what the different commands of the bot does',
-  usage: '`help <command>`',
+  usage: '`$$help <command>`',
   aliases: ['help'],
-  permLevel: 'User'
+  permLevel: 'User',
+  options: [
+    {
+      type: 3,
+      name: 'command',
+      description: 'Command that you want to get help on',
+      choices: []
+    }
+  ]
 }
 
-exports.run = async (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Interaction} interaction
+ * @param {Array} args
+ */
+exports.run = async (message, interaction, args) => {
+  const thing = message || interaction
+  const client = thing.client
+
   // if there are no args, get the help command of the help command itself
   if (args.length === 0) args[0] = 'help'
 
   // if there are args, get the first argument and search it up in commands list
   const cmd = client.commands.get(args[0])
 
-  // if that command doesn't exist, silently exit and do nothing
-  // if they dont have proper permLevels, do nothing too
-  // todo: if that command doesn't exist, say that that command doesn't exist / add those "did you mean x?" stuff in the future
-  if (!cmd || !hasPerms(cmd.info.permLevel, message)) {
-    message.reply({
-      embeds: [{
-        color: colors.main,
-        description: 'Sorry, we didn\'t find any command with\n' +
-          `the name \`${cmd}\`. Please try again.`,
-        footer: { text: `Xtrike Bot v${process.env.npm_package_version}` }
-      }]
-    })
-    return
+  // embed variable
+  const embed = new MessageEmbed().setFooter(`Xtrike Bot v${process.env.npm_package_version}`)
+
+  if (!cmd || !hasPerms(cmd, thing)) {
+    // if that command doesn't exist or if they dont have proper permission levels
+    const fuse = new Fuse(client.commands.map(a => a.info), { keys: ['name'] }) // search options
+    const results = fuse.search(args[0]) // search
+      .map(a => a.item.name) // get the command name only
+      .filter(a => hasPerms(client.commands.get(a), thing)) // check if user has perms to view that command
+    // set the embed
+    embed.setColor(colors.main)
+      .setDescription('Sorry, we didn\'t find any commands with\n' +
+        `the name \`${args[0]}\`. ` + (
+        results.length
+          ? 'Did you mean:\n\n' + results.join('\n')
+          : 'Please try again.'))
+  } else {
+    const { name, description, usage, thumbnail, option, similar } = cmd.info
+    // set the embed
+    embed.setColor(colors.main)
+      .setTitle(`${prefix}${name} command`)
+      .setThumbnail(thumbnail ?? '')
+      .setDescription(description.replace(/{{|}}/g, '')) // remove `{{` and `}}`
+    if (usage) embed.addFields({ name: 'Usage', value: usage.replaceAll('$$', prefix) })
+    if (option) embed.addFields({ name: 'Options', value: option })
+    if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })
   }
-
-  const { name, description, usage } = cmd.info
-
-  const bot = await client.user.fetch() // for the bot avatar
-  const embed = new MessageEmbed()
-    .setColor(colors.main)
-    .setTitle(`${prefix}${name} command`)
-    .setDescription(description)
-    .setFooter(`Xtrike Bot v${process.env.npm_package_version}`, bot.avatarURL())
-  if (usage) embed.addFields({ name: 'Usage', value: usage.replace(/^`/gm, '`' + prefix) })
-  message.channel.send({ embeds: [embed] })
+  thing.reply({ embeds: [embed] })
 }

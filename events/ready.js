@@ -1,19 +1,33 @@
-const { presence, time } = require('../config')
+const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
-const mongoose = require('mongoose')
+const Amongoose = require('mongoose')
+const config = require('../config')
+const { presence, time } = require('../modules/base')
+const { storeInfo, getInfo } = require('../modules/botInfo')
 
-module.exports = async client => {
-  console.log(chalk.green(`Ready as ${client.user.tag}! (${time()}) 🤖`))
-  console.log(chalk.blue(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`))
-
+/** @param {Client} client */
+exports.execute = async client => {
+  console.log(chalk.green(`Ready as ${client.user.tag}! 🤖`, chalk.bgGreenBright.black(`(${time()})`)))
   // presence
   if (presence.activity) {
     client.user.setPresence({
       activities: [{ name: presence.activity, type: presence.activityType }],
-      status: process.env.ISMOBILE === 'true' ? 'online' : presence.status
+      status: config.isMobile === 'true' ? 'online' : presence.status
     })
   }
 
+  // server
+  require('../modules/express')()
+
   // mongodb
-  await mongoose.connect(process.env.MONGO_URI, { keepAlive: true })
+  await Amongoose.connect(config.mongoURI, { keepAlive: true })
+
+  // statistics
+  // server count
+  console.log(chalk.blue(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`))
+  storeInfo('serverCount', client.guilds.cache.size)
+  // uptime
+  if (!await getInfo('upSince')) storeInfo('upSince', Date.now()) // dont update if there is already a value
+  // bot ready
+  storeInfo('botReady', (await getInfo('botReady') || 0) + 1)
 }

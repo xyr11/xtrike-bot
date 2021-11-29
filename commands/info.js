@@ -1,20 +1,25 @@
-const { prefix, colors } = require('../config')
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+const { prefix, colors } = require('../modules/base')
 
 exports.info = {
   name: 'info',
   category: 'Bot Info',
-  description: 'Show information about the bot',
-  usage: '`info`',
+  description: 'Show information about the bot.',
+  usage: '`$$info`',
   aliases: ['bot', 'version'],
   permLevel: 'User'
 }
 
-exports.run = (client, message, args) => {
-  message.channel.send({
+/**
+ * @param {Message} message
+ * @param {Interaction} interaction
+ */
+exports.run = (message, interaction) => {
+  (message || interaction).reply({
     embeds: [{
       color: colors.main,
       title: 'Xtrike Bot',
-      description: 'Xtrike Bot is a multi-purpose bot by \n<@681766482304434187>',
+      description: 'Xtrike Bot is a multi-purpose bot by <@681766482304434187>',
       fields: [
         {
           name: ':speech_balloon: Commands',

@@ -1,76 +1,86 @@
-const { errLog, time, colors } = require('../config')
+const { Client, Message, Interaction, TextChannel } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { serializeError } = require('serialize-error')
+const { time, discordTime, colors } = require('./base')
+const { errorLogging } = require('../config')
 
 /** Some cute error emotes for the damned */
 const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
 
-/** Generate a random number */
-const randNo = max => Math.floor(Math.random() * Math.floor(max))
-
-/** A variable for recording the current Message variable on commands for error tracking */
-let msg = null
-
 /**
- * Save the current message here
- * @param {Message} message Message
+ * Generate a random number from 0 to x
+ * @param {Number} max
  */
-exports.saveMsg = function (message) { msg = message }
-
-/**
- * Get the current Message variable saved
- * @returns Message
- */
-exports.getMsg = () => msg
+const randNo = max => Math.floor(Math.random() * max)
 
 /**
  * Send an error in current channel and in error logging channel, and in the console
- * @param {ErrorEvent} error Generated error
- * @param {Client} client Discord client
- * @param {Client} message Discord client
- * @param {String} title ???
+ * @param {Error} error
+ * @param {Client} client
+ * @param {Message} message
+ * @param {Interaction} interaction
  */
-exports.sendErr = (error, client, message = msg, title = error.name) => {
+module.exports = (error, client, message = null, interaction = null) => {
+  const thing = message || interaction
+  const timeSent = thing ? thing.createdTimestamp : Date.now()
   const errEmote = errEmotes[randNo(errEmotes.length)]
-
-  // Display it to console first
-  console.error(chalk.red(`${title ?? Error} (${time()})`))
-  console.error(error)
-
-  // Internet connection error code (i think)
-  // Prevent infinite looping from internet connection error, if hosted locally
-  if (error.code === 500) return
 
   // serialize the error object
   const err = serializeError(error)
 
+  // absolutely ignore these error
+  if (
+    (err.stderr && err.stderr.search("ERROR: There's no video in ") === 0) // youtube-dl no video error
+  ) return
+
+  // Display it to console first
+  console.error(chalk.red(`${error.name || 'Error'}`), chalk.bgRedBright.black(`(${time()})`))
+  console.error(error)
+
+  // dont send to error logging channel
+  const dontSend =
+    (error.code >= 500 && error.code < 600) || // 500 error codes
+    err.code === 50035 //                         Embed size exceeds maximum size of 6000
+  // dont sent to the current channel
+  const dontSendToChannel =
+    dontSend ||
+    err.code === 10062 || //        DiscordAPIError: Unknown interaction
+    error.name === 'FetchError' //  something to do with fetch() which is async
+
   // Send the error embed to corresponding channel, if there are any
-  if (message && message.channel) {
-    try {
-      message.channel.send({
-        content: 'Sorry, seems like I have encountered an error.',
-        embeds: [{
-          color: colors.red,
-          title: `${errEmote} I have encountered an error!`,
-          description: `${message ? `From \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>:\n` : ''}\`\`\`${error}\`\`\``,
-          footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
-        }]
-      })
-    } catch (err) {
-      console.error(err)
+  if (!dontSendToChannel && thing) {
+    const err = {
+      content: 'Sorry, seems like I have encountered an error.',
+      embeds: [{
+        color: colors.red,
+        title: `${errEmote} I have encountered an error!`,
+        description: `From \`${thing.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``,
+        footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
+      }]
     }
+    if (message) message.reply(err).catch()
+    else if (interaction) interaction.followUp(err).catch()
+  }
+
+  // split error log into 4089 characters (4096-7)
+  const fullErr = JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/').match(/(.|\s){1,4089}/g)
+  fullErr.splice(10, fullErr.length - 9) // cut it up to 10 entries only
+  // create embeds
+  const embeds = []
+  for (const i in fullErr) {
+    embeds.push({
+      color: colors.red,
+      title: i === '0' ? `${errEmote} New error ${thing ? `from \`${thing.content}\` ` : ''}at ${discordTime(timeSent)}` : '',
+      description: `\`\`\`\n${fullErr[i]}\`\`\``
+    })
   }
 
   // Send the error embed to error logging channel
-  try {
-    client.channels.cache.get(errLog).send({
-      embeds: [{
-        color: colors.red,
-        title: `${errEmote} New error ${message ? `from \`${message.content}\` at <t:${Math.floor(message.createdTimestamp / 1000)}>` : ''}`,
-        description: `\n\`\`\`${JSON.stringify(err, undefined, 2).replaceAll('\\\\', '/')}\`\`\``
-      }]
-    })
-  } catch (err) {
-    console.error(err)
+  if (!dontSend) {
+    if (errorLogging) {
+      /** @type {TextChannel} */
+      const errLogChannel = client.channels.cache.get(errorLogging)
+      if (errLogChannel) errLogChannel.send({ embeds }).catch()
+    }
   }
 }

@@ -1,16 +1,32 @@
+const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+
 exports.info = {
   name: 'hmm',
   category: 'General',
   description: 'Reply with "hmm..."',
-  usage: '`hmm [args]`',
+  usage: '`$$hmm [extra text]`',
   aliases: ['hmmm', 'hmmmm', 'hmmmmm', 'hmmmmmm'],
-  permLevel: 'User'
+  permLevel: 'User',
+  options: [
+    {
+      type: 3,
+      name: 'text',
+      description: 'Extra text'
+    }
+  ]
 }
 
-exports.run = (client, message, args) => {
+/**
+ * @param {Message} message
+ * @param {Interaction} interaction
+ * @param {Array} args
+ */
+exports.run = async (message, interaction, args) => {
   if (!args.length) {
-    message.reply(`${message.author} hmmmmmm... :thinking:`)
+    if (message) message.channel.send(`${message.author} hmmmm... :thinking:`)
+    else interaction.reply(`${interaction.user} hmmmm... :thinking:`)
   } else {
-    message.reply(`${args.join(' ')} hmmmmmm... :thinking:`)
+    if (message) message.channel.send(`${message.author} ${args.join(' ')} hmmmm... :thinking:`)
+    else interaction.reply(`${interaction.user} ${args.join(' ')} hmmmm... :thinking:`)
   }
 }
