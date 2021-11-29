@@ -111,7 +111,7 @@ Statistics
 - Get the bot uptime (aabb3c8)
 - Get the number of times the bot executes user commands (aabb3c8)
 
-</details>
+<hr></details>
 
 ### 0.1.4
 <details>
@@ -135,7 +135,7 @@ Others
 + Cleaned `config.js`
 + Changed the run command on `.replit` to include installation of Node 16
 
-</details>
+<hr></details>
 
 ### 0.1.3
 <details>
@@ -149,7 +149,7 @@ Others
 + Changed presence activity
 + Added more emojis in `errorCatch.js`
 
-</details>
+<hr></details>
 
 ### 0.1.2
 <details>
@@ -162,7 +162,7 @@ Others
 - added a `Develop` guide in README.md
 - added new modules
 
-</details>
+<hr></details>
 
 ### 0.1.0
 Rewrite for Discord.js v13 and replaced spaghetti code to an actual command handler. Also, modules, arrow functions, and more Modern Javascript™.
@@ -175,7 +175,7 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 + Switched hosting platform from Heroku to Repl.it, modules that aren't needed by Repl.it will not be deleted so that local development of the bot is possible and also because Heroku will be our backup platform
 + Removed the owner ID in the main file (index.js) and placed it in the .env file
 
-</details>
+<hr></details>
 
 ### 0.0.4
 <details>
@@ -191,7 +191,7 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 - Remove owner, no-sleep and restart commands completely
 - Removed support for custom emojis from support server and replaced it with discord-wide emojis
 ```
-</details>
+<hr></details>
 
 ### 0.0.3
 <details>
@@ -206,7 +206,7 @@ Rewrite for Discord.js v13 and replaced spaghetti code to an actual command hand
 - Removed "hmm" command from beta commands to be an official command
 - No-sleep command deprecated
 ```
-</details>
+<hr></details>
 
 ### 0.0.2 and 0.0.1
 The bare bones of the bot, with very limited features.
@@ -245,32 +245,26 @@ console.log(stats)
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-1. *If you're using Replit*, click: [![Run on Replit link](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot). *If not*, then clone the repository via Git by opening your console and entering the following command:
+```
+cd "C:/path/of/repo/folder"
+git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot && npm i
+```
 
-   *If not*, then clone the repository via Git
-   ```
-   cd "C:/Path/of/folder/you/want/this/repo/to/go"
-   git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot && npm i
-   ```
-
-2. Rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot.
-
-3. On the `config.json` file, add values to the `exports.botSupport`, and `exports.devs` variables. Read the comments to see what they do.
+After that, rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot. There are comments to help you out.
 
 ### Run repository
-*If you're on Replit*, you should press the big "Run" button.
-
-*If not*, enter the following command:
+*If you're on Replit*, press the big "**Run**" button. *If not*, open your console and enter the following command to start your bot:
 ```
 npm start
 ```
-If no errors are encountered, you will be able to see this message if the bot successfully logs in to Discord:
+If no errors are encountered, you should be able to see the following message:
 ```
-Ready as <Bot username>! (<Date and time>) 🤖
+Ready as <Bot username>! 🤖 (<Date and time>)
 ```
 
 ### Customizing the bot
-You can customize the bot by replacing the default values on your `config.js` file.
+You can customize the bot by replacing the default value of the optional variables on your `config.js` file.
 
 <details>
 <summary>Documentation</summary>
@@ -279,9 +273,9 @@ Variable | Default value | Description
 -- | -- | --
 `botPrefix` | "`;`" | Prefix of the bot. You can do more than 1 symbol here BUT not a whole word. This will have no effect if the user used slash commands (if slash commands are already deployed).
 `botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change
-`Timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+`timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
-`botStatus` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
+`status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
 `actType` | "`PLAYING`" | Activity type: `PLAYING`/`WATCHING`/`LISTENING`/`COMPETING` (all caps)
 `actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
 `isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
