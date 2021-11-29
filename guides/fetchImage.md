@@ -54,11 +54,19 @@ The schema or format for the input entry is:
   a: '681766482304434187', // author id
   i: 'https://imgurp.com/1DBO2wh.png', // image url
   d: 'Lorem ipsum', // text on the image (using OCRSpace API)
-  e: { // error object
-    exitCode: '1', // OCRExitCode
-    parsedResults: '' // ParsedResults
-  }
+  w: 1000000 // timestamp (see below)
 }
+```
+
+#### Message timestamp
+The timestamp is how many seconds since `October 31, 2021 GMT` (Unix time 1635638400000).
+```js
+// convert to timestamp
+var currentTimestamp = Date.now() / 1000 - 1635638400
+
+// convert to normal date
+var timestamp = 1000000
+var date = new Date((timestamp + 1635638400) * 1000)
 ```
 
 For the guild identifier, see: [Unique guild identifier](#unique-guild-identifier)
