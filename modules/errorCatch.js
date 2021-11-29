@@ -1,7 +1,8 @@
-const { Client, Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Client, Message, Interaction, TextChannel } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { serializeError } = require('serialize-error')
-const { time, discordTime, colors } = require('../config')
+const { time, discordTime, colors } = require('./base')
+const { errorLogging } = require('../config')
 
 /** Some cute error emotes for the damned */
 const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
@@ -14,7 +15,7 @@ const randNo = max => Math.floor(Math.random() * max)
 
 /**
  * Send an error in current channel and in error logging channel, and in the console
- * @param {ErrorEvent} error
+ * @param {Error} error
  * @param {Client} client
  * @param {Message} message
  * @param {Interaction} interaction
@@ -48,19 +49,17 @@ module.exports = (error, client, message = null, interaction = null) => {
 
   // Send the error embed to corresponding channel, if there are any
   if (!dontSendToChannel && thing) {
-    try {
-      const err = {
-        content: 'Sorry, seems like I have encountered an error.',
-        embeds: [{
-          color: colors.red,
-          title: `${errEmote} I have encountered an error!`,
-          description: `From \`${thing.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``,
-          footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
-        }]
-      }
-      if (message) message.reply(err)
-      if (interaction) interaction.followUp(err)
-    } catch (err) { }
+    const err = {
+      content: 'Sorry, seems like I have encountered an error.',
+      embeds: [{
+        color: colors.red,
+        title: `${errEmote} I have encountered an error!`,
+        description: `From \`${thing.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``,
+        footer: { text: 'This error message will also be sent to the developers. Hang tight!' }
+      }]
+    }
+    if (message) message.reply(err).catch()
+    else if (interaction) interaction.followUp(err).catch()
   }
 
   // split error log into 4089 characters (4096-7)
@@ -78,8 +77,10 @@ module.exports = (error, client, message = null, interaction = null) => {
 
   // Send the error embed to error logging channel
   if (!dontSend) {
-    try {
-      client.channels.cache.get(process.env.ERR_LOG).send({ embeds })
-    } catch (err) { }
+    if (errorLogging) {
+      /** @type {TextChannel} */
+      const errLogChannel = client.channels.cache.get(errorLogging)
+      if (errLogChannel) errLogChannel.send({ embeds }).catch()
+    }
   }
 }

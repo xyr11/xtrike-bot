@@ -1,7 +1,7 @@
 const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const fs = require('fs')
-const { prefix, time } = require('../config')
+const { prefix, time } = require('../modules/base')
 
 exports.info = {
   name: 'reload',

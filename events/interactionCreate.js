@@ -1,5 +1,5 @@
 const { Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const { userPerms, hasPerms } = require('../config')
+const { userPerms, hasPerms } = require('../modules/base')
 const recordStats = require('../modules/recordStatistics')
 
 /** @param {Interaction} interaction */

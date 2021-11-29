@@ -1,7 +1,8 @@
 const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
-const { presence, time } = require('../config')
 const chalk = require('chalk')
 const Amongoose = require('mongoose')
+const config = require('../config')
+const { presence, time } = require('../modules/base')
 const { storeInfo, getInfo } = require('../modules/botInfo')
 
 /** @param {Client} client */
@@ -11,7 +12,7 @@ exports.execute = async client => {
   if (presence.activity) {
     client.user.setPresence({
       activities: [{ name: presence.activity, type: presence.activityType }],
-      status: process.env.ISMOBILE === 'true' ? 'online' : presence.status
+      status: config.isMobile === 'true' ? 'online' : presence.status
     })
   }
 
@@ -19,7 +20,7 @@ exports.execute = async client => {
   require('../modules/express')()
 
   // mongodb
-  await Amongoose.connect(process.env.MONGO_URI, { keepAlive: true })
+  await Amongoose.connect(config.mongoURI, { keepAlive: true })
 
   // statistics
   // server count

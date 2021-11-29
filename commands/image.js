@@ -1,5 +1,5 @@
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const { prefix, colors, userPerms } = require('../config')
+const { prefix, colors, userPerms } = require('../modules/base')
 const { ImagesModel, getImageDb, activateChannel, activateServer, deactivateChannel, deactivateServer, updatePreV020, guildIdentifiers } = require('../modules/getImage')
 const Fuse = require('fuse.js')
 

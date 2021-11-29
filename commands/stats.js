@@ -1,5 +1,5 @@
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const { PermLevels, colors } = require('../config')
+const { PermLevels, colors } = require('../modules/base')
 const { getAll } = require('../modules/botInfo')
 
 exports.info = {

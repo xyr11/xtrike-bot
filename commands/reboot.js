@@ -1,6 +1,6 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
-const { presence, time } = require('../config')
+const { presence, time } = require('../modules/base')
 const { storeInfo } = require('../modules/botInfo')
 
 exports.info = {

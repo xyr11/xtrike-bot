@@ -45,12 +45,11 @@ hmm
 
 Image search
 - [x] *New defaults*: It will search for images at most 7 days old and from the current channel only. (a6a6be5, a5af925)
+- [x] Rewrote the schema for more efficient data storage (12bab96, b1924ef)
+- [x] Changed how the results are displayed (a27912a, 240db89, b1924ef) and fixed search parameters for optimal results (a6a6be5, b1924ef)
 - [x] Updated the help embed (a6a6be5)
-- [x] Fixed search parameters for optimal results (a6a6be5)
-- [x] Cut the amount of results to 10 because Discord messages only support up to 10 embeds (a27912a, 240db89)
-- [x] Automatically retry if script encounters a FetchError (548a61b)
 - [x] Better link checking (6c3632f)
-- [ ] Optimize data storage (12bab96)
+- [x] Automatically retry if script encounters a FetchError (548a61b)
 
 message
 - [x] Added the `message` command back (2a7c020, 0a27337, 3010261)
@@ -112,10 +111,8 @@ Statistics
 - [x] Get the number of times the bot executes user commands (aabb3c8)
 
 ### 0.1.4
-Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging
-
 <details>
-<summary>Changelog</summary>
+<summary> Fixed bugs in `;image`, added the `;help` command, more settings in `.env`, better error logging </summary>
 
 `;image`
 + Fixed bugs regarding activating the command
@@ -138,10 +135,8 @@ Others
 </details>
 
 ### 0.1.3
-Re-added `package-lock.json`, updates to the `image` command, better Replit integration, and more:
-
 <details>
-<summary>Changelog</summary>
+<summary>Re-added `package-lock.json`, updates to the `image` command, better Replit integration, and more:</summary>
 
 + Added include/exclude channel in  `image` command
 + Better `image` command replies
@@ -154,9 +149,8 @@ Re-added `package-lock.json`, updates to the `image` command, better Replit inte
 </details>
 
 ### 0.1.2
-Introducing databases and the beta version of the `image` command which finds text in images. Also:
 <details>
-<summary>Changelog</summary>
+<summary>Introducing databases and the beta version of the `image` command which finds text in images. Also:</summary>
 
 - added an `env` entry for the timezone
 - updated the `.info` part of commands
@@ -217,6 +211,7 @@ The bare bones of the bot, with very limited features.
 ## To-do's for future versions
 - [ ] Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
 - [ ] Support for command aliases
+- [ ] Command that temporarily disables other commands
 - [ ] Switch commands and autoresponses to Class
 - [ ] Auto-generate `Options` field in the help embed from the options property for slash commands
 - [ ] Unified and modularized logger
@@ -265,15 +260,7 @@ console.log(stats)
    git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot && npm i
    ```
 
-2. *If you're using Replit*, add the keys and values in the System Environmental Variables part, following the naming scheme of the keys below [(see the Replit docs for more info)](https://docs.replit.com/programming-ide/storing-sensitive-information-environment-variables).
-
-   *If not*, then create a `.env` file, copy the stuff below and add the actual values after the equal symbol
-   ```
-   DISCORD_TOKEN=your-discord-token
-   CLIENT_ID=your-discord-client-id
-   MONGO_URI=your-mongo-db-uri
-   OCRSPACE_KEY=your-ocrspace-key
-   ```
+2. Rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot.
 
 3. On the `config.json` file, add values to the `exports.botSupport`, and `exports.devs` variables. Read the comments to see what they do.
 
@@ -290,38 +277,21 @@ Ready as <Bot username>! (<Date and time>) 🤖
 ```
 
 ### Customizing the bot
-You can add additional `.env` variables to customize the bot. See the documentation below. A template can also be found on `.env.example` (if you are not using Replit).
+You can customize the bot by replacing the default values on your `config.js` file.
 
 <details>
 <summary>Documentation</summary>
 
-```
-# Bot prefix
-PREFIX=;
-
-# If you want to customize the timezone. Needs a valid TZ name (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-TIMEZONE=Antarctica/South_Pole
-
-# Slash commands options
-# Deploy slash commands in all servers?
-DEPLOY_SLASH=false
-# The id of the testing server if DEPLOY_SLASH is not true. If DEPLOY_SLASH is not true, the bot will only deploy slash commands in the test server.
-BOT_SERVER=777777777777777777
-
-# Error logging channel id
-# All errors encountered and caught by the bot or process will be send in the specified channel. Note that this may include personal info such as folder names if you're developing this locally.
-ERR_LOG=777777777777777777
-
-# Presence
-# Status: online/idle/dnd/invisible
-STATUS=online
-# Activity type: PLAYING/WATCHING/LISTENING/COMPETING
-ACTIVITYTYPE=PLAYING
-# Activity text, the one that will show up in "Playing ..."
-PRESENCE=I am online!
-# If you want the "Online in mobile" status, set to `true`. Will ignore ACTIVITYTYPE.
-ISMOBILE=
-```
+Variable | Default value | Description
+-- | -- | --
+`botPrefix` | "`;`" | Prefix of the bot. You can do more than 1 symbol here BUT not a whole word. This will have no effect if the user used slash commands (if slash commands are already deployed).
+`botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change
+`Timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+`errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
+`botStatus` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
+`actType` | "`PLAYING`" | Activity type: `PLAYING`/`WATCHING`/`LISTENING`/`COMPETING` (all caps)
+`actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
+`isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
 
 </details>
 
@@ -333,11 +303,12 @@ git fetch --all && git reset --hard origin/main && npm i
 ***NOTE: This will overwrite all files that you have modified, so you will lose them.*** If you want it to be saved permanently then I suggest forking the repository instead and doing `git merge` with your own version every time there is a new update.
 
 ## License
-[MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE)
+The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE).
 
 ## Contact
 [Join the official support and dev Discord server!](https://discord.gg/x3F22hN)
 
+### Personal
 [@xy_rus](https://twitter.com/xy_rus) on bird app <br>
 [Xtrike#<i>0507</i> (id: 681766482304434187)](https://discord.com) on imagine a place
 

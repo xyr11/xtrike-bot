@@ -1,16 +1,15 @@
 const { Client, Collection } = require('discord.js')
 const fs = require('fs')
 const chalk = require('chalk')
+const config = require('./config')
+const { intents, partials } = require('./modules/base')
 
 // access our .env file
 const dotenv = require('dotenv')
 dotenv.config()
 
-// get needed intents and partials
-const { intents, partials } = require('./config')
-
 // initialize client
-const client = new Client({ intents, partials, ws: { properties: process.env.ISMOBILE === 'true' ? { $browser: 'Discord iOS' } : {} } })
+const client = new Client({ intents, partials, ws: { properties: config.isMobile ? { $browser: 'Discord iOS' } : {} } })
 
 // handle errors
 const outputErr = require('./modules/errorCatch')
@@ -55,4 +54,4 @@ for (const file of events) {
   client.on(eventName, (...args) => event.execute(...args))
 }
 
-client.login(process.env.DISCORD_TOKEN)
+client.login(config.discordToken)

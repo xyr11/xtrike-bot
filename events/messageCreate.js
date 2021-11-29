@@ -1,5 +1,5 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const { prefix, userPerms, hasPerms } = require('../config')
+const { prefix, userPerms, hasPerms } = require('../modules/base')
 const recordStats = require('../modules/recordStatistics')
 
 /** @param {Message} message */

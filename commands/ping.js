@@ -1,5 +1,5 @@
 const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const { colors } = require('../config')
+const { colors } = require('../modules/base')
 
 exports.info = {
   name: 'ping',

@@ -2,7 +2,8 @@ const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
-const { time, PermLevels } = require('../config')
+const { discordToken, clientId, deploySlash, testingServer } = require('../config')
+const { time, PermLevels } = require('../modules/base')
 
 exports.info = {
   name: 'deployslash',
@@ -17,9 +18,8 @@ exports.info = {
  * @param {Message} message
  */
 exports.run = async message => {
-  const { DISCORD_TOKEN, CLIENT_ID, DEPLOY_SLASH, BOT_SERVER } = process.env
   // check if there is a test server given
-  if (DEPLOY_SLASH !== 'true' && BOT_SERVER === '') throw new Error('No test server id was found in your .env')
+  if (deploySlash && testingServer) throw new Error('No test server id was found in your .env')
 
   await message.reply('Deploying slash commands...')
 
@@ -35,11 +35,11 @@ exports.run = async message => {
   })
 
   // deploy
-  const rest = new REST({ version: '9' }).setToken(DISCORD_TOKEN)
+  const rest = new REST({ version: '9' }).setToken(discordToken)
   rest.put(
-    DEPLOY_SLASH === 'true'
-      ? Routes.applicationCommands(CLIENT_ID) // deploy in all guilds
-      : Routes.applicationGuildCommands(CLIENT_ID, BOT_SERVER), // deploy in bot server
+    deploySlash
+      ? Routes.applicationCommands(clientId) // deploy in all guilds
+      : Routes.applicationGuildCommands(clientId, testingServer), // deploy in bot server
     { body }
   ).then(() => {
     console.log(chalk.blue('Successfully registered application commands.'), chalk.bgBlueBright.black(`(${time()})`))

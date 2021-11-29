@@ -1,5 +1,6 @@
 const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
 const fetch = require('node-fetch')
+const { ocrApi } = require('../config')
 const ImagesModel = require('../schemas/images')
 const { getInfo, storeInfo } = require('./botInfo')
 
@@ -197,8 +198,6 @@ const updatePreV020 = async () => {
       let { url, channel, id, author, image, text, when } = d
       id = url ? url.match(/(?<=\/)[0-9]+$/)[0] : id // extract message id from url
 
-      console.log(guildIdentifier, id, channel, getTimestamp(when))
-
       // add new input entry
       /** @type {InputEntry} */
       const inputEntry = {
@@ -265,14 +264,14 @@ const fetchImage = async message => {
 
   for (const link of msgLinks) {
     // TODO: instead of just adding values blindingly, we should implement a check if the image (url) to be inserted already exists in the array [https://www.npmjs.com/package/pixelmatch]
-    let results
+    let results, isErr
 
     // get the text inside the image using OCR API
     // this part is an infinite loop, so if fetch() gets a FetchError
     // or if the API has IsErroredOnProcessing then it will repeat.
     // if there are no errors then the infinite loop will break
     let noData = true
-    const apiKeys = process.env.OCRSPACE_KEY.split('|') // multiple API keys for OCRSpace 🤔
+    const apiKeys = ocrApi.split('|') // multiple API keys for OCRSpace 🤔
     while (noData) {
       let fetched
       // fetch
@@ -285,45 +284,39 @@ const fetchImage = async message => {
           require('../modules/errorCatch')(err, message.client)
         }
       }
-      // check if there are no errors returned
-      if (fetched && !fetched.IsErroredOnProcessing) {
-        noData = false // stop the infinite loop
-        results = fetched.ParsedResults // get the results
-      } else {
-        // log an error
-        require('../modules/errorCatch')(new Error(results
-          ? `OCRExitCode ${results.OCRExitCode}: ${results.ErrorMessage} \n${results}`
-          : 'Error: no value for "results"'),
-        message.client)
-      }
+      noData = false // stop the infinite loop
+      if (!fetched.IsErroredOnProcessing) results = fetched.ParsedResults // get the text
+      else isErr = true // API encountered an error
     }
 
-    // extract the text from the result
-    let text = ''
-    if (!results) {
-      return // didn't find any text
-    } else if (results.length === 1) {
-      text = results[0].ParsedText
-    } else if (results.length > 1) {
-      // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to
-      // 'a w b' but it instead extracts the ParsedText property
-      text = results.reduce((a, b) => ({ r: a.ParsedText + ' ' + b.ParsedText })).r
+    if (!isErr) {
+      // extract the text from the result
+      let text = ''
+      if (!results) {
+        return // didn't find any text
+      } else if (results.length === 1) {
+        text = results[0].ParsedText
+      } else if (results.length > 1) {
+        // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to
+        // 'a w b' but it instead extracts the ParsedText property
+        text = results.reduce((a, b) => ({ r: a.ParsedText + ' ' + b.ParsedText })).r
+      }
+      // add new entry
+      /** @type {InputEntry} */
+      const inputEntry = {
+        f: false,
+        _id: id,
+        g: configEntry._id,
+        c: channelId,
+        a: message.author.id,
+        i: link,
+        d: text,
+        w: getTimestamp(message.createdTimestamp)
+      }
+      await setImageDb(inputEntry)
+      // update config entry in database
+      await setImageDb({ _id: guildId, d: { c: configEntry.d.c + 1 } })
     }
-    // add new entry
-    /** @type {InputEntry} */
-    const inputEntry = {
-      f: false,
-      _id: id,
-      g: configEntry._id,
-      c: channelId,
-      a: message.author.id,
-      i: link,
-      d: text,
-      w: getTimestamp(message.createdTimestamp)
-    }
-    await setImageDb(inputEntry)
-    // update config entry in database
-    await setImageDb({ _id: guildId, d: { c: configEntry.d.c + 1 } })
   }
 }
 

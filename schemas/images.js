@@ -12,8 +12,8 @@ const schema = new mongoose.Schema({
   w: Number,
   // pre-v0.1.4 schema
   guildId: String,
-  data: Array,
-  excludedChannels: Array,
+  data: mongoose.Mixed,
+  excludedChannels: mongoose.Mixed,
   totalToday: Number,
   messageInit: Object
 }, { versionKey: false })

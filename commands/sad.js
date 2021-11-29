@@ -1,5 +1,5 @@
 const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const { user } = require('../config')
+const { user } = require('../modules/base')
 
 exports.info = {
   name: 'sad',
