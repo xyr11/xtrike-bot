@@ -11,8 +11,8 @@ exports.execute = async client => {
   // presence
   if (presence.activity) {
     client.user.setPresence({
-      activities: [{ name: presence.activity, type: presence.activityType }],
-      status: config.isMobile === 'true' ? 'online' : presence.status
+      activities: [{ name: presence.activity, type: presence.activityType.toUpperCase() }],
+      status: config.isMobile ? 'online' : presence.status
     })
   }
 

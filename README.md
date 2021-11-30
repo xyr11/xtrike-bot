@@ -276,7 +276,7 @@ Variable | Default value | Description
 `timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
 `status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
-`actType` | "`PLAYING`" | Activity type: `PLAYING`/`WATCHING`/`LISTENING`/`COMPETING` (all caps)
+`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`
 `actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
 `isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
 
