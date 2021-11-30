@@ -30,8 +30,8 @@ module.exports = (error, client, message = null, interaction = null) => {
 
   // absolutely ignore these error
   if (
-    (err.stderr.search("ERROR: There's no video in ") === 0) || // youtube-dl no video error
-    (err.stderr.search('ERROR: Unsupported URL ') === 0) // youtube-dl unsupported url error
+    (err.stderr && err.stderr.search("ERROR: There's no video in ") === 0) || // youtube-dl no video error
+    (err.stderr && err.stderr.search('ERROR: Unsupported URL ') === 0) // youtube-dl unsupported url error
   ) return
 
   // Display it to console first
