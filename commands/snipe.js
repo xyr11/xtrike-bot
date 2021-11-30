@@ -3,7 +3,7 @@
  * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
  */
 
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Interaction, MessageEmbed, MessageAttachment, GuildChannel } = require('discord.js') // eslint-disable-line no-unused-vars
 const { sniper } = require('../modules/sniper')
 
 exports.info = {
@@ -33,9 +33,14 @@ exports.info = {
 exports.run = async (message, interaction, args) => {
   const thing = message || interaction
 
-  // by default, it will choose the current channel
-  // if there is a specified channel, it will choose that channel
-  const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
+  // if there is a specified channel then snipe from that channel, if
+  // not then snipe from the current channel.
+  // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
+  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
+  const channel = thing.guild.channels.cache.get(channelId)
+
+  // check if the given channel is in the same guild
+  if (!channel) return thing.reply("There's nothing to snipe!")
 
   // get snipe data
   /**
@@ -47,7 +52,7 @@ exports.run = async (message, interaction, args) => {
    * @property {String} t Created timestamp
    */
   /** @type {Deleted} */
-  const deleted = await sniper('a', channel)
+  const deleted = await sniper('a', channelId)
 
   // if there's no value
   if (!deleted) return thing.reply("There's nothing to snipe!")
@@ -55,18 +60,21 @@ exports.run = async (message, interaction, args) => {
   // get author
   const author = await thing.client.users.cache.get(deleted.a)
 
-  // create embed
+  // create message
   const embeds = []
+  const files = []
   embeds.push(new MessageEmbed()
     .setAuthor(author.tag, author.avatarURL())
     .setColor(author.hexAccentColor)
-    .setDescription((deleted.c || '[Message has no content]') +
-      (deleted.e.length ? ' [Message has embeds, see below]' : '') +
-      (deleted.e.length > 9 ? ' [Too many embeds, only 9 will be shown]' : ''))
-    .setFooter(`#${thing.client.channels.cache.get(channel).name}`)
+    .setDescription(deleted.c +
+      (deleted.f.length ? ' [Message has attachments]' : '') + // if there are attachments
+      (deleted.e.length ? ' [Message has embeds]' : '')) // if there are embeds
+    .setFooter(`#${channel.name}`)
     .setTimestamp(deleted.t))
-  if (deleted.f.length > 0) embeds[0].setImage(deleted.f[0])
   // check if there are any deleted embeds and include them
-  if (deleted.e) deleted.e.slice(0, 9).forEach(e => embeds.push(e))
-  await thing.reply({ embeds })
+  if (deleted.e) deleted.e.forEach(e => embeds.push(e))
+  // check if there are any deleted files
+  if (deleted.f.length === 1) embeds[0].setImage(deleted.f[0])
+  else if (deleted.f.length > 1) deleted.f.forEach(url => files.push(new MessageAttachment(url)))
+  await thing.reply({ embeds, files })
 }

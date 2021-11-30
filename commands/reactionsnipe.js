@@ -33,9 +33,14 @@ exports.info = {
 exports.run = async (message, interaction, args) => {
   const thing = message || interaction
 
-  // by default, it will choose the current channel
-  // if there is a specified channel, it will choose that channel
-  const channel = (args[0] && args[0].match(/[0-9]{18}/)[0]) ?? thing.channel.id
+  // if there is a specified channel then snipe from that channel, if
+  // not then snipe from the current channel.
+  // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
+  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
+  const channel = thing.guild.channels.cache.get(channelId)
+
+  // check if the given channel is in the same guild
+  if (!channel) return thing.reply("There's nothing to snipe!")
 
   // get reactionsnipe data
   /**
@@ -46,13 +51,13 @@ exports.run = async (message, interaction, args) => {
    * @property {String} t Removed timestamp
    */
   /** @type {ReactRemove} */
-  const reacted = await sniper('c', channel)
+  const reacted = await sniper('c', channelId)
 
   // if there's no value
   if (!reacted) return thing.reply("There's nothing to snipe!")
 
   // message url
-  const messageUrl = `https://discord.com/channels/${thing.guildId}/${channel}/${reacted.i}`
+  const messageUrl = `https://discord.com/channels/${thing.guildId}/${channelId}/${reacted.i}`
 
   // get author
   const author = await thing.client.users.cache.get(reacted.a)
@@ -70,7 +75,7 @@ exports.run = async (message, interaction, args) => {
     .setAuthor(author.tag, author.avatarURL(), messageUrl)
     .setColor(author.hexAccentColor)
     .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${messageUrl})`)
-    .setFooter(`#${thing.client.channels.cache.get(channel).name}`)
+    .setFooter(`#${channel.name}`)
     .setTimestamp(reacted.t)
   await thing.reply({ embeds: [embed] })
 }
