@@ -1,13 +1,13 @@
 const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const fs = require('fs')
-const { prefix, time } = require('../modules/base')
+const { prefix, time, presence } = require('../modules/base')
 
 exports.info = {
   name: 'reload',
   category: 'Developer',
-  description: 'Reload a command',
-  usage: '`$$reload <command>`',
+  description: 'Reload',
+  usage: '`$$reload <action>`',
   aliases: ['refresh', 'load'],
   permLevel: 'lmao',
   requiredArgs: true
@@ -28,7 +28,7 @@ const doesExist = async filePath => {
 /**
  * @param {Message} message
  * @param {Interaction} interaction
- * @param {Array} args
+ * @param {String[]} args
  */
 exports.run = async (message, interaction, args) => {
   const client = message.client
@@ -54,11 +54,22 @@ exports.run = async (message, interaction, args) => {
       }
       reloadedName = 'All autoresponses have been reloaded'
     } else if (commandName === 'err') {
+      // reload the errorCatch module
       // delete cache
       delete require.cache[require.resolve('../modules/errorCatch.js')]
       // re-add the module
       require('../modules/errorCatch.js')
       reloadedName = 'The errorCatch module has been reloaded'
+    } else if (commandName === 'activity' && args[1]) {
+      // reload the presence activity
+      if (['PLAYING', 'LISTENING', 'WATCHING'].indexOf(args[1].toUpperCase()) > -1 && args[2]) {
+        // if args[1] is a valid activity type, use it
+        client.user.setActivity(args.slice(2).join(' '), { type: args[1].toUpperCase() })
+      } else {
+        // use the whole args[] on the activity text
+        client.user.setActivity(args.slice(1).join(' '), { type: presence.activityType || 'PLAYING' })
+      }
+      reloadedName = 'The presence activity of the bot has been reloaded'
     } else {
       const fileExists = await doesExist(`./commands/${commandName}.js`)
       // Check if the command can be found in client.commands
