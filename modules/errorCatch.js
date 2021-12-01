@@ -28,10 +28,10 @@ module.exports = (error, client, message = null, interaction = null) => {
   // serialize the error object
   const err = serializeError(error)
 
-  // absolutely ignore these error
+  // absolutely ignore these errors
   if (
-    (err.stderr && err.stderr.search("ERROR: There's no video in ") === 0) || // youtube-dl no video error
-    (err.stderr && err.stderr.search('ERROR: Unsupported URL ') === 0) // youtube-dl unsupported url error
+    (err.stderr && err.stderr.search("ERROR: There's no video") === 0) || // youtube-dl no video error
+    (err.stderr && err.stderr.search('ERROR: Unsupported URL') === 0) // youtube-dl unsupported url error
   ) return
 
   // Display it to console first
