@@ -19,6 +19,45 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
+### 0.2.1
+<details>
+<summary>Updates on config file, ytdlVideos, reload, sniper & added some files</summary>
+
+#### General
+- Added `PRIVACY.md` and `LICENSE-3RD-PARTY`
+
+Config file
+- Accept lowercase activity type
+- Fixed `isMobile`
+
+README
+- Removed commit hashes because they're too messy
+- Added Facebook as supported site and disclaimer for `ytdlVideos`
+
+Error catching
+- Fixed `err.stderr` bug that crashes errorCatch
+- Updated error catching for `youtube-dl` errors
+
+#### Commands
+reload
+- Added reloading the presence activity
+
+Sniper
+- Fixed channel selector
+- Check if given channel is in the same server
+- If there are multiple sniped files then attach them in message
+- Limiting sniped embeds to only 9
+
+#### Autoresponses
+ytdlVideos
+- Fixed `output.formats` bug
+- Log errors using errorCatch.js
+- Detect Facebook links
+- `while` loops will not use an extra variable
+- Run youtube-dl to each of the links simultaneously
+- Remove infinite loop in message sending
+
+</details>
 
 ### 0.2
 <details>
