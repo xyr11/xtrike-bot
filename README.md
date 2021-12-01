@@ -10,7 +10,7 @@ And it's open-source!
 Can't find that one image your friend sent that got buried by a day's worth of messages? Well, you can now search for them! Powered by [OCRSpace](https://ocr.space/) and [Fuse.js](https://fusejs.io/). (Enter `;image` for more info.)
 
 ### Extract the raw video from external links!
-It's a real inconvenience when you need to open links just to watch epic fails or low quality memes. So now, the bot will automatically extract and send the video whenever someone sends a link! Powered by [youtube-dl](http://ytdl-org.github.io/youtube-dl/). (Supported sites: Twitter, Tiktok.)
+It's a real inconvenience when you need to open links just to watch epic fails or low quality memes. So now, the bot will automatically extract and send the video whenever someone sends a link! Powered by [youtube-dl](http://ytdl-org.github.io/youtube-dl/).[^1]
 
 ### And more in the future!
 Hang tight.
@@ -19,6 +19,45 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
+### 0.2.1
+<details>
+<summary>Updates on config file, ytdlVideos, reload, sniper & added some files</summary>
+
+#### General
+- Added `PRIVACY.md` and `LICENSE-3RD-PARTY`
+
+Config file
+- Accept lowercase activity type
+- Fixed `isMobile`
+
+README
+- Removed commit hashes because they're too messy
+- Added Facebook as supported site and disclaimer for `ytdlVideos`
+
+Error catching
+- Fixed `err.stderr` bug that crashes errorCatch
+- Updated error catching for `youtube-dl` errors
+
+#### Commands
+reload
+- Added reloading the presence activity
+
+Sniper
+- Fixed channel selector
+- Check if given channel is in the same server
+- If there are multiple sniped files then attach them in message
+- Limiting sniped embeds to only 9
+
+#### Autoresponses
+ytdlVideos
+- Fixed `output.formats` bug
+- Log errors using errorCatch.js
+- Detect Facebook links
+- `while` loops will not use an extra variable
+- Run youtube-dl to each of the links simultaneously
+- Remove infinite loop in message sending
+
+</details>
 
 ### 0.2
 <details>
@@ -27,89 +66,89 @@ Hang tight.
 #### General
 - Support for dual command handlers
 - Added JSDoc comments for development
-- Removed old README.md and integrated it to the current one (5111b52) and added more shields (2d881ea)
-- Serve http requests for status checking at https://xtrike-bot.xyr11.repl.co/ (fb173ee)
+- Removed old README.md and integrated it to the current one and added more shields
+- Serve http requests for status checking at https://xtrike-bot.xyr11.repl.co/
 
 #### Commands
-- Support for dual command handlers, `messageCreate` and `interactionCreate` at the same time! (8bf55c3, 8f0e007)
-- `requiredArgs: true`: If a user doesn't give arguments, it will instead give the help embed of that command. (8dca861)
-- Never acknowledge the bot's own messages (27ff8dc)
+- Support for dual command handlers, `messageCreate` and `interactionCreate` at the same time!
+- `requiredArgs: true`: If a user doesn't give arguments, it will instead give the help embed of that command.
+- Never acknowledge the bot's own messages
 
 Help
-- Added a "Did you mean" part if there aren't any matches (d102252, 2f9e75a)
-- Added a `thumbnail` option for the help embed (97ca5ce)
-- Instead of adding the prefix per line, `$$` will now be used instead to substitute the current prefix (61da3cc)
-- "Options" and "Similar" now has its own embed fields (f47146b)
+- Added a "Did you mean" part if there aren't any matches
+- Added a `thumbnail` option for the help embed
+- Instead of adding the prefix per line, `$$` will now be used instead to substitute the current prefix
+- "Options" and "Similar" now has its own embed fields
 
 hmm
-- Won't reply to messages anymore (if not a slash command) (5111b52)
+- Won't reply to messages anymore (if not a slash command)
 
 Image search
-- *New defaults*: It will search for images at most 7 days old and from the current channel only (a6a6be5, a5af925)
-- Rewrote the schema for more efficient data storage (12bab96, b1924ef)
-- Changed how the results are displayed (a27912a, 240db89, b1924ef) and fixed search parameters for optimal results (a6a6be5, b1924ef)
-- Updated the help embed (a6a6be5)
-- Better link checking (6c3632f)
-- Automatically retry if script encounters a FetchError (548a61b)
+- *New defaults*: It will search for images at most 7 days old and from the current channel only
+- Rewrote the schema for more efficient data storage
+- Changed how the results are displayed and fixed search parameters for optimal results
+- Updated the help embed
+- Better link checking
+- Automatically retry if script encounters a FetchError
 
 message
-- Added the `message` command back (2a7c020, 0a27337, 3010261)
+- Added the `message` command back
 
 ping
-- Removed reliance on custom `pingArea` channel, instead it will just edit its own message (34bf75c)
+- Removed reliance on custom `pingArea` channel, instead it will just edit its own message
 
 reboot
-- Will log to console and change the activity text if bot is rebooting (e4561b8)
-- Uptime logs will be cleared if `reboot` is run. (aabb3c8)
+- Will log to console and change the activity text if bot is rebooting
+- Uptime logs will be cleared if `reboot` is run.
 
 sad
-- The original `sad` command is added back! (8172c7f)
+- The original `sad` command is added back!
 
 Sniper
-- Added `pls snipe`, `editsnipe`, and `reactionsnipe` from [DankMemer/sniper](https://github.com/DankMemer/sniper) (cc4e0b4, 18e8e0d, b84a868)
-- Added dank mode to support `pls` as a valid prefix (cc4e0b4)
-- Data is now stored in the database so that it won't get lost if the bot restarts (51e0446)
+- Added `pls snipe`, `editsnipe`, and `reactionsnipe` from [DankMemer/sniper](https://github.com/DankMemer/sniper)
+- Added dank mode to support `pls` as a valid prefix
+- Data is now stored in the database so that it won't get lost if the bot restarts
 
 stats
-- Added stats to get bot commands statistics (2dc84d2)
+- Added stats to get bot commands statistics
 
 test
-- More `test` options (92c19f9, a27febc)
+- More `test` options
 
 uptime
-- Added the `uptime` command back. Bot logs the time when it boots up if there are no prior logs. Logs will be cleared if `reboot` is run. (aabb3c8)
+- Added the `uptime` command back. Bot logs the time when it boots up if there are no prior logs. Logs will be cleared if `reboot` is run.
 
 #### Autoresponses
-- Modularized autoresponses (88dcf6b)
+- Modularized autoresponses
 
 hi Autoresponse
-- Added back the feature that when every time someone says "hi", the bot wil reply with "hello" (88dcf6b)
+- Added back the feature that when every time someone says "hi", the bot wil reply with "hello"
 
 ytdlVideos Autoresponse
-- Support for many links in a message (5a5e09d)
-- Default to the lowest quality present (d6a74f6)
+- Support for many links in a message
+- Default to the lowest quality present
 
 #### Others
 Bot config
-- Switched all config settings to `config.js` (919092f)
+- Switched all config settings to `config.js`
 - Moved all other variables to `modules/base.js`
 
 modules/base.js
-- Added more intents and partials (a084ef0, 5e432df)
-- Removed `botId` (a084ef0)
-- `hasPerms()`: require the command object instead of just the name (8ab8478)
+- Added more intents and partials
+- Removed `botId`
+- `hasPerms()`: require the command object instead of just the name
 
 Endpoint
-- Added endpoints to get bot statistics (fb173ee, e695778)
+- Added endpoints to get bot statistics
 
 Error catching
-- Added filters if and when an error needs to be sent in the error logging channel or be ignored entirely (c3580eb, b0c88f2, d6b14f9)
-- Removed last channel tracking (2d321c1)
-- Added current time as fallback (44d469b)
+- Added filters if and when an error needs to be sent in the error logging channel or be ignored entirely
+- Removed last channel tracking
+- Added current time as fallback
 
 Statistics
-- Get the bot uptime (aabb3c8)
-- Get the number of times the bot executes user commands (aabb3c8)
+- Get the bot uptime
+- Get the number of times the bot executes user commands
 
 <hr></details>
 
@@ -276,7 +315,7 @@ Variable | Default value | Description
 `timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
 `status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
-`actType` | "`PLAYING`" | Activity type: `PLAYING`/`WATCHING`/`LISTENING`/`COMPETING` (all caps)
+`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`
 `actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
 `isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
 
@@ -318,3 +357,5 @@ The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blo
 
 ## Credits
 Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thank also to [Replit](https://replit.com) for the bot hosting.
+
+[^1]: Supported sites: Facebook, Twitter, Tiktok. DISCLAIMER: The bot only temporarily saves the videos generated from this feature so that it can be send on Discord. You are entirely responsible for any and all content generated from these links.

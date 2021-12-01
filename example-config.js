@@ -60,8 +60,8 @@ const errorLogging = '012345678901234567'
 // Presence (all are optional)
 // Status: [online]/idle/dnd/invisible = ===============================
 const status = 'online'
-// Activity type: [PLAYING]/WATCHING/LISTENING/COMPETING (all caps) ====
-const actType = 'PLAYING'
+// Activity type: [playing]/watching/listening/competing ===============
+const actType = 'playing'
 // Activity name, the text that will show up in "Playing..." ===========
 const actName = ';info'
 // Set the status to "Online in mobile device"? ========================

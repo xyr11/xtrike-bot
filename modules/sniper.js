@@ -39,7 +39,7 @@ exports.e = async (n, arg1, arg2 = null) => {
     d = {
       a: arg1.author.id,
       c: arg1.content,
-      e: arg1.embeds,
+      e: arg1.embeds.slice(0, 9),
       f: [...arg1.attachments.values()].map((a) => a.proxyURL),
       t: arg1.createdTimestamp
     }
@@ -51,7 +51,7 @@ exports.e = async (n, arg1, arg2 = null) => {
     d = {
       a: arg1.author.id,
       c: arg1.content,
-      e: arg1.embeds,
+      e: arg1.embeds.slice(0, 9),
       f: [...arg1.attachments.values()].map((a) => a.proxyURL),
       i: arg1.id,
       t: arg2.editedTimestamp

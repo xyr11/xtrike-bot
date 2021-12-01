@@ -23,7 +23,7 @@ const botSupport = []
 /** Bot presence based on env variables */
 const presence = {
   status: status ?? 'online',
-  activityType: actType ?? 'PLAYING',
+  activityType: actType ?? 'playing',
   activity: actName ?? ';info'
 }
 
