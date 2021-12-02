@@ -19,6 +19,28 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
+### 0.3 ***(Dev To-do List)***
+*Short description not found*
+
+#### General
+- [ ] Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
+
+#### Commands
+- [ ] Support for command aliases
+- [ ] More commands?
+
+Image search
+- [ ] New schema spec to support new features and fixes below
+- [ ] Fix the `Cannot read properties of undefined (reading 'IsErroredOnProcessing')` error
+- [ ] Fix the `E11000 duplicate key error collection` error
+- [ ] Check if image already exists in the database to avoid data duplication
+- [ ] Filter images that are deleted or images that no longer exists
+- [ ] Use the dominant color of the image as the embed color instead of the author profile color
+- [ ] Switch autoresponse to `fetchImage.js` so that it can be reloaded using `reload`
+
+video
+- [ ] Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
+
 ### 0.2.1
 <details>
 <summary>Updates on config file, ytdlVideos, reload, sniper & added some files</summary>
@@ -332,8 +354,6 @@ git fetch --all && git reset --hard origin/main && npm i
 <details>
 <summary>To-do's for future versions</summary>
 
-- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
-- Support for command aliases
 - Command that temporarily disables other commands
 - Switch commands and autoresponses to Class
 - Auto-generate `Options` field in the help embed from the options property for slash commands
