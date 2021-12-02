@@ -25,6 +25,9 @@ Hang tight.
 #### General
 - [ ] Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
 
+errorCatch
+- [x] Show serialized error object in the console too
+
 #### Commands
 - [ ] Support for command aliases
 - [ ] More commands?
