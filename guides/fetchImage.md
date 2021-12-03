@@ -1,7 +1,7 @@
 # Fetching Images
 This is a guide on how the bot fetches image for use in the `;image` command.
 
-Version 1.0
+Spec version: 0.3 (for `v0.3.0`, please see [Compatibility](#compatibility))
 
 ## Specification
 There are 2 "types" of *documents* (the technical name of entries for MongoDB) that the bot uses, a *config entry* for each of the guilds and an *input entry* for each of the images.
@@ -68,8 +68,15 @@ var currentTimestamp = Date.now() / 1000 - 1635638400
 var timestamp = 1000000
 var date = new Date((timestamp + 1635638400) * 1000)
 ```
-
 For the guild identifier, see: [Unique guild identifier](#unique-guild-identifier)
 
+### Compatibility
+Please note that *data created in newer versions WILL NOT BE COMPATIBLE to older versions*.
+
+Spec version | Status | Comments
+-- | -- | --
+0.3 (for `v0.3.0`) | Latest version | Backward compatible to 0.2 and 0.1 data
+0.2 (for `v0.2.0`) | Deprecated
+0.1 (for `v0.1.2`) | Deprecated
 
 [^1]: I have a whole separate guide for you! Check [/guides/snowflakes.md](./snowflakes.md).
