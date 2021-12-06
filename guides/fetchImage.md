@@ -48,7 +48,7 @@ The schema or format for the input entry is:
 ```js
 {
   f: false, // document type is not a config entry
-  _id: '914369938347667486', // message id
+  _id: '914369938347667486a', // message id plus extra letter
   g: '0aa', // unique guild identifier (see above)
   c: '765022790038192148', // channel id
   a: '681766482304434187', // author id
