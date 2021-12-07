@@ -63,5 +63,5 @@ exports.run = async (message, interaction, args) => {
   // send debug messages
   if (!debugEmbed) return
   if (interaction) interaction.followUp({ embeds: [debugEmbed] })
-  else message.send({ embeds: [debugEmbed] })
+  else message.channel.send({ embeds: [debugEmbed] })
 }
