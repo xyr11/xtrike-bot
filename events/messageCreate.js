@@ -3,7 +3,7 @@ const { prefix, userPerms, hasPerms } = require('../modules/base')
 const recordStats = require('../modules/recordStatistics')
 
 /** @param {Message} message */
-exports.execute = message => {
+exports.execute = async message => {
   const { client, author, content } = message
   if (author.id === client.user.id) return // never acknowledge your own message
 
@@ -31,7 +31,7 @@ exports.execute = message => {
   // If they dont have proper permLevels, do nothing too
   if (!cmd || !hasPerms(cmd, message)) return
   // Check if beta
-  if (cmd.info.isBeta === true && userPerms(message) < 4) {
+  if (cmd.info.isBeta && userPerms(message) < 4) {
     return message.reply('This command isn\'t really done yet, check back later.')
   }
   // If message starts with 'pls' but dank mode is not enabled in command, return
@@ -40,8 +40,8 @@ exports.execute = message => {
   // Run the command
   try {
     message.channel.sendTyping()
-    if (cmd.info.requiredArgs && !args.length) client.commands.get('help').run(message, null, [cmd.info.name]) // if the command requires arguments and there are no given arguments, return the help embed
-    else cmd.run(message, null, args)
+    if (cmd.info.requiredArgs && !args.length) await client.commands.get('help').run(message, null, [cmd.info.name]) // if the command requires arguments and there are no given arguments, return the help embed
+    else await cmd.run(message, null, args)
     recordStats(cmd.info.name)
   } catch (error) {
     require('../modules/errorCatch')(error, client, message)
