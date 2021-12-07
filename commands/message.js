@@ -44,6 +44,9 @@ const date = input => {
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {
+  // check if command is run via slash commands
+  if (interaction) return interaction.reply({ content: 'Please use `;message` instead because slash commands is not supported.', ephemeral: true })
+
   const channel = message.channel // current channel
 
   // text parser
