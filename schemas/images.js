@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
   a: String,
   i: String,
   d: mongoose.Mixed,
+  h: String,
   w: Number,
   // pre-v0.1.4 schema
   guildId: String,

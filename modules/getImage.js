@@ -1,6 +1,6 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, Client } = require('discord.js') // eslint-disable-line no-unused-vars
+const { imageHash } = require('image-hash')
 const fetch = require('node-fetch')
-const { ocrApi } = require('../config')
 const ImagesModel = require('../schemas/images')
 const { getInfo, storeInfo } = require('./botInfo')
 
@@ -34,6 +34,7 @@ const { getInfo, storeInfo } = require('./botInfo')
 
 // internal counter
 let counter = 0
+const getCounter = () => counter
 // when the bot starts, get the counter from the database
 const syncCounter = async () => await getInfo('imageCounter').then(value => { counter = value || 0 })
 syncCounter()
@@ -48,13 +49,13 @@ const randChar = () => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.sp
  * @type {Map<String, String>}
  */
 const guildIdentifiers = new Map()
+const getGuildIdentifiers = () => guildIdentifiers
 // also get all guild identifiers from the database
 const syncGuildIdentifiers = async () => ImagesModel.find({ f: true }).then(fetchedConfig => {
   if (!fetchedConfig) return
   for (const config of fetchedConfig) guildIdentifiers.set(config.g, config._id)
 })
 syncGuildIdentifiers()
-const getGuildIdentifiers = () => guildIdentifiers
 
 /**
  * Timestamp for InputEntry
@@ -63,39 +64,69 @@ const getGuildIdentifiers = () => guildIdentifiers
 const getTimestamp = unixTime => Math.floor(+unixTime / 1000 - 1635638400)
 
 /**
- * Store bot info
- * @param {ConfigEntry|InputEntry} object Data. Please note that the `_id` property is required.
+ * Add new image data. Use `updateEntry` or `setEntry` instead.
+ * @param {Object} object Image data
  */
-const setImageDb = async object => {
+const newEntry = async object => await new ImagesModel({ ...object }).save()
+
+/**
+ * Get image data
+ * @param {Object} query MongoDB query
+ * @returns {ConfigEntry|InputEntry}
+ */
+const getEntry = async query => await ImagesModel.findOne(query)
+
+/**
+ * Update image data
+ * @param {ConfigEntry|InputEntry} object The data that you want to put. The `_id` property is required.
+ */
+const updateEntry = async object => {
   const { _id } = object
-  // check if there are any previous entries with the same id
+  // check if there are any entries with the same id
   const results = await ImagesModel.find({ _id })
-  // if yes then update that one
+  // if there are, then update that one
   if (results.length) {
     delete object._id // delete the id because it wont be updated
-    await ImagesModel.findOneAndReplace({ _id }, object)
+    await ImagesModel.updateOne({ _id }, object)
   } else {
-    // if no then create a new one instead
-    await new ImagesModel({ ...object }).save()
+    // if there are no entries then create a new one instead
+    newEntry(object)
   }
 }
 
 /**
- * Get bot info of one document
- * @param {Object} query
- * @returns {ConfigEntry|InputEntry} Stored data, using `.lean()` (check https://mongoosejs.com/docs/tutorials/lean.html)
+ * Set image data. If entry already exists, it will be overwritten by whatever you place on `object`.
+ * If you don't want it to be overwritten then use `updateEntry` instead.
+ * @param {ConfigEntry|InputEntry} object The data that you want to put. The `_id` property is required.
+ * @param {any} oldId If you updated the `_id`, place the old `_id` here.
  */
-const getImageDb = async query => {
-  const result = await ImagesModel.findOne(query)
-  if (result) return result
+const setEntry = async (object, oldId = null) => {
+  const { _id } = object
+  // check if there are any entries with the same id
+  const results = await ImagesModel.find({ _id: oldId || _id })
+  // if there are, then replace that one
+  if (results.length && !oldId) {
+    delete object._id // delete the id because it wont be updated
+    await ImagesModel.updateOne({ _id }, object)
+  } else {
+    // if there are no entries or `_id` is updated then create a new one instead
+    await newEntry(object)
+    if (oldId) await deleteEntry(oldId)
+  }
 }
 
 /**
+ * Delete entry
+ * @param {String|Number} _id The `_id` of the entry
+ */
+const deleteEntry = async _id => await ImagesModel.deleteOne({ _id })
+
+/**
  * check if the config entry of a guild is present
- * @param {String} guildId message.guildId
+ * @param {String} guildId
  * @returns {Boolean}
  */
-const isActivated = async guildId => !!await getImageDb({ f: true, g: guildId })
+const isActivated = async guildId => !!await getEntry({ f: true, g: guildId })
 
 /**
  * Activate `;image` in channel
@@ -108,7 +139,7 @@ const activateChannel = async (configEntry, channelId) => {
   // remove the channel from the array
   excluded.splice(excluded.indexOf(channelId), 1)
   // update config entry
-  await setImageDb({ _id: configEntry._id, d: { e: excluded } })
+  await setEntry({ _id: configEntry._id, d: { e: excluded } })
 }
 
 /**
@@ -131,7 +162,7 @@ const activateServer = async message => {
       m: message.id
     }
   }
-  await setImageDb(configEntry) // save config entry to db
+  await setEntry(configEntry) // save config entry to db
   guildIdentifiers.set(message.guildId, guildIdentifier) // save to local var
   await storeInfo('imageCounter', counter) // update counter
 }
@@ -141,7 +172,7 @@ const activateServer = async message => {
  * @param {ConfigEntry} configEntry
  * @param {String} channelId message.channelId
  */
-const deactivateChannel = async (configEntry, channelId) => await setImageDb({ _id: configEntry._id, d: { e: [...configEntry.d.e, channelId] } })
+const deactivateChannel = async (configEntry, channelId) => await setEntry({ _id: configEntry._id, d: { e: [...configEntry.d.e, channelId] } })
 
 /**
  * Delete all data and config entry
@@ -149,7 +180,32 @@ const deactivateChannel = async (configEntry, channelId) => await setImageDb({ _
  */
 const deactivateServer = async guildId => {
   await ImagesModel.deleteMany({ g: guildIdentifiers.get(guildId) }) // delete input entries
-  await ImagesModel.deleteOne({ g: guildId }) // delete config entry
+  await deleteEntry(guildId) // delete config entry
+}
+
+/**
+ * Fetch image url
+ * @param {String} imageUrl Url of image to fetch
+ * @param {Client} client Discord client
+ * @returns {Promise<{ok: Boolean, buffer: Buffer, type: String}>}
+ */
+const fetchImageUrl = async (imageUrl, client) => {
+  let ok, buffer, type
+  while (ok === undefined) {
+    try {
+      const fetched = await fetch(imageUrl).then(res => res) // get fetched result
+      ok = fetched.ok // check if image is deleted
+      type = fetched.headers.get('content-type') // get image type
+      buffer = await fetched.buffer() // get image buffer
+    } catch (err) {
+      if (err.name !== 'FetchError') {
+        // stop the infinite loop if bot encountered an error NOT related to FetchError
+        ok = false
+        require('../modules/errorCatch')(err, client)
+      }
+    }
+  }
+  return { ok, buffer, type }
 }
 
 /**
@@ -188,7 +244,7 @@ const updatePreV020 = async () => {
           m: messageInit.id ?? messageInit
         }
       }
-      await setImageDb(configEntry) // save config entry to db
+      await setEntry(configEntry) // save config entry to db
       guildIdentifiers.set(guild, guildIdentifier) // save to local var
       await storeInfo('imageCounter', counter) // update counter
     }
@@ -210,115 +266,20 @@ const updatePreV020 = async () => {
         d: text,
         w: getTimestamp(when)
       }
-      await setImageDb(inputEntry) // save input entry to db
+      await setEntry(inputEntry) // save input entry to db
     }
 
     // delete old entry
-    await ImagesModel.deleteOne({ _id })
+    await deleteEntry(_id)
   }
 }
 
 /**
- * Get images from new messages, get the text inside each image, and add it to the database
- * @param {Message} message
+ * Transform `image-hash` module to a Promise
+ * @param {Any} input imageHash input
+ * @returns {Promise<String>}
  */
-const fetchImage = async message => {
-  const { id, channelId, guildId } = message
-  const validTypes = ['png', 'jpg', 'jpeg', 'tif', 'bmp']
-
-  // get images from messages
-  const msgLinks = []
-  // attachments
-  if (message.attachments.size > 0) {
-    for (const img of message.attachments) {
-      // check if the content type is a valid type
-      if (validTypes.indexOf(img[1].contentType.substring(6)) > -1) msgLinks.push(img[1].url)
-    }
-  }
-  // links on message content
-  const links = message.content.match(/(?<=.|^|\s)https?:\/\/[^\s]*/g)
-  if (links) {
-    for (const link of links) {
-      // get file type
-      let fileType = link.match(/[^.]+$/)
-      fileType = fileType[0] || ''
-      // check if file type is an image (that OCRSpace can process) and check if link is repeated
-      if (validTypes.indexOf(fileType) > -1 && msgLinks.indexOf(link) === -1) msgLinks.push(link)
-    }
-  }
-
-  // check if there are any messages
-  if (!msgLinks.length) return
-
-  // sync local variables
-  if (!counter) await syncCounter()
-  if (!guildIdentifiers.size) await syncGuildIdentifiers()
-
-  // backward compatibility for pre-v0.2.0 entries
-  await updatePreV020()
-
-  // check if command is activated in current guild
-  const configEntry = await getImageDb({ f: true, g: guildId })
-  // if the server hasn't enabled the command or if the channel is excluded then return
-  if (!configEntry || configEntry.d.e.indexOf(channelId) > -1) return
-
-  for (const link of msgLinks) {
-    // TODO: instead of just adding values blindingly, we should implement a check if the image (url) to be inserted already exists in the array [https://www.npmjs.com/package/pixelmatch]
-    let results, isErr
-
-    // get the text inside the image using OCR API
-    // this part is an infinite loop, so if fetch() gets a FetchError
-    // or if the API has IsErroredOnProcessing then it will repeat.
-    // if there are no errors then the infinite loop will break
-    let noData = true
-    const apiKeys = ocrApi.split('|') // multiple API keys for OCRSpace 🤔
-    while (noData) {
-      let fetched
-      // fetch
-      try {
-        fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + apiKeys[Math.floor(Math.random() * apiKeys.length)] + '&url=' + link).then(res => res.json())
-      } catch (err) {
-        if (err.name !== 'FetchError') {
-          // stop the infinite loop if bot encountered an error NOT related to FetchError
-          noData = false
-          require('../modules/errorCatch')(err, message.client)
-        }
-      }
-      noData = false // stop the infinite loop
-      if (!fetched.IsErroredOnProcessing) results = fetched.ParsedResults // get the text
-      else isErr = true // API encountered an error
-    }
-
-    if (!isErr) {
-      // extract the text from the result
-      let text = ''
-      if (!results) {
-        return // didn't find any text
-      } else if (results.length === 1) {
-        text = results[0].ParsedText
-      } else if (results.length > 1) {
-        // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to
-        // 'a w b' but it instead extracts the ParsedText property
-        text = results.reduce((a, b) => ({ r: a.ParsedText + ' ' + b.ParsedText })).r
-      }
-      // add new entry
-      /** @type {InputEntry} */
-      const inputEntry = {
-        f: false,
-        _id: id,
-        g: configEntry._id,
-        c: channelId,
-        a: message.author.id,
-        i: link,
-        d: text,
-        w: getTimestamp(message.createdTimestamp)
-      }
-      await setImageDb(inputEntry)
-      // update config entry in database
-      await setImageDb({ _id: guildId, d: { c: configEntry.d.c + 1 } })
-    }
-  }
-}
+const awaitImgHash = input => new Promise((resolve, reject) => { imageHash(input, 10, true, (err, data) => { if (err) reject(err); resolve(data) }) })
 
 // export the variables
-module.exports = { ImagesModel, guildIdentifiers: getGuildIdentifiers, setImageDb, getImageDb, isActivated, activateChannel, activateServer, deactivateChannel, deactivateServer, updatePreV020, fetchImage }
+module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, getEntry, updateEntry, setEntry, deleteEntry, isActivated, activateChannel, activateServer, deactivateChannel, deactivateServer, fetchImageUrl, updatePreV020, awaitImgHash }
