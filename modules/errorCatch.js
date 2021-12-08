@@ -45,6 +45,7 @@ module.exports = (error, client, message = null, interaction = null) => {
   // dont sent to the current channel
   const dontSendToChannel =
     dontSend ||
+    errObj.code === 10015 || // DiscordAPIError: Unknown Webhook
     errObj.code === 10062 || // DiscordAPIError: Unknown interaction
     error.name === 'FetchError' // something to do with fetch() which is async
 
