@@ -21,21 +21,24 @@ exports.execute = async interaction => {
 
   // create args from interaction.options
   const args = []
-  for (const o of interaction.options.data) {
+  for (const option of interaction.options.data) {
+    const { name, type, value } = option
     // if the option is a boolean and the value is true, add the option name in the args
-    if (o.type === 'BOOLEAN' && o.value) args.push(o.name)
-    // if the option is a string, add the option value
-    else if (o.type === 'STRING') args.push(...o.value.split(/ +/g)) // split each words using spaces
+    if (type === 'BOOLEAN' && value) args.push(name)
+    // if the name is a flag (i.e. "--flag"), then add both the option name and value
+    else if (name.search('--') === 0) args.push(name, ...value.toString().split(/ +/g))
     // if the option is a number, convert to string
-    else if (o.type === 'INTEGER' || o.type === 'NUMBER') args.push(o.value + '') // split each words using spaces
+    else if (type === 'INTEGER' || type === 'NUMBER') args.push(value + '') // split each words using spaces
     // if the option is a channel, convert it to the `<#channelId>` format
-    else if (o.channel) args.push(`<#${o.value}>`)
+    else if (option.channel) args.push(`<#${value}>`)
     // if the option is a user, convert it to the `<@id>` format
-    else if (o.user) args.push(`<@${o.value}>`)
-    // if the option is a role, convert it to the `<@id>` format
-    else if (o.role) args.push(`<@&${o.value}>`)
+    else if (option.user) args.push(`<@${value}>`)
+    // if the option is a role, convert it to the `<@&id>` format
+    else if (option.role) args.push(`<@&${value}>`)
+    // if the option is a string, add the option value
+    else if (type === 'STRING') args.push(...value.split(/ +/g)) // split each words using spaces
   }
-  // add the content property on `inteaction` for commands that need it
+  // add the content property on `interaction` for commands that need it
   interaction.content = `/${interaction.commandName} ${args.join(' ')}`
 
   while (true) {
