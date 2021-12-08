@@ -1,7 +1,7 @@
 const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const fetch = require('node-fetch')
 const { ocrApi } = require('../config')
-const { counter, syncCounter, guildIdentifiers, syncGuildIdentifiers, setEntry, getTimestamp, updatePreV020, getEntry, fetchImageUrl, awaitImgHash, updateEntry } = require('../modules/getImage')
+const { counter, syncCounter, guildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, fetchImageUrl, updatePreV020, awaitImgHash } = require('../modules/getImage')
 
 // Hello there! Please look at guides/fetchImage.md to know more about the
 // specifications of the `;image` command. Thank you!
@@ -47,7 +47,7 @@ const getAndSaveImage = async (message, imageUrl, index) => {
   const { client } = message
 
   // check if image is already on the database by using the image url
-  if (await getEntry({ i: imageUrl })) return
+  if (await imgEntry.get({ i: imageUrl })) return
 
   // fetch image
   const { ok, buffer, type } = await fetchImageUrl(imageUrl, message.client)
@@ -56,6 +56,8 @@ const getAndSaveImage = async (message, imageUrl, index) => {
 
   // get hash
   const hash = await awaitImgHash({ data: buffer, ext: type })
+  // check if image is already on the database using the image hash
+  if (await imgEntry.get({ h: hash })) return
 
   // get the text inside the image using OCR API
   // this part is an infinite loop, so if fetch() gets a FetchError
@@ -96,25 +98,16 @@ const getAndSaveImage = async (message, imageUrl, index) => {
   if (!results) return
 
   // extract the text from the result
-  let text = ''
-  if (!results) {
-    return // didn't find any text
-  } else if (results.length === 1) {
-    text = results[0].ParsedText
-  } else if (results.length > 1) {
-    // function that basically makes [{c: 'a'}, {c: 'w'}, {c: 'b'}] to
-    // 'a w b' but it instead extracts the ParsedText property
-    text = results.reduce((a, b) => ({ r: a.ParsedText + ' ' + b.ParsedText })).r
-  }
+  // basically what it does is make [{c: 'a'}, {c: 'w'}, {c: 'b'}] to 'a w b'
+  let text = results.reduce((a, b) => ({ text: (a.ParsedText || '') + ' ' + b.ParsedText }), []).text
+  // filter text
+  text = text.replace(/(\r?\n)+/g, '\n') // remove extra newlines
+    .replace(/^\s*|\s*$/gs, '') // remove spaces before and after string
   // return if there are no text
   if (!text) return
 
   const { id, channelId, guildId, author, createdTimestamp } = message
-  const configEntry = await getEntry({ f: true, g: guildId }) // fetch latest
-
-  // check if image is already on the database using the image hash
-  console.log(hash) // ! test
-  if (await getEntry({ h: hash })) return
+  const configEntry = await imgEntry.get({ f: true, g: guildId }) // fetch latest
 
   // add new entry
   const indexLetter = 'abcdefghijklmnop'.split('')[index] // convert index to letter for the _id
@@ -130,8 +123,8 @@ const getAndSaveImage = async (message, imageUrl, index) => {
     h: hash,
     w: getTimestamp(createdTimestamp)
   }
-  setEntry(inputEntry)
-  updateEntry({ _id: guildId, d: { c: configEntry.d.c + 1 } }) // config entry
+  imgEntry.set(inputEntry)
+  imgEntry.update({ _id: guildId, d: { c: configEntry.d.c + 1 } }) // config entry
 }
 
 /**
@@ -174,7 +167,7 @@ module.exports = async message => {
   updatePreV020()
 
   // check if command is activated in current guild
-  const configEntry = await getEntry({ f: true, g: message.guildId })
+  const configEntry = await imgEntry.get({ f: true, g: message.guildId })
   // if the server hasn't enabled the command or if the channel is excluded then return
   if (!configEntry || configEntry.d.e.indexOf(message.channelId) > -1) return
 
