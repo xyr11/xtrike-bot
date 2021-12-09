@@ -18,21 +18,22 @@ client.on('error', error => outputErr(error, client))
 
 // read the commands folder
 client.commands = new Collection()
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+const commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 console.log(chalk.gray('Loading commands'))
-for (const file of commandFiles) {
+for (const file of commands) {
   // Add module of each of the command files
   const command = require(`./commands/${file}`)
   // Load em
-  client.commands.set(command.info.name, command)
+  if (command.info) client.commands.set(command.info.name, command)
+  else console.log(chalk.gray('Warning:', file, 'is not loaded!'))
 }
 
 // read the autoresponses folder
 client.autoresponses = []
 client.autoresponseNames = []
-const autoresponseFiles = fs.readdirSync('./autoresponses').filter(file => file.endsWith('.js'))
+const autoresponses = fs.readdirSync('./autoresponses').filter(file => file.endsWith('.js'))
 console.log(chalk.gray('Loading autoresponses'))
-for (const file of autoresponseFiles) {
+for (const file of autoresponses) {
   const name = file.split('.')[0]
   // Add module of each of the autoresponse files
   const autoresponse = require(`./autoresponses/${file}`)
