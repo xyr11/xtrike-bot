@@ -27,6 +27,6 @@ module.exports = async message => {
   // fetch each link
   links.forEach(link => ytdl(link, message.client).then(files => {
     // send video
-    if (files.length) message.reply({ files, allowedMentions: { repliedUser: false } })
+    if (files) message.reply({ files, allowedMentions: { repliedUser: false } })
   }))
 }
