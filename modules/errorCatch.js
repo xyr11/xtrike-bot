@@ -13,6 +13,22 @@ const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🚫 ❗'.split(' ')
  */
 const randNo = max => Math.floor(Math.random() * max)
 
+/** list of errors to ignore */
+const ignoreErr = err =>
+  err.stderr?.search("ERROR: There's no video") === 0 || // youtube-dl no video error
+  err.stderr?.search('ERROR: Unsupported URL') === 0 || // youtube-dl unsupported url error
+  err.stderr?.search('ERROR: Sorry, you are not authorized to see this status') === 0 // youtube-dl private twitter account
+
+const dontSend = err =>
+  (err.code >= 500 && err.code < 600) || // 500 error codes
+  err.code === 50035 // Embed size exceeds maximum size of 6000
+
+const dontSendToChannel = err =>
+  dontSend(err) ||
+  err.code === 10015 || // DiscordAPIError: Unknown Webhook
+  err.code === 10062 || // DiscordAPIError: Unknown interaction
+  err.name === 'FetchError' // something to do with fetch() which is async
+
 /**
  * Send an error in current channel and in error logging channel, and in the console
  * @param {Error} error
@@ -28,29 +44,15 @@ module.exports = (error, client, message = null, interaction = null) => {
   // serialize the error object
   const errObj = serializeError(error)
 
-  // absolutely ignore these errors
-  if (
-    (errObj.stderr && errObj.stderr.search("ERROR: There's no video") === 0) || // youtube-dl no video error
-    (errObj.stderr && errObj.stderr.search('ERROR: Unsupported URL') === 0) // youtube-dl unsupported url error
-  ) return
+  // ignore these errors
+  if (ignoreErr(errObj)) return
 
   // Display it to console first
   console.error(chalk.red(`${error.name || 'Error'}`), chalk.bgRedBright.black(`(${time()})`))
   console.error(error, errObj)
 
-  // dont send to error logging channel
-  const dontSend =
-    (error.code >= 500 && error.code < 600) || // 500 error codes
-    errObj.code === 50035 // Embed size exceeds maximum size of 6000
-  // dont sent to the current channel
-  const dontSendToChannel =
-    dontSend ||
-    errObj.code === 10015 || // DiscordAPIError: Unknown Webhook
-    errObj.code === 10062 || // DiscordAPIError: Unknown interaction
-    error.name === 'FetchError' // something to do with fetch() which is async
-
   // Send the error embed to corresponding channel, if there are any
-  if (!dontSendToChannel && thing) {
+  if (thing && !dontSendToChannel(error)) {
     const err = {
       content: 'Sorry, seems like I have encountered an error.',
       embeds: [{
@@ -78,11 +80,9 @@ module.exports = (error, client, message = null, interaction = null) => {
   }
 
   // Send the error embed to error logging channel
-  if (!dontSend) {
-    if (errorLogging) {
-      /** @type {TextChannel} */
-      const errLogChannel = client.channels.cache.get(errorLogging)
-      if (errLogChannel) errLogChannel.send({ embeds }).catch()
-    }
+  if (errorLogging && !dontSend(error)) {
+    /** @type {TextChannel} */
+    const errLogChannel = client.channels.cache.get(errorLogging)
+    if (errLogChannel) errLogChannel.send({ embeds }).catch()
   }
 }
