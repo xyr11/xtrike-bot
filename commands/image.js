@@ -1,4 +1,4 @@
-const { Message, Interaction, MessageEmbed, Client, MessagePayload, InteractionReplyOptions } = require('discord.js') // eslint-disable-line no-unused-vars
+const { Message, CommandInteraction, MessageEmbed, Client, MessagePayload, InteractionReplyOptions } = require('discord.js') // eslint-disable-line no-unused-vars
 const getPixels = require('get-pixels')
 const { prefix, colors, userPerms } = require('../modules/base')
 const { config: imgConfig, imgEntry, fetchImageUrl, updatePreV020, guildIdentifiers, awaitImgHash } = require('../modules/getImage')
@@ -210,7 +210,7 @@ const msgDisableWarning = "When you disable the image command, you won't be able
 
 /**
  * @param {Message} message
- * @param {Interaction} interaction
+ * @param {CommandInteraction} interaction
  * @param {Array} args
  */
 exports.run = async (message, interaction, args) => {

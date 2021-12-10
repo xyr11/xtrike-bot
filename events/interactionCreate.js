@@ -1,8 +1,8 @@
-const { Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
+const { CommandInteraction } = require('discord.js') // eslint-disable-line no-unused-vars
 const { userPerms, hasPerms } = require('../modules/base')
 const recordStats = require('../modules/recordStatistics')
 
-/** @param {Interaction} interaction */
+/** @param {CommandInteraction} interaction */
 exports.execute = async interaction => {
   if (!interaction.isCommand()) return
   const { client } = interaction
