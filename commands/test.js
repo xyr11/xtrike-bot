@@ -40,13 +40,13 @@ exports.run = async (message, interaction, args) => {
   } else if (args[0] === 'debug') {
     // message/interaction object
     const { ...serialized } = thing
-    debugEmbed = { description: '```' + JSON.stringify(serialized, (key, val) => typeof val === 'bigint' ? val.toString() : val, 2) + '```' }
+    debugEmbed = { description: '```json\n' + JSON.stringify(serialized, (key, val) => typeof val === 'bigint' ? val.toString() : val, 2) + '```' }
   } else if (args[0] === 'author') {
     // author user
-    debugEmbed = { description: '```' + JSON.stringify(thing.author, undefined, 2) + '```' }
+    debugEmbed = { description: '```json\n' + JSON.stringify(thing.author, undefined, 2) + '\n```' }
   } else if (args[0] === 'bot') {
     // client bot user
-    debugEmbed = { description: '```' + JSON.stringify(client.user, undefined, 2) + '```' }
+    debugEmbed = { description: '```json\n' + JSON.stringify(client.user, undefined, 2) + '\n```' }
   } else if (args[0] === 'commands') {
     // output all commands
     console.log(client.commands)
@@ -57,7 +57,7 @@ exports.run = async (message, interaction, args) => {
     }
   } else if (args[0] === 'options') {
     // show interaction options
-    if (interaction) debugEmbed = { description: '```' + JSON.stringify(interaction.options.data, undefined, 2) + '```' }
+    if (interaction) debugEmbed = { description: '```json\n' + JSON.stringify(interaction.options.data, undefined, 2) + '\n```' }
   }
 
   // send debug messages
