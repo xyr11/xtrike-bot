@@ -1,6 +1,6 @@
 const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
 const Fuse = require('fuse.js')
-const { prefix, colors, hasPerms } = require('../modules/base')
+const { botName, prefix, colors, hasPerms } = require('../modules/base')
 
 exports.info = {
   name: 'help',
@@ -35,7 +35,7 @@ exports.run = async (message, interaction, args) => {
   const cmd = client.commands.get(args[0])
 
   // embed variable
-  const embed = new MessageEmbed().setFooter(`Xtrike Bot v${process.env.npm_package_version}`)
+  const embed = new MessageEmbed().setFooter(`${botName} v${process.env.npm_package_version}`)
 
   if (!cmd || !hasPerms(cmd, thing)) {
     // if that command doesn't exist or if they dont have proper permission levels

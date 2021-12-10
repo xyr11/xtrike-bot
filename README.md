@@ -335,14 +335,18 @@ You can customize the bot by replacing the default value of the optional variabl
 
 Variable | Default value | Description
 -- | -- | --
-`botPrefix` | "`;`" | Prefix of the bot. You can do more than 1 symbol here BUT not a whole word. This will have no effect if the user used slash commands (if slash commands are already deployed).
-`botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change
-`timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+`botPrefix` | "`;`" | You can use more than 1 character here and any character except a space. This will have no effect if user used slash commands (if slash commands are deployed).
+`botName` | "`Xtrike Bot`" | Name of the bot.
+`botDescription` | "`Xtrike Bot is a multi-purpose bot.`" | Description of the bot. It can have multiple lines and Discord embed formatting.
+`botColor` | "`#E3E5E8`" | Used for the color of embeds sent by the bot. Use a hex color value like "#RRGGBB".
+`infoFields` | Check file | Info fields. This is an array of fields that will be shown in the `;info` embed. Fields needs a `name` and `value` property, and they support Discord embed formatting too.
+`botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change.
+`timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
-`status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
-`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`
+`status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`.
+`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`.
 `actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
-`isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
+`isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`.
 
 </details>
 

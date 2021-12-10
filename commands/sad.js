@@ -1,10 +1,10 @@
 const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const { user } = require('../modules/base')
+const { botName, user } = require('../modules/base')
 
 exports.info = {
   name: 'sad',
   category: 'Miscellaneous',
-  description: "Let Xtrike Bot cheer you if you're sad!",
+  description: `Let ${botName} cheer you if you're sad!`,
   usage: 'sad',
   permLevel: 'User'
 }

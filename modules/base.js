@@ -1,6 +1,6 @@
 const { Intents, Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
-const { botPrefix, status, actType, actName, timezone } = require('../config')
+let { prefix, botName, botDescription, botColor, infoFields, status, actType, actName, timezone } = require('../config')
 
 /** Bot intents */
 const intents = [
@@ -11,8 +11,16 @@ const intents = [
 /** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
 const partials = ['MESSAGE', 'REACTION', 'USER']
 
-/** Prefix of the bot */
-const prefix = botPrefix || ';'
+// bot name
+botName = botName || 'Xtrike Bot'
+// bot description
+botDescription = botDescription || 'Xtrike Bot is a multi-purpose bot.'
+// info fields
+if (typeof infoFields !== 'object') infoFields = {}
+// bot color
+botColor = botColor || '#E3E5E8'
+// bot prefix
+prefix = prefix || ';'
 
 // User ids of various important people
 /** Bot developer user ids */
@@ -140,4 +148,4 @@ const hasPerms = (command, message) => {
 }
 
 // export the variables
-module.exports = { intents, partials, prefix, botSupport, devs, presence, colors, time, discordTime, user, PermLevels, userPerms, hasPerms }
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, time, discordTime, user, PermLevels, userPerms, hasPerms }
