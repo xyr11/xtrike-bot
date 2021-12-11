@@ -1,4 +1,4 @@
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
 const { PermLevels, colors } = require('../modules/base')
 const { getAll } = require('../modules/botInfo')
 
@@ -11,16 +11,11 @@ exports.info = {
   permLevel: 'User'
 }
 
-/**
- * @param {Message} message
- * @param {Interaction} interaction
- */
-exports.run = async (message, interaction) => {
-  const thing = message || interaction
-
+/** @param {import('../modules/sendMsg')} msg */
+exports.run = async msg => {
   // filter command names available to bot admins and below
   /** @type {Map} */
-  const cmdsMap = thing.client.commands.filter(a => PermLevels[a.info.permLevel].level < 4).keys()
+  const cmdsMap = msg.client.commands.filter(a => PermLevels[a.info.permLevel].level < 4).keys()
   const [...cmds] = cmdsMap // convert to array
 
   // get all data at once
@@ -31,7 +26,7 @@ exports.run = async (message, interaction) => {
     .filter(e => e) // filter empty strings
 
   // reply
-  await thing.reply({
+  await msg.reply({
     embeds: [new MessageEmbed()
       .setTitle('Xtrike Bot Command Statistics')
       .setDescription(cmdsStats.join('\n') || 'No available data yet')

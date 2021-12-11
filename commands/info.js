@@ -1,4 +1,4 @@
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
 const { botName, botDescription, botColor, infoFields } = require('../modules/base')
 
 exports.info = {
@@ -10,18 +10,13 @@ exports.info = {
   permLevel: 'User'
 }
 
-/**
- * @param {Message} message
- * @param {Interaction} interaction
- */
-exports.run = (message, interaction) => {
-  (message || interaction).reply({
-    embeds: [new MessageEmbed()
-      .setTitle(botName)
-      .setColor(botColor)
-      .setThumbnail((message || interaction).client.user.avatarURL())
-      .setDescription(botDescription)
-      .addFields(infoFields)
-    ]
-  })
-}
+/** @param {import('../modules/sendMsg')} msg */
+exports.run = msg => msg.send({
+  embeds: [new MessageEmbed()
+    .setTitle(botName)
+    .setColor(botColor)
+    .setThumbnail(msg.client.user.avatarURL())
+    .setDescription(botDescription)
+    .addFields(infoFields)
+  ]
+})

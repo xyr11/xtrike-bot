@@ -1,5 +1,3 @@
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-
 exports.info = {
   name: 'test',
   category: 'Developer',
@@ -20,48 +18,51 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-  const client = thing.client
+exports.run = async (msg, args) => {
+  const { client } = msg
 
   // reply
-  await thing.reply(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
+  await msg.reply(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
 
-  /** @type {MessageEmbed} */
+  /** @param {Object|Array} obj */
+  const json = obj => JSON.stringify(obj, (key, val) => typeof val === 'bigint' ? val.toString() : val, 2)
+
+  /** @type {import('discord.js').MessageEmbed} */
   let debugEmbed
-  // debug
+  // debug options
   if (args[0] === 'embed') {
     // should produce a ReferenceError error
-    thing.reply(testing_the_error_embed_dont_mind) // eslint-disable-line no-undef
+    msg.reply(testing_the_error_embed_dont_mind) // eslint-disable-line no-undef
   } else if (args[0] === 'debug') {
     // message/interaction object
-    const { ...serialized } = thing
-    debugEmbed = { description: '```json\n' + JSON.stringify(serialized, (key, val) => typeof val === 'bigint' ? val.toString() : val, 2) + '```' }
+    debugEmbed = { description: '```json\n' + json({ ...msg }) + '```' }
   } else if (args[0] === 'author') {
     // author user
-    debugEmbed = { description: '```json\n' + JSON.stringify(thing.author, undefined, 2) + '\n```' }
+    debugEmbed = { description: '```json\n' + json(msg.author) + '\n```' }
+  } else if (args[0] === 'member') {
+    // author user
+    debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id)) + '\n```' }
+  } else if (args[0] === 'perms') {
+    // author user
+    debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id).permissions.serialize()) + '\n```' }
   } else if (args[0] === 'bot') {
     // client bot user
-    debugEmbed = { description: '```json\n' + JSON.stringify(client.user, undefined, 2) + '\n```' }
+    debugEmbed = { description: '```json\n' + json(client.user) + '\n```' }
   } else if (args[0] === 'commands') {
     // output all commands
     console.log(client.commands)
   } else if (args[0] === 'help') {
     // return the help info of each command
-    if (message) {
-      for (const cmd of client.commands.map(a => a.info.name)) client.commands.get('help').run(message, null, [cmd])
-    }
+    if (msg.isMsg) for (const cmd of client.commands.map(a => a.info.name)) client.commands.get('help').run(msg, null, [cmd])
   } else if (args[0] === 'options') {
     // show interaction options
-    if (interaction) debugEmbed = { description: '```json\n' + JSON.stringify(interaction.options.data, undefined, 2) + '\n```' }
+    if (msg.isSlash) debugEmbed = { description: '```json\n' + json(msg.options.data) + '\n```' }
   }
 
   // send debug messages
   if (!debugEmbed) return
-  if (interaction) interaction.followUp({ embeds: [debugEmbed] })
-  else message.channel.send({ embeds: [debugEmbed] })
+  msg.send({ embeds: [debugEmbed] })
 }

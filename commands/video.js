@@ -1,4 +1,3 @@
-const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const ytdl = require('../modules/ytdl')
 
 exports.info = {
@@ -14,30 +13,26 @@ exports.info = {
   ]
 }
 
-/**
- * @param {Message} message
- * @param {Interaction} interaction
- */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-  const { client } = thing
+/** @param {import('../modules/sendMsg')} msg */
+exports.run = async (msg, args) => {
+  const { client } = msg
   const linkRegex = /https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g
 
   let links = []
   let matches
 
-  if (interaction) {
-    // defer reply
-    await interaction.deferReply({ ephemeral: true })
+  await msg.defer()
+
+  if (msg.isSlash) {
     // get links from interaction
-    matches = interaction.content.match(linkRegex)
+    matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   } else {
     // check if there is a reply
-    if (message.reference) {
+    if (msg.reference) {
       // get message that is replied to
-      let repliedTo = await message.channel.messages.fetch(message.reference.messageId)
-      if (!repliedTo) repliedTo = (await message.channel.messages.fetch({ limit: 100 })).get(message.reference.messageId)
+      let repliedTo = await msg.channel.messages.fetch(msg.reference.messageId)
+      if (!repliedTo) repliedTo = (await msg.channel.messages.fetch({ limit: 100 })).get(msg.reference.messageId)
       // message is fetched
       if (repliedTo) {
         // get links from message that is replied to
@@ -46,7 +41,7 @@ exports.run = async (message, interaction, args) => {
       }
     }
     // get links from message
-    matches = message.content.match(linkRegex)
+    matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   }
 
@@ -59,26 +54,20 @@ exports.run = async (message, interaction, args) => {
   if (!isNaN(lastArgs)) quality = +lastArgs
 
   // check if there are links
-  if (!links.length) {
-    if (message) return message.reply("There aren't any links in the message!")
-    return interaction.editReply("There aren't any links in the message!")
-  }
+  if (!links.length) return msg.reply("There aren't any links in the message!")
 
   // send the fetching links message
-  if (message) await message.reply('Fetching the links...')
-  else await interaction.editReply('Fetching the links...')
+  await msg.reply('Fetching the links...')
 
   // fetch each link
   links.forEach(link => {
     ytdl(link, client, quality).then(files => {
       if (!files.length) {
         // no video
-        if (message) message.reply("Seems like there's no video in", link)
-        else interaction.editReply({ content: "Seems like there's no video in " + link, ephemeral: true })
+        msg.reply({ content: "Seems like there's no video in " + link, ephemeral: true })
       } else {
         // send video
-        if (message) message.reply({ files, allowedMentions: { repliedUser: false } })
-        else interaction.followUp({ files, ephemeral: true })
+        msg.followUp({ files, ephemeral: true })
       }
     })
   })

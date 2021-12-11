@@ -1,16 +1,21 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
+const SendMsg = require('../modules/sendMsg')
 const { prefix, userPerms, hasPerms } = require('../modules/base')
+const errorCatch = require('../modules/errorCatch')
 const recordStats = require('../modules/recordStatistics')
 
-/** @param {Message} message */
+/** @param {import('discord.js').Message} message */
 exports.execute = async message => {
-  const { client, author, content } = message
-  if (author.id === client.user.id) return // never acknowledge your own message
+  // set to SendMsg class
+  const msg = new SendMsg(message)
+  const { client, author, content } = msg
 
-  // Trigger all autoresponses
+  // never acknowledge your own message
+  if (author.id === client.user.id) return
+
+  // trigger all autoresponses
   for (const runAutoresponse of client.autoresponses) runAutoresponse(message)
 
-  // Ignore bots and messages with no content
+  // ignore bots and messages with no content
   if (author.bot || !content) return
 
   // Check if message starts with 'pls'
@@ -23,6 +28,7 @@ exports.execute = async message => {
   const args = !dank
     ? content.slice(prefix.length).trim().split(/ +/g) // remove the prefix
     : content.split(/ +/g).slice(1) // remove the 'pls' word
+  if (!args.length) return
   const command = args.shift().toLowerCase()
 
   // Grab the command data
@@ -40,10 +46,10 @@ exports.execute = async message => {
   // Run the command
   try {
     message.channel.sendTyping()
-    if (cmd.info.requiredArgs && !args.length) await client.commands.get('help').run(message, null, [cmd.info.name]) // if the command requires arguments and there are no given arguments, return the help embed
-    else await cmd.run(message, null, args)
+    if (cmd.info.requiredArgs && !args.length) await client.commands.get('help').run(msg, [cmd.info.name]) // if the command requires arguments and there are no given arguments, return the help embed
+    else await cmd.run(msg, args)
     recordStats(cmd.info.name)
   } catch (error) {
-    require('../modules/errorCatch')(error, client, message)
+    errorCatch(error, client, msg)
   }
 }

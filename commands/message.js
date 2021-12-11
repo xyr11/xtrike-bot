@@ -1,4 +1,4 @@
-const { Message, MessageEmbed, MessagePayload } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
 
 exports.info = {
   name: 'message',
@@ -40,14 +40,15 @@ const date = input => {
 }
 
 /**
- * @param {Message} message
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
+exports.run = async (msg, args) => {
   // check if command is run via slash commands
-  if (interaction) return interaction.reply({ content: 'Please use `;message` instead because slash commands is not supported.', ephemeral: true })
+  msg.ephemeral()
+  if (msg.isSlash) return msg.reply('Please use `;message` instead because slash commands is not supported.')
 
-  const channel = message.channel // current channel
+  const { channel } = msg
 
   // text parser
   /** @type {String} */
@@ -131,13 +132,13 @@ exports.run = async (message, interaction, args) => {
     // if the message is not found or there are no given message id
     else await channel.send(finalMessage)
   } else {
-    message.author.send("There's no valid content or embed found in your message.")
+    msg.author.send("There's no valid content or embed found in your message.")
   }
 
   // delete user message
-  message.delete().catch(err => {
+  msg.message.delete().catch(err => {
     // if the bot doesn't have permissions then dm the user
-    if (err.message === 'Missing Permissions') return message.author.send(`I cannot delete your message because I have missing permissions in <#${channel.id}>`)
-    require('../modules/errorCatch')(err, message.client, message)
+    if (err.message === 'Missing Permissions') return msg.author.send(`I cannot delete your message because I have missing permissions in <#${channel.id}>`)
+    require('../modules/errorCatch')(err, msg.client, msg)
   })
 }

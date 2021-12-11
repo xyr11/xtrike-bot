@@ -26,21 +26,18 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-
+exports.run = async (msg, args) => {
   // if there is a specified channel then snipe from that channel, if
   // not then snipe from the current channel.
   // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
-  const channel = thing.guild.channels.cache.get(channelId)
+  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? msg.channelId
+  const channel = msg.guild.channels.cache.get(channelId)
 
   // check if the given channel is in the same guild
-  if (!channel) return thing.reply("There's nothing to snipe!")
+  if (!channel) return msg.reply("There's nothing to snipe!")
 
   // get reactionsnipe data
   /**
@@ -54,13 +51,7 @@ exports.run = async (message, interaction, args) => {
   const reacted = await sniper('c', channelId)
 
   // if there's no value
-  if (!reacted) return thing.reply("There's nothing to snipe!")
-
-  // message url
-  const messageUrl = `https://discord.com/channels/${thing.guildId}/${channelId}/${reacted.i}`
-
-  // get author
-  const author = await thing.client.users.cache.get(reacted.a)
+  if (!reacted) return msg.reply("There's nothing to snipe!")
 
   /**
    * @param {ReactionEmoji|GuildEmoji} emoji
@@ -71,11 +62,14 @@ exports.run = async (message, interaction, args) => {
     : `[:${emoji.name}:](${emoji.url})` // bot cannot use the emoji
 
   // create embed
-  const embed = new MessageEmbed()
-    .setAuthor(author.tag, author.avatarURL(), messageUrl)
-    .setColor(author.hexAccentColor)
-    .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${messageUrl})`)
-    .setFooter(`#${channel.name}`)
-    .setTimestamp(reacted.t)
-  await thing.reply({ embeds: [embed] })
+  const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${reacted.i}` // message url
+  const author = await msg.client.users.fetch(reacted.a) // get author
+  msg.reply({
+    embeds: [new MessageEmbed()
+      .setAuthor(author.tag, author.avatarURL(), msgUrl)
+      .setColor(author.hexAccentColor)
+      .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${msgUrl})`)
+      .setFooter(`#${channel.name}`)
+      .setTimestamp(reacted.t)]
+  })
 }

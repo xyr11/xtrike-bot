@@ -1,5 +1,3 @@
-const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-
 exports.info = {
   name: 'hmm',
   category: 'General',
@@ -17,16 +15,9 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
- * @param {Array} args
+ * @param {import('../modules/sendMsg')} msg
+ * @param {Array=} args
  */
-exports.run = async (message, interaction, args) => {
-  if (!args.length) {
-    if (message) message.channel.send(`${message.author} hmmmm... :thinking:`)
-    else interaction.reply(`${interaction.user} hmmmm... :thinking:`)
-  } else {
-    if (message) message.channel.send(`${message.author} ${args.join(' ')} hmmmm... :thinking:`)
-    else interaction.reply(`${interaction.user} ${args.join(' ')} hmmmm... :thinking:`)
-  }
-}
+exports.run = (msg, args) => args.length
+  ? msg.send(`${msg.author} ${args.join(' ')} hmmmm... :thinking:`)
+  : msg.send(`${msg.author} hmmmm... :thinking:`)

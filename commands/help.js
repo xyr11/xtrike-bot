@@ -1,6 +1,6 @@
-const { Message, Interaction, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
 const Fuse = require('fuse.js')
-const { botName, prefix, colors, hasPerms } = require('../modules/base')
+const { botName, prefix, botColor, hasPerms } = require('../modules/base')
 
 exports.info = {
   name: 'help',
@@ -20,40 +20,35 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-  const client = thing.client
+exports.run = async (msg, args) => {
+  const { client } = msg
 
-  // if there are no args, get the help command of the help command itself
-  if (args.length === 0) args[0] = 'help'
-
-  // if there are args, get the first argument and search it up in commands list
+  // if there are no args, get the help info of the help command itself
+  if (!args.length) args[0] = 'help'
+  // get the first argument and search it up in the commands list
   const cmd = client.commands.get(args[0])
 
   // embed variable
   const embed = new MessageEmbed().setFooter(`${botName} v${process.env.npm_package_version}`)
 
-  if (!cmd || !hasPerms(cmd, thing)) {
-    // if that command doesn't exist or if they dont have proper permission levels
+  // check if that command doesn't exist or if they dont have proper permission levels
+  if (!cmd || !hasPerms(cmd, msg)) {
+    // fuzzy search for the given arguments
     const fuse = new Fuse(client.commands.map(a => a.info), { keys: ['name'] }) // search options
     const results = fuse.search(args[0]) // search
       .map(a => a.item.name) // get the command name only
-      .filter(a => hasPerms(client.commands.get(a), thing)) // check if user has perms to view that command
-    // set the embed
-    embed.setColor(colors.main)
-      .setDescription('Sorry, we didn\'t find any commands with\n' +
-        `the name \`${args[0]}\`. ` + (
-        results.length
-          ? 'Did you mean:\n\n' + results.join('\n')
-          : 'Please try again.'))
+      .filter(a => hasPerms(client.commands.get(a), msg)) // check if user has perms to view that command
+    // create the embed
+    embed.setColor(botColor).setDescription(`Sorry, we didn't find any commands with the name \`${args[0]}\`. `)
+    if (results.length) embed.addField('Did you mean:', results.join('\n'))
+    else embed.addField('Please try again', 'Make sure to check the spelling of the command.')
   } else {
+    // create the embed
     const { name, description, usage, thumbnail, option, similar } = cmd.info
-    // set the embed
-    embed.setColor(colors.main)
+    embed.setColor(botColor)
       .setTitle(`${prefix}${name} command`)
       .setThumbnail(thumbnail ?? '')
       .setDescription(description.replace(/{{|}}/g, '')) // remove `{{` and `}}`
@@ -61,5 +56,5 @@ exports.run = async (message, interaction, args) => {
     if (option) embed.addFields({ name: 'Options', value: option })
     if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })
   }
-  thing.reply({ embeds: [embed] })
+  msg.reply({ embeds: [embed] })
 }

@@ -3,7 +3,7 @@
  * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
  */
 
-const { Message, Interaction, MessageEmbed, MessageAttachment, GuildChannel } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed, MessageAttachment } = require('discord.js')
 const { sniper } = require('../modules/sniper')
 
 exports.info = {
@@ -26,21 +26,18 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-
+exports.run = async (msg, args) => {
   // if there is a specified channel then snipe from that channel, if
   // not then snipe from the current channel.
   // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
-  const channel = thing.guild.channels.cache.get(channelId)
+  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? msg.channelId
+  const channel = msg.guild.channels.cache.get(channelId)
 
   // check if the given channel is in the same guild
-  if (!channel) return thing.reply("There's nothing to snipe!")
+  if (!channel) return msg.reply("There's nothing to snipe!")
 
   // get snipe data
   /**
@@ -55,12 +52,10 @@ exports.run = async (message, interaction, args) => {
   const deleted = await sniper('a', channelId)
 
   // if there's no value
-  if (!deleted) return thing.reply("There's nothing to snipe!")
-
-  // get author
-  const author = await thing.client.users.cache.get(deleted.a)
+  if (!deleted) return msg.reply("There's nothing to snipe!")
 
   // create message
+  const author = await msg.client.users.fetch(deleted.a) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
@@ -76,5 +71,5 @@ exports.run = async (message, interaction, args) => {
   // check if there are any deleted files
   if (deleted.f.length === 1) embeds[0].setImage(deleted.f[0])
   else if (deleted.f.length > 1) deleted.f.forEach(url => files.push(new MessageAttachment(url)))
-  await thing.reply({ embeds, files })
+  await msg.reply({ embeds, files })
 }

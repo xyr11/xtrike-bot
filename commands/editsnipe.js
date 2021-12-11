@@ -3,7 +3,7 @@
  * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
  */
 
-const { Message, Interaction, MessageEmbed, MessageAttachment } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed, MessageAttachment } = require('discord.js')
 const { sniper } = require('../modules/sniper')
 
 exports.info = {
@@ -26,21 +26,18 @@ exports.info = {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-
+exports.run = async (msg, args) => {
   // if there is a specified channel then snipe from that channel, if
   // not then snipe from the current channel.
   // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
-  const channel = thing.guild.channels.cache.get(channelId)
+  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? msg.channelId
+  const channel = msg.guild.channels.cache.get(channelId)
 
   // check if the given channel is in the same guild
-  if (!channel) return thing.reply("There's nothing to snipe!")
+  if (!channel) return msg.reply("There's nothing to snipe!")
 
   // get editSnipe data
   /**
@@ -56,24 +53,20 @@ exports.run = async (message, interaction, args) => {
   const edited = await sniper('b', channelId)
 
   // if there's no value
-  if (!edited) return thing.reply("There's nothing to snipe!")
-
-  // message url
-  const editedUrl = `https://discord.com/channels/${thing.guildId}/${channelId}/${edited.i}`
-
-  // get author
-  const author = await thing.client.users.cache.get(edited.a)
+  if (!edited) return msg.reply("There's nothing to snipe!")
 
   // create embed
+  const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edited.i}` // message url
+  const author = await msg.client.users.fetch(edited.a) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
-    .setAuthor(author.tag, author.avatarURL(), editedUrl)
+    .setAuthor(author.tag, author.avatarURL(), msgUrl)
     .setColor(author.hexAccentColor)
     .setDescription(edited.c +
       (edited.f.length ? ' [Message has attachments]' : '') + // if there are attachments
       (edited.e.length ? ' [Message has embeds, see below]' : '') + // if there are embeds
-      ` [(go to original message)](${editedUrl})`)
+      ` [(go to original message)](${msgUrl})`)
     .setFooter(`#${channel.name}`)
     .setTimestamp(edited.t))
   // check if there are any removed embeds and include them
@@ -81,5 +74,5 @@ exports.run = async (message, interaction, args) => {
   // check if there are any deleted files
   if (edited.f.length === 1) embeds[0].setImage(edited.f[0])
   else if (edited.f.length > 1) edited.f.forEach(url => files.push(new MessageAttachment(url)))
-  await thing.reply({ embeds, files })
+  await msg.reply({ embeds, files })
 }

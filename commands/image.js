@@ -1,8 +1,8 @@
-const { Message, CommandInteraction, MessageEmbed, Client, MessagePayload, InteractionReplyOptions } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
+const Fuse = require('fuse.js')
 const getPixels = require('get-pixels')
 const { prefix, colors, userPerms } = require('../modules/base')
 const { config: imgConfig, imgEntry, fetchImageUrl, updatePreV020, guildIdentifiers, awaitImgHash } = require('../modules/getImage')
-const Fuse = require('fuse.js')
 
 exports.info = {
   name: 'image',
@@ -178,7 +178,7 @@ const popularColor = async (buffer, type) => {
  * basically what this does is it checks if the image has been deleted, gets the dominant color for the embed, and also fetches the user that sent it. it then places it on the given map
  * @param {Object} data Data from database
  * @param {String} index index of data for ranking
- * @param {Client} client for error logging
+ * @param {import('discord.js').Client} client for error logging
  * @param {Map} map the map to place data in
  */
 const fetchEach = async (data, index, client, map) => {
@@ -209,22 +209,13 @@ const msgNotEnabled = `A moderator or admin hasn't enabled this command yet. \nT
 const msgDisableWarning = "When you disable the image command, you won't be able to use it until a moderator enables it back again. It will also remove ALL data regarding images sent so you wouldn't be able to search for them again. \nAre you really sure about this? Enter `" + prefix + 'image --disable server YES` to go ahead.'
 
 /**
- * @param {Message} message
- * @param {CommandInteraction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
-  const { id, channelId, guildId } = thing
-
-  /** @param {String|MessagePayload|InteractionReplyOptions} messagePayload */
-  const send = messagePayload => {
-    if (message) return message.reply(messagePayload)
-    else return interaction.editReply(messagePayload)
-  }
-
-  // defer reply
-  if (interaction) await interaction.deferReply({ ephemeral: true })
+exports.run = async (msg, args) => {
+  const { id, channelId, guildId } = msg
+  msg.ephemeral()
+  await msg.defer() // defer reply
 
   // set the instance of the map
   maps[id] = new Map()
@@ -238,46 +229,46 @@ exports.run = async (message, interaction, args) => {
   const isExcluded = configEntry.d.e.indexOf(channelId) > -1
 
   // activate/deactivate command
-  if (userPerms(thing) < 2) { // check user permission level
-    send('You need to be at least a moderator to be able to do this.')
+  if (userPerms(msg) < 2) { // check user permission level
+    msg.reply('You need to be at least a moderator to be able to do this.')
   } else {
     if (args[0] === '--activate' || args[0] === '--enable') {
       if (args[1] === 'channel') {
         // activate channel
         // check if command is not activated in server
-        if (!configEntry) return send(msgNotEnabled)
+        if (!configEntry) return msg.reply(msgNotEnabled)
         // check if channel is not excluded
-        if (!isExcluded) return send(`This channel is already enabled. By default, all channels are enabled. \nTo disable a channel, try \`${prefix}image --disable channel\`.`)
+        if (!isExcluded) return msg.reply(`This channel is already enabled. By default, all channels are enabled. \nTo disable a channel, try \`${prefix}image --disable channel\`.`)
         await imgConfig.activate.channel(configEntry, channelId)
-        return send('Successfully included this channel for image monitoring.')
+        return msg.reply('Successfully included this channel for image monitoring.')
       } else if (!args[1] || (args[1] && args[1] === 'server')) {
         // activate server
         // check if command is already activated
-        if (configEntry) return send('You have enabled this server already!')
-        await imgConfig.activate.server(thing)
-        return send({
+        if (configEntry) return msg.reply('You have enabled this server already!')
+        await imgConfig.activate.server(msg.message)
+        return msg.reply({
           content: 'Success!',
           embeds: [{ description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
         })
       }
     } else if (args[0] === '--deactivate' || args[0] === '--disable') {
       // check if command is not activated in server
-      if (!configEntry) return send(msgNotEnabled)
+      if (!configEntry) return msg.reply(msgNotEnabled)
       if (!args[1]) {
         // deactivate server warning
-        send(msgDisableWarning)
+        msg.reply(msgDisableWarning)
       } else if (args[1] === 'channel') {
         // deactivate channel
         if (isExcluded) {
-          return send('This channel is already excluded!')
+          return msg.reply('This channel is already excluded!')
         }
         await imgConfig.deactivate.channel(configEntry, channelId)
-        return send('Successfully excluded this channel for image monitoring.')
+        return msg.reply('Successfully excluded this channel for image monitoring.')
       } else if (args[1] === 'server') {
         // show deactivate server warning
-        if (args[2].toLowerCase() !== 'yes') return thing.reply(msgDisableWarning)
+        if (args[2].toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
         await imgConfig.deactivate.server(guildId)
-        return send('Successfully disabled this command!')
+        return msg.reply('Successfully disabled this command!')
       }
     }
   }
@@ -342,7 +333,7 @@ exports.run = async (message, interaction, args) => {
   /** @type {Object[]} */
   let results = fuse.search(args.join(' '))
   // check if there are any results
-  if (!results.length) return send({ content: 'Sorry, I wasn\'t able to find images that contain that text.' })
+  if (!results.length) return msg.reply({ content: 'Sorry, I wasn\'t able to find images that contain that text.' })
   // process each result
   for (const r in results) {
     // check whether all results have been processed (including `undefined` values)
@@ -350,7 +341,7 @@ exports.run = async (message, interaction, args) => {
     if (valuesCount(id) >= results.length || filteredValCount(id) >= 10) continue // if true, stop the loop
     // if not then keep processing the images
     await new Promise((resolve, reject) => setTimeout(resolve, 50)) // add 50ms delay for each loop
-    fetchEach(results[r], r, thing.client, maps[id])
+    fetchEach(results[r], r, msg.client, maps[id])
   }
 
   // when the all results have been fetched, get the array
@@ -369,7 +360,7 @@ exports.run = async (message, interaction, args) => {
       // make an embed
       const { channel, msgId, user, avatar, color, image, timestamp } = result
       embeds.push(new MessageEmbed()
-        .setAuthor(`#${+p + 1} by ${user} (Link)`, avatar, `https://discord.com/channels/${thing.guildId}/${channel}/${msgId}`)
+        .setAuthor(`#${+p + 1} by ${user} (Link)`, avatar, `https://discord.com/channels/${msg.guildId}/${channel}/${msgId}`)
         .setColor(color)
         .setImage(image)
         .setTimestamp(timestamp)
@@ -381,7 +372,7 @@ exports.run = async (message, interaction, args) => {
   }
 
   // send embeds
-  send({ content: `I was able to find ${valuesCount(id)} images:`, embeds })
+  msg.reply({ content: `I was able to find ${valuesCount(id)} images:`, embeds })
   // delete instance data
   return delete maps[id]
 }

@@ -1,4 +1,3 @@
-const { Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const fs = require('fs')
 const { prefix, time, presence } = require('../modules/base')
@@ -26,12 +25,11 @@ const doesExist = async filePath => {
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {String[]} args
  */
-exports.run = async (message, interaction, args) => {
-  const client = message.client
+exports.run = async (msg, args) => {
+  const { client } = msg
   const commandName = args[0]
 
   try {
@@ -75,7 +73,7 @@ exports.run = async (message, interaction, args) => {
       // Check if the command can be found in client.commands
       if (!client.commands.has(commandName)) {
         // check if file of the command exists
-        if (!fileExists) return message.reply('That command does not exist')
+        if (!fileExists) return msg.reply('That command does not exist')
         // add the module
         const props = require(`./${commandName}.js`)
         client.commands.set(commandName, props)
@@ -84,7 +82,7 @@ exports.run = async (message, interaction, args) => {
         // delete the command on client.commands
         client.commands.delete(commandName)
         // check if file of the command is deleted
-        if (!fileExists) return message.reply('Command has been deleted')
+        if (!fileExists) return msg.reply('Command has been deleted')
         // delete cache
         delete require.cache[require.resolve(`./${commandName}.js`)]
         // re-add the module
@@ -93,11 +91,11 @@ exports.run = async (message, interaction, args) => {
         reloadedName = `The command \`${prefix}${commandName}\` has been reloaded`
       }
     }
-    message.reply(reloadedName)
+    msg.reply(reloadedName)
     console.log(chalk.green(reloadedName), chalk.bgGreenBright.black(time()))
   } catch (error) {
-    await require('../modules/errorCatch')(error, message.client, message)
-    await message.reply('I have encountered an error while trying to reload. \n⚠️ Because the reload command is very powerful, this error can cause massive disruption. Therefore, the bot will REBOOT shortly. ⚠️')
+    await require('../modules/errorCatch')(error, client, msg)
+    await msg.reply('I have encountered an error while trying to reload. \n⚠️ Because the reload command is very powerful, this error can cause massive disruption. Therefore, the bot will REBOOT shortly. ⚠️')
     process.exit(0)
   }
 }
