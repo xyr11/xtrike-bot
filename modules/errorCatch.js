@@ -16,7 +16,8 @@ const randNo = max => Math.floor(Math.random() * max)
 const ignoreErr = err =>
   err.stderr?.search("ERROR: There's no video") === 0 || // youtube-dl no video error
   err.stderr?.search('ERROR: Unsupported URL') === 0 || // youtube-dl unsupported url error
-  err.stderr?.search('ERROR: Sorry, you are not authorized to see this status') === 0 // youtube-dl private twitter account
+  err.stderr?.search('ERROR: Sorry, you are not authorized to see this status') === 0 || // youtube-dl private twitter account
+  err.stderr?.search('ERROR: This video is only available for registered users' === 0) // youtube-dl registered user error
 
 const dontSend = err =>
   (err.code >= 500 && err.code < 600) || // 500 error codes
