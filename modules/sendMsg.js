@@ -1,9 +1,6 @@
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const { time } = require('./base')
-const { serializeError } = require('serialize-error')
-
-// const run = func => func().then(() => this.logText && this.logger(this.logText)).catch(this.err)
 
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */
@@ -36,52 +33,31 @@ class SendMsg {
     this.author = message.author ?? message.user
     /** @type {String} */
     this.content = message.content
-    /** @type {Message} */
+    /** @type {Discord.Message} */
     this.sent = undefined
   }
 
-  /**
-   * Log text to console for .then
-   * @param {*[]} text
-   */
-  logger (...text) {
-    if (!text.length) return
-    // convert to string
-    text = text.map(a => {
-      if (typeof a === 'object') a = JSON.stringify(a)
-      if (typeof a === 'number') a += ''
+  /** Console logger. Use `.log()` instead please */
+  logger () {
+    if (!this.logText.length) return
+    const text = this.logText.map(a => {
+      if (typeof a === 'object') a = JSON.stringify(a) // convert to string
       return a
     })
-    if (this.log === 'info') console.log(chalk.blue(text))
+    if (!this.log) console.log(time(), text)
+    if (this.log === 'info') console.log(chalk.blue(time(), text))
     if (this.log === 'warn') console.log(chalk.yellow(time()), text)
     if (this.log === 'err') console.log(chalk.red(time()), text)
     if (this.log === 'good') console.log(chalk.green(time(), text))
   }
 
   /**
-   * Console error logger for .catch
-   * @param {Error} err
-   */
-  err (err) {
-    this.log = 'err'
-    this.logger(err, serializeError(err))
-  }
-
-  /**
-   * Automatic logger and catcher, as long as you give the function
-   * @param {Function} func
-   */
-  run (func) {
-    func().then(() => this.logText && this.logger(this.logText)).catch(this.err)
-  }
-
-  /**
    * Log text after sending a message
-   * @param {String} text
-   * @param {undefined|'info'|'warn'|'err'|'good'} type
+   * @param {'none'|'info'|'warn'|'err'|'good'} type
+   * @param {Any[]} text
    */
-  log (text, type) {
-    if (!text) return
+  log (type, ...text) {
+    if (!text.length) return
     this.logText = text
     this.log = type
   }
@@ -98,65 +74,90 @@ class SendMsg {
    * @param {Discord.InteractionReplyOptions} interactionOptions
    */
   async defer (interactionOptions) {
-    if (this.isSlash) await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false }).then(() => { this.deferred = true }).catch(this.err)
+    if (!this.isSlash) return
+    await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
+    this.deferred = true
   }
 
   /**
    * Send a message
-   * @param {String|MessagePayload|InteractionReplyOptions} payload
+   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
    */
   async send (payload) {
+    let e
     // send as Message
-    if (this.isMsg) return await this.channel.send(payload).then(sent => (this.sent = sent && sent))
-    // send as Interaction
-    if (this.deferred) return await this.message.editReply(payload) // if the application command is deferred, just edit the reply
-    // follow up if there is already an earlier sent message
-    if (this.sent) return await this.message.followUp(payload).then(sent => (this.sent = sent && sent))
-    // if not, just reply to the application command
-    return await this.message.reply(payload).then(sent => (this.sent = sent && sent))
+    if (this.isMsg) e = await this.channel.send(payload)
+    else {
+      // send as Interaction
+      // if the application command is deferred, just edit the reply
+      if (this.deferred) e = await this.message.editReply(payload)
+      else {
+        // follow up if there is already an earlier sent message
+        if (this.sent) e = await this.message.followUp(payload)
+        // if not, just reply to the application command
+        else e = await this.message.reply(payload)
+      }
+    }
+    // after the async stuff finishes:
+    this.sent = e
+    this.logger()
+    return e
   }
 
   /**
    * Reply to the message
-   * @param {String|MessagePayload|InteractionReplyOptions} payload
+   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
    * @param {Boolean=} pingUser whether to ping the user or not
    */
   async reply (payload, pingUser = true) {
-    // send as Message
+    let e
     if (this.isMsg) {
-      // convert the payload into an object and add the repliedUser attribute
+      // send as Message
+      // if payload is a string then convert the payload into an object and add the repliedUser attribute
       if (typeof payload === 'string') payload = { content: payload, allowedMentions: { repliedUser: pingUser } }
+      // if not then add the allowedMentions property to the given object
       else payload = { ...payload, allowedMentions: { repliedUser: pingUser } }
-      return await this.message.reply(payload).then(sent => (this.sent = sent && sent)) // send as Message
+      e = await this.message.reply(payload)
+    } else {
+      // send as Interaction
+      // if the application command is deferred, just edit the reply
+      if (this.deferred) e = await this.message.editReply(payload)
+      else {
+        // follow up if there is already an earlier sent message
+        if (this.sent) e = await this.message.followUp(payload)
+        // if not, just reply to the application command
+        else e = await this.message.reply(payload)
+      }
     }
-    // send as Interaction
-    // if the application command is deferred, just edit the reply
-    if (this.deferred) return await this.message.editReply(payload).then(sent => (this.sent = sent && sent))
-    // follow up if there is already an earlier sent message
-    if (this.sent) return await this.message.followUp(payload).then(sent => (this.sent = sent && sent))
-    // if not, just reply to the application command
-    return await this.message.reply(payload).then(sent => (this.sent = sent && sent))
+    // after the async stuff finishes:
+    this.sent = e
+    this.logger()
+    return e
   }
 
   /**
    * Reply to an earlier message you sent
-   * @param {String|MessagePayload|InteractionReplyOptions} payload
+   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
    */
   async followUp (payload) {
-    return await this.isMsg
-      ? this.message.reply(payload).then(sent => (this.sent = sent && sent)) // send as Message
-      : this.message.followUp(payload).then(sent => (this.sent = sent && sent)) // send as Interaction
+    const e = this.isMsg ? await this.message.reply(payload) : await this.message.followUp(payload)
+    // after the async stuff finishes:
+    this.sent = e
+    this.logger()
+    return e
   }
 
   /**
    * Edit a sent message
-   * @param {String|MessagePayload|InteractionReplyOptions} payload
+   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
    */
   async edit (payload) {
     if (!this.sent) throw new Error('No message to edit!')
-    return await this.isMsg
-      ? this.sent.edit(payload).then(sent => (this.sent = sent && sent)) // send as Message
-      : this.message.editReply(payload).then(sent => sent) // send as Interaction
+    const e = this.isMsg ? await this.sent.edit(payload) : await this.message.editReply(payload)
+    // after the async stuff finishes:
+    this.sent = e
+    this.logger()
+    return e
   }
 }
 
