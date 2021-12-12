@@ -63,7 +63,7 @@ exports.run = async (msg, args) => {
 
   // create embed
   const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${reacted.i}` // message url
-  const author = await msg.client.users.fetch(reacted.a) // get author
+  const author = await msg.client.users.fetch(reacted.a, { force: true }) // get author
   msg.reply({
     embeds: [new MessageEmbed()
       .setAuthor(author.tag, author.avatarURL(), msgUrl)

@@ -55,7 +55,7 @@ exports.run = async (msg, args) => {
   if (!deleted) return msg.reply("There's nothing to snipe!")
 
   // create message
-  const author = await msg.client.users.fetch(deleted.a) // get author
+  const author = await msg.client.users.fetch(deleted.a, { force: true }) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()

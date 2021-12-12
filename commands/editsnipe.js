@@ -57,7 +57,7 @@ exports.run = async (msg, args) => {
 
   // create embed
   const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edited.i}` // message url
-  const author = await msg.client.users.fetch(edited.a) // get author
+  const author = await msg.client.users.fetch(edited.a, { force: true }) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
