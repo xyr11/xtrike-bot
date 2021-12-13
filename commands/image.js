@@ -214,8 +214,8 @@ const msgDisableWarning = "When you disable the image command, you won't be able
  */
 exports.run = async (msg, args) => {
   const { id, channelId, guildId } = msg
-  msg.ephemeral()
-  await msg.defer() // defer reply
+  msg.setEphemeral()
+  await msg.setDefer() // defer reply
 
   // set the instance of the map
   maps[id] = new Map()

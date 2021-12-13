@@ -45,7 +45,7 @@ const date = input => {
  */
 exports.run = async (msg, args) => {
   // check if command is run via slash commands
-  msg.ephemeral()
+  msg.setEphemeral()
   if (msg.isSlash) return msg.reply('Please use `;message` instead because slash commands is not supported.')
 
   const { channel } = msg

@@ -28,6 +28,7 @@ exports.run = async (msg, args) => {
   const logs = []
 
   // send initial message
+  await msg.setDefer()
   await msg.reply({ embeds: [{ description: ':person_running: Pinging...' }] })
 
   // number of loops

@@ -21,7 +21,7 @@ exports.run = async (msg, args) => {
   let links = []
   let matches
 
-  await msg.defer()
+  await msg.setDefer()
 
   if (msg.isSlash) {
     // get links from interaction

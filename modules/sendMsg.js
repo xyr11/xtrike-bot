@@ -39,7 +39,7 @@ class SendMsg {
 
   /** Console logger. Use `.log()` instead please */
   logger () {
-    if (!this.logText.length) return
+    if (!this.logText || !this.logText.length) return
     const text = this.logText.map(a => {
       if (typeof a === 'object') a = JSON.stringify(a) // convert to string
       return a
@@ -64,16 +64,15 @@ class SendMsg {
 
   /**
    * set if the application command is ephemeral (visible only to user) or not
+   * @param {Boolean=} value
    */
-  ephemeral () {
-    if (this.isSlash) this.ephemeral = true
-  }
+  setEphemeral (value = true) { if (this.isSlash) this.ephemeral = value }
 
   /**
    * If you want to defer the reply for an application command
    * @param {Discord.InteractionReplyOptions} interactionOptions
    */
-  async defer (interactionOptions) {
+  async setDefer (interactionOptions) {
     if (!this.isSlash) return
     await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
     this.deferred = true
