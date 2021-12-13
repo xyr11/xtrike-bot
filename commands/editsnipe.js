@@ -4,24 +4,23 @@
  */
 
 const { MessageEmbed, MessageAttachment } = require('discord.js')
+const { isChannel } = require('../modules/base')
 const { sniper } = require('../modules/sniper')
 
 exports.info = {
   name: 'editsnipe',
   category: 'General',
   thumbnail: 'https://imgur.com/dRSYp1f.png',
-  description: 'Give the original message of the most recently edited one in the current or given channel.\n\n' +
+  description: 'Get the original message of the most recently edited messages.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
-  usage: '`$$editsnipe [channel]`',
+  usage: '`$$editsnipe [number] [channel]`',
+  option: '`[number]`: Get the *nth* edited message, default is `1` (most recent) and max is `10` \n `[channel]`: the channel to get deleted messages.',
   similar: '`$$snipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true,
   options: [
-    {
-      type: 7, // text channel
-      name: 'channel',
-      description: 'The channel to snipe'
-    }
+    { type: 4, name: 'number', description: 'Get the nth edited message' },
+    { type: 7, name: 'channel', description: 'The channel to snipe' }
   ]
 }
 
@@ -30,16 +29,28 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
-  // if there is a specified channel then snipe from that channel, if
-  // not then snipe from the current channel.
-  // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? msg.channelId
-  const channel = msg.guild.channels.cache.get(channelId)
+  // get the nth deleted message
+  let index = !isNaN(args[0]) ? +Math.floor(args[0]) : undefined
+  // if given index is less than 1
+  if (index && index < 1) index = 1
 
+  // if there is a specified channel then snipe from that channel, if not then snipe from the current channel
+  let channelId = msg.channelId
+  // channel is in the 2nd arg
+  if (index && args[1]) channelId = isChannel(args[1]) ?? channelId
+  // there's no `number` value, so channel is in the 1st arg
+  if (!index && args[0]) channelId = isChannel(args[0]) ?? channelId
+
+  // find the channel in the guild
+  const channel = msg.guild.channels.cache.get(channelId)
   // check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
-  // get editSnipe data
+  // get editsnipe data
+  const edits = await sniper('b', channelId)
+  // if there's no value
+  if (!edits && !edits.length) return msg.reply("There's nothing to snipe!")
+
   /**
    * @typedef {Object} Edited
    * @property {String} a Author id
@@ -50,10 +61,13 @@ exports.run = async (msg, args) => {
    * @property {String} t Edited timestamp
    */
   /** @type {Edited} */
-  const edited = await sniper('b', channelId)
+  // get the edited entry
+  let edited = edits
+  // if editsnipe data is an array, get the index instead
+  if (Array.isArray(edits)) edited = edits[index - 1] || edits[0]
 
-  // if there's no value
-  if (!edited) return msg.reply("There's nothing to snipe!")
+  // remove non-rich embeds
+  edited.e = edited.e.filter(e => e.type === 'rich')
 
   // create embed
   const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edited.i}` // message url

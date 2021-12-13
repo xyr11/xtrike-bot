@@ -1,1 +1,1 @@
-exports.execute = (...args) => require('../modules/sniper').e('b', ...args)
+exports.execute = require('../modules/sniper').edit

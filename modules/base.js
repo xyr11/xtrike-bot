@@ -67,6 +67,14 @@ const time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us',
  */
 const discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
 
+/**
+ * Check if string is a Discord channel.
+ * @param {String} text Channel in "`<#11111111111111111>`" format
+ * @returns {String} Channel id
+ */
+// valid snowflakes have 17-20 numbers (see /guides/snowflakes.md)
+const isChannel = text => text && text.match(/(?<=<#)[0-9]{17,20}(?=>)/) && text.match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]
+
 /** The different permission levels and their checks */
 const PermLevels = {
   lmao: {
@@ -134,4 +142,4 @@ const hasPerms = (command, msg) => {
 }
 
 // export the variables
-module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, time, discordTime, PermLevels, userPerms, hasPerms }
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, time, discordTime, isChannel, PermLevels, userPerms, hasPerms }
