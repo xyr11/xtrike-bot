@@ -29,7 +29,7 @@ exports.run = async (msg, args) => {
 
   // send initial message
   await msg.setDefer()
-  await msg.reply({ embeds: [{ description: ':person_running: Pinging...' }] })
+  await msg.reply({ embeds: [{ description: 'Loading...' }] })
 
   // number of loops
   const loops = (Number(args[0]) && args[0] > 0 && args[0] < 31) ? args[0] : 3
