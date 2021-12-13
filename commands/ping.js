@@ -36,7 +36,7 @@ exports.run = async (msg, args) => {
   // loop
   for (let i = loops; i--;) {
     // edit the message
-    await msg.edit({ content: '​'.repeat(i + 1) }).then(async editedMsg => {
+    await msg.edit({ embeds: [{ description: '🏃‍♂️ Pinging..... ' + '/-\\|'.split('')[i % 4] }] }).then(async editedMsg => {
       // get the time difference between the message edits
       botPing.push(Math.floor((editedMsg.editedTimestamp - (referenceTime || editedMsg.createdTimestamp)) / 10) * 10)
       clientPing.push(Math.round(client.ws.ping))
