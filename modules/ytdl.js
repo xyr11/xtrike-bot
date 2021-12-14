@@ -92,7 +92,7 @@ module.exports = async (link, client, quality = 0) => {
     // return if encountered an error while downloading the video
     if (!buffer) return
 
-    return new MessageAttachment(Readable.from(buffer), new URL(link).pathname.replace(/\W+/g, '-').slice(1) + '.mp4')
+    return new MessageAttachment(Readable.from(buffer), link.replace(new URL(link).origin, '').slice(1).replace(/\W+/g, '-') + '.mp4')
   }
 
   // store message attachments
