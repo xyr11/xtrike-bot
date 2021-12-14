@@ -3,7 +3,7 @@ exports.info = {
   category: 'General',
   description: 'Reply with "hmm..."',
   usage: '`$$hmm [extra text]`',
-  aliases: ['hmmm', 'hmmmm', 'hmmmmm', 'hmmmmmm'],
+  aliases: ['hmmm', 'hmmmm', 'hmmmmm'],
   permLevel: 'User',
   options: [
     {

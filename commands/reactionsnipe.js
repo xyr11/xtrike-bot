@@ -15,6 +15,7 @@ exports.info = {
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$reactionsnipe [number] [channel]`',
   option: '`[number]`: Get the *nth* removed reaction, default is `1` (most recent) and max is `10` \n `[channel]`: the channel to get deleted messages (optional)',
+  aliases: ['reactsnipe'],
   similar: '`$$snipe` `$$editsnipe`',
   permLevel: 'User',
   dank: true,

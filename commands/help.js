@@ -25,22 +25,31 @@ exports.info = {
  */
 exports.run = async (msg, args) => {
   const { client } = msg
+  /** @type {import('discord.js').Collection<String, {info: Object, run: Function}>} */
+  const commands = client.commands
+
+  // get command from command name or command alias
+  const getCmd = name => commands.get(name) || commands.get([...commands.keys()].filter(i => commands.get(i).info.aliases && commands.get(i).info.aliases.indexOf(name) > -1)[0])
 
   // if there are no args, get the help info of the help command itself
   if (!args.length) args[0] = 'help'
   // get the first argument and search it up in the commands list
-  const cmd = client.commands.get(args[0])
+  const cmd = getCmd(args[0])
 
   // embed variable
   const embed = new MessageEmbed().setFooter(`${botName} v${process.env.npm_package_version}`)
 
   // check if that command doesn't exist or if they dont have proper permission levels
   if (!cmd || !hasPerms(cmd, msg)) {
-    // fuzzy search for the given arguments
-    const fuse = new Fuse(client.commands.map(a => a.info), { keys: ['name'] }) // search options
-    const results = fuse.search(args[0]) // search
-      .map(a => a.item.name) // get the command name only
-      .filter(a => hasPerms(client.commands.get(a), msg)) // check if user has perms to view that command
+    const commandNames = commands.map(a => a.info.name) // get command names
+    commands.forEach(a => a.info.aliases && commandNames.push(...a.info.aliases)) // get command aliases
+
+    // fuzzy search
+    const results = new Fuse(commandNames).search(args[0])
+      .map(a => a.item) // get the command name only
+      .filter(a => getCmd(a) && hasPerms(getCmd(a), msg)) // check if user has perms to view that command
+      .slice(0, 6) // get the first 6 entries
+
     // create the embed
     embed.setColor(botColor).setDescription(`Sorry, we didn't find any commands with the name \`${args[0]}\`. `)
     if (results.length) embed.addField('Did you mean:', results.join('\n'))

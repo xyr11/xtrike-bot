@@ -7,7 +7,6 @@ exports.info = {
   category: 'Developer',
   description: 'Reboot',
   usage: '`$$reboot`',
-  aliases: [],
   permLevel: 'lmao'
 }
 
