@@ -62,12 +62,12 @@ exports.run = async (msg, args) => {
   // fetch each link
   links.forEach(link => {
     ytdl(link, client, quality).then(files => {
-      if (!files.length) {
+      if (!files || !files.length) {
         // no video
-        msg.reply({ content: "Seems like there's no video in " + link, ephemeral: true })
+        msg.reply({ content: `Seems like there's no video in "\`${link}\`".` })
       } else {
         // send video
-        msg.followUp({ files, ephemeral: true })
+        msg.followUp({ files })
       }
     })
   })
