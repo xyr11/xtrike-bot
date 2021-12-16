@@ -1,14 +1,13 @@
-const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
-const ytdl = require('../modules/ytdl')
+const ytdlVids = require('../modules/ytdlVids')
 
 // Check for video links and send the raw video file using youtube-dl
-/** @param {Message} message */
+/** @param {import('discord.js').Message} message */
 module.exports = async message => {
   // if it's a `;video` command then return immediately
   if (message.content.split(/ +/g)[0].toLowerCase() === ';video') return
 
   // regex for getting links
-  const ytdlRegex = new RegExp('(?<=.|^|\\s)https:\\/\\/(www\\.)?' + // get https://, and www. if present
+  const ytdlRegex = new RegExp('(?<=.|^|\\s)https:\\/\\/(www\\.)?' + // get "https://" and "www." if present
     '(' +
       'twitter\\.com\\/[A-z0-9_]{0,15}\\/status\\/[0-9]{5,}' + // get twitter.com/status/[user]/[id] links
       '|' +
@@ -25,7 +24,7 @@ module.exports = async message => {
   // get links from message and remove duplicates
   const links = [...new Set(message.content.match(ytdlRegex))]
   // fetch each link
-  links.forEach(link => ytdl(link, message.client).then(files => {
+  links.forEach(link => ytdlVids(link, message.client).then(files => {
     // send video
     if (files) message.reply({ files, allowedMentions: { repliedUser: false } })
   }))

@@ -1,8 +1,8 @@
-const { Message, MessageAttachment, Interaction, Client } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageAttachment } = require('discord.js')
 const download = require('download')
 const { Readable } = require('stream')
 const youtubeDl = require('youtube-dl-exec')
-const errorCatch = require('../modules/errorCatch')
+const errorCatch = require('./errorCatch')
 
 const retryIfErr = [
   'ERROR: Unable to extract data; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output.',
@@ -12,7 +12,7 @@ const retryIfErr = [
 /**
  * Function to run youtube-dl for each link simultaneously
  * @param {String} link
- * @param {Client} client for logging errors
+ * @param {import('discord.js').Client} client for logging errors
  * @param {Number} quality specify the quality using the video height. default value is the 2nd worst quality.
  */
 module.exports = async (link, client, quality = 0) => {
@@ -41,7 +41,7 @@ module.exports = async (link, client, quality = 0) => {
   /**
    * Function to download and send the video for all links simultaneously
    * @param {Object} entry Entry or output
-   * @param {Client} client
+   * @param {import('discord.js').Client} client
    */
   const downloadAndSend = async entry => {
     // if there are no videos
@@ -55,7 +55,7 @@ module.exports = async (link, client, quality = 0) => {
       vidLink = formats.reduce((prev, curr) => {
         // if height of the previous value is closer to the quality than the height
         // of the current value then replace the current value to the previous value
-        if (Math.abs(quality - prev.height) <= Math.abs(quality - curr.height)) return prev
+        if (curr.height && Math.abs(quality - prev.height) <= Math.abs(quality - curr.height)) return prev
         // if not then return the current value
         return curr
       }).url
