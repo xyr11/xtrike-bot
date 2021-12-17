@@ -1,3 +1,4 @@
+const errorCatch = require('../modules/errorCatch')
 const ytdlVids = require('../modules/ytdlVids')
 
 exports.info = {
@@ -57,18 +58,16 @@ exports.run = async (msg, args) => {
   // check if there are links
   if (!links.length) return msg.reply("There aren't any links in the message!")
 
-  // send the fetching links message
-  await msg.reply('Fetching the links...')
-
   // fetch each link
   links.forEach(link => {
-    ytdlVids(link, client, quality).then(files => {
+    ytdlVids(link, client, quality).then(async files => {
+      if (files && files.length) files = files.filter(a => a !== undefined)
       if (!files || !files.length) {
         // no video
-        msg.reply({ content: `Seems like there's no video in "\`${link}\`".` })
+        await msg.reply(`I wasn't able to find a video in "\`${link}\`".`)
       } else {
         // send video
-        msg.followUp({ files })
+        msg.reply({ files })
       }
     })
   })
