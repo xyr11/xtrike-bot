@@ -46,7 +46,7 @@ module.exports = (error, client, msg) => {
   if (ignoreErr(error)) return
 
   // Variables
-  const timeSent = msg.message?.createdTimestamp || Date.now() // the time when the error occurred
+  const timeSent = msg?.message?.createdTimestamp || Date.now() // the time when the error occurred
   const errEmote = errEmotes[rand(errEmotes.length)] // error emote
   const errObj = serializeError(error) // serialize the error object
 
