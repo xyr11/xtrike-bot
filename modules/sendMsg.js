@@ -63,6 +63,15 @@ class SendMsg {
   }
 
   /**
+   * React to the message
+   * @param {Discord.EmojiIdentifierResolvable} emote
+   * @returns {Promise<Discord.MessageReaction|false>}
+   */
+  async react (emote) {
+    return this.isMsg && await this.message.react(emote)
+  }
+
+  /**
    * set if the application command is ephemeral (visible only to user) or not
    * @param {Boolean=} value
    */
@@ -73,9 +82,19 @@ class SendMsg {
    * @param {Discord.InteractionReplyOptions} interactionOptions
    */
   async setDefer (interactionOptions) {
-    if (!this.isSlash) return
-    await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
-    this.deferred = true
+    /** @type {Discord.MessageReaction|Discord.Message} */
+    let e
+    if (this.isMsg) {
+      // add reaction as a response that the message has been acknowledged
+      e = await this.react(this.client.emojis.cache.get('921418001826340904') || '✅')
+      /** @type {Discord.MessageReaction} */
+      this.deferReact = e
+    } if (this.isSlash) {
+      // defer command application
+      e = await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
+      this.deferred = true
+    }
+    return e
   }
 
   /**
@@ -83,19 +102,17 @@ class SendMsg {
    * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
    */
   async send (payload) {
+    /** @type {Discord.Message|Discord.InteractionReplyOptions} */
     let e
     // send as Message
-    if (this.isMsg) e = await this.channel.send(payload)
-    else {
+    if (this.isMsg) {
+      e = await this.channel.send(payload)
+      if (this.deferReact) await this.deferReact.remove() // remove reaction
+    } else {
       // send as Interaction
-      // if the application command is deferred, just edit the reply
-      if (this.deferred) e = await this.message.editReply(payload)
-      else {
-        // follow up if there is already an earlier sent message
-        if (this.sent) e = await this.message.followUp(payload)
-        // if not, just reply to the application command
-        else e = await this.message.reply(payload)
-      }
+      if (this.sent) e = await this.message.followUp(payload) // follow up if there's a sent message already
+      else if (this.deferred) e = await this.message.editReply(payload) // if the application command is deferred, edit the reply
+      else e = await this.message.reply(payload) // if not, just reply to the application command
     }
     // after the async stuff finishes:
     this.sent = e
@@ -109,6 +126,7 @@ class SendMsg {
    * @param {Boolean=} pingUser whether to ping the user or not
    */
   async reply (payload, pingUser = true) {
+    /** @type {Discord.Message|Discord.InteractionReplyOptions} */
     let e
     if (this.isMsg) {
       // send as Message
@@ -117,29 +135,13 @@ class SendMsg {
       // if not then add the allowedMentions property to the given object
       else payload = { ...payload, allowedMentions: { repliedUser: pingUser } }
       e = await this.message.reply(payload)
+      if (this.deferReact) await this.deferReact.remove() // remove reaction
     } else {
       // send as Interaction
-      // if the application command is deferred, just edit the reply
-      if (this.deferred) e = await this.message.editReply(payload)
-      else {
-        // follow up if there is already an earlier sent message
-        if (this.sent) e = await this.message.followUp(payload)
-        // if not, just reply to the application command
-        else e = await this.message.reply(payload)
-      }
+      if (this.sent) e = await this.message.followUp(payload) // follow up if there's a sent message already
+      else if (this.deferred) e = await this.message.editReply(payload) // if the application command is deferred, edit the reply
+      else e = await this.message.reply(payload) // if not, just reply to the application command
     }
-    // after the async stuff finishes:
-    this.sent = e
-    this.logger()
-    return e
-  }
-
-  /**
-   * Reply to an earlier message you sent
-   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
-   */
-  async followUp (payload) {
-    const e = this.isMsg ? await this.message.reply(payload) : await this.message.followUp(payload)
     // after the async stuff finishes:
     this.sent = e
     this.logger()
@@ -152,7 +154,28 @@ class SendMsg {
    */
   async edit (payload) {
     if (!this.sent) throw new Error('No message to edit!')
+    /** @type {Discord.Message} */
     const e = this.isMsg ? await this.sent.edit(payload) : await this.message.editReply(payload)
+    // after the async stuff finishes:
+    this.sent = e
+    this.logger()
+    return e
+  }
+
+  /**
+   * Reply to an earlier message you sent
+   * @param {String|Discord.MessagePayload|Discord.InteractionReplyOptions} payload
+   */
+  async replyToSent (payload) {
+    /** @type {Discord.Message} */
+    let e
+    if (this.isMsg) {
+      if (!this.sent) throw new Error('No earlier message to reply to!')
+      await this.sent.reply(payload)
+    } else {
+      e = await this.message.followUp(payload)
+    }
+    if (this.deferReact) this.deferReact.remove() // remove reaction
     // after the async stuff finishes:
     this.sent = e
     this.logger()

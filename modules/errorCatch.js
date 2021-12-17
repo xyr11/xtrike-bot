@@ -59,7 +59,7 @@ module.exports = (error, client, msg) => {
     // Footer text
     const foot = `${botName} v${process.env.npm_package_version} • ` + (rand(10) !== 1 ? 'This error will also be sent to the developers. Hang tight!' : "No one's around to help.") // an easter egg? (check http://youtu.be/o-AeEM1Nk0c)
     // Add embed
-    msg.followUp({
+    msg.reply({
       content: 'Sorry, seems like I have encountered an error.',
       embeds: [new MessageEmbed()
         .setTitle(`${errEmote} I have encountered an error!`)
