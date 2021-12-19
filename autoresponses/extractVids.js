@@ -1,3 +1,4 @@
+const errorCatch = require('../modules/errorCatch')
 const ytdlVids = require('../modules/ytdlVids')
 
 // Check for video links and send the raw video file using youtube-dl
@@ -24,8 +25,16 @@ module.exports = async message => {
   // get links from message and remove duplicates
   const links = [...new Set(message.content.match(ytdlRegex))]
   // fetch each link
-  links.forEach(link => ytdlVids(link, message.client).then(files => {
+  links.forEach(link => ytdlVids(link, message.client).then(async files => {
     // send video
-    if (files) message.reply({ files, allowedMentions: { repliedUser: false } })
+    if (!files || !files.error) return
+    while (true) {
+      try {
+        await message.reply({ files, allowedMentions: { repliedUser: false } })
+        return
+      } catch (err) {
+        errorCatch(err, message.client)
+      }
+    }
   }))
 }

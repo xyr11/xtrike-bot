@@ -72,7 +72,7 @@ module.exports = async (link, client, quality = 0) => {
     if (!format) return
 
     // check if the file size is too big
-    if (format.filesize > 8192000) return { err: 'Too big', link: format.url, height: format.height } // throw new Error('File too big!')
+    if (format.filesize > 8192000) throw new Error('File too big: ' + format.url)
 
     // download the video from the link given
     // this part is an infinite loop, so if it encounters an error then
@@ -103,14 +103,23 @@ module.exports = async (link, client, quality = 0) => {
     return new MessageAttachment(Readable.from(buffer), link.replace(new URL(link).origin, '').slice(1).replace(/\W+/g, '-') + '.' + format.ext)
   }
 
-  // store message attachments
-  const files = []
+  try {
+    // store message attachments
+    /** @type {MessageAttachment[]} */
+    let files = []
 
-  // for extractors which has multiple entries (e.g. Facebook extractor)
-  if (Array.isArray(output.entries)) for (const entry of output.entries) files.push(await downloadAndSend(entry))
-  // for other extractors which only has one entry given in the `output` var
-  else files.push(await downloadAndSend(output))
+    // for extractors which has multiple entries (e.g. Facebook extractor)
+    if (Array.isArray(output.entries)) for (const entry of output.entries) files.push(await downloadAndSend(entry))
+    // for other extractors which only has one entry given in the `output` var
+    else files.push(await downloadAndSend(output))
 
-  // return MessageAttachment object
-  return files
+    // filter undefined values
+    files = files.filter(a => a !== undefined)
+    if (!files.length) files = null
+    return files
+  } catch (err) {
+    // check if file is too big
+    if (err.message && err.message.search('File too big') === 0) return { error: 'File too big', link: err.message.replace('File too big: ', '') }
+    else errorCatch(err, client)
+  }
 }

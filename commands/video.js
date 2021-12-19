@@ -64,19 +64,16 @@ exports.run = async (msg, args) => {
   links.forEach(link => {
     ytdlVids(link, client, quality).then(async files => {
       // no video
-      // filter undefined values
-      files = files.filter(a => a !== undefined)
-      // no video
-      if (!files || !files.length) {
+      if (!files) {
         // no video
         await msg.reply(`I wasn't able to find a video in "\`${link}\`".`)
-      } else if (files[0].err === 'Too big') {
+      } else if (files.error === 'File too big') {
         // file too big
         await msg.reply({
           content: 'File too big to upload.',
           embeds: [new MessageEmbed()
-            .setDescription(`The video format I found ${files[0].height ? `with a height of ${files[0].height} ` : ''}is too big to upload. \n You can download the video directly on "\`${files[0].link}\`".`)
-            .setFooter('Please note that the link may expire quickly')]
+            .setDescription(`The video format that I found is too big to upload. \n You can download the video directly [in this link](${files.link}).`)
+            .setFooter('Note that the link may expire quickly')]
         })
       } else {
         // send video
