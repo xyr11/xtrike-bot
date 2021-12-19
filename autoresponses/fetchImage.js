@@ -142,7 +142,7 @@ module.exports = async message => {
     }
   }
   // links on message content
-  const links = message.content.match(/(?<=.|^|\s)https?:\/\/[^\s]*/g)
+  const links = message.content.match(/(?<=.|^|\s)https?:\/\/[^.]+\.[^\s]+/g)
   if (links) {
     for (const link of links) {
       // get file type
