@@ -23,7 +23,14 @@ module.exports = async (link, client, quality = 0) => {
   while (output === undefined) {
     try {
       // fetch
-      output = await youtubeDl(link, { dumpSingleJson: true, noWarnings: true })
+      output = await youtubeDl(link, {
+        dumpSingleJson: true,
+        noWarnings: true,
+        noCallHome: true,
+        noCheckCertificate: true,
+        preferFreeFormats: true,
+        youtubeSkipDashManifest: true
+      })
       // stop the infinite loop
     } catch (err) {
       // check if error is 'Unable to extract data' or error 500, in
@@ -47,24 +54,25 @@ module.exports = async (link, client, quality = 0) => {
     // if there are no videos
     if (!entry.formats) return
 
-    /** @type {{height: Number, url: String, http_headers: Object}[]} */
-    const formats = entry.formats.filter(a => a.protocol === 'https' && a.ext === 'mp4') // filter the .mp4 links
-    let vidLink
+    // filter out the video only / audio only / dash files
+    const formats = entry.formats.filter(a => a.protocol === 'https' && a.vcodec !== 'none' && a.acodec !== 'none')
+    // pick one format
+    let format = formats[1] || formats[0] // default values
     if (quality) {
-      // get the url of the object that has the nearest value to `quality`
-      vidLink = formats.reduce((prev, curr) => {
+      // get the format that has the nearest value to `quality`
+      format = formats.reduce((prev, curr) => {
         // if height of the previous value is closer to the quality than the height
         // of the current value then replace the current value to the previous value
         if (curr.height && Math.abs(quality - prev.height) <= Math.abs(quality - curr.height)) return prev
         // if not then return the current value
         return curr
-      }).url
-    } else {
-      // use default values
-      vidLink = (formats[1] || formats[0]).url
+      })
     }
     // return if there are no links
-    if (!vidLink) return
+    if (!format) return
+
+    // check if the file size is too big
+    if (format.filesize > 8192000) return { err: 'Too big', link: format.url, height: format.height } // throw new Error('File too big!')
 
     // download the video from the link given
     // this part is an infinite loop, so if it encounters an error then
@@ -74,7 +82,7 @@ module.exports = async (link, client, quality = 0) => {
     while (buffer === undefined) {
       try {
         // download the chosen link
-        buffer = await download(vidLink, { headers: entry.http_headers })
+        buffer = await download(format.url, { headers: entry.http_headers })
         // check if default quality is chosen and if video is more than 3.5 MB
         if (!quality && formats.length > 1 && Buffer.byteLength(buffer) > 3670016) {
           // download the worst quality
@@ -92,7 +100,7 @@ module.exports = async (link, client, quality = 0) => {
     // return if encountered an error while downloading the video
     if (!buffer) return
 
-    return new MessageAttachment(Readable.from(buffer), link.replace(new URL(link).origin, '').slice(1).replace(/\W+/g, '-') + '.mp4')
+    return new MessageAttachment(Readable.from(buffer), link.replace(new URL(link).origin, '').slice(1).replace(/\W+/g, '-') + '.' + format.ext)
   }
 
   // store message attachments
