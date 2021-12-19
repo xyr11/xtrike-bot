@@ -1,11 +1,10 @@
-const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const Amongoose = require('mongoose')
 const config = require('../config')
 const { presence, time } = require('../modules/base')
 const { storeInfo, getInfo } = require('../modules/botInfo')
 
-/** @param {Client} client */
+/** @param {import('discord.js').Client} client */
 exports.execute = async client => {
   console.log(chalk.green(`Ready as ${client.user.tag}! 🤖`, chalk.bgGreenBright.black(`(${time()})`)))
   // presence

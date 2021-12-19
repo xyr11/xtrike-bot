@@ -1,4 +1,3 @@
-const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
 const express = require('express')
 const cors = require('cors')

@@ -1,4 +1,3 @@
-const { Message, Client } = require('discord.js') // eslint-disable-line no-unused-vars
 const { imageHash } = require('image-hash')
 const fetch = require('node-fetch')
 const ImagesModel = require('../schemas/images')
@@ -151,7 +150,7 @@ const config = {
 
     /**
      * Activate `;image` in server
-     * @param {Message} message message
+     * @param {import('./sendMsg')} message message
      */
     server: async message => {
       // generate guild identifier
@@ -196,7 +195,7 @@ const config = {
 /**
  * Fetch image url
  * @param {String} imageUrl Url of image to fetch
- * @param {Client} client Discord client
+ * @param {import('discord.js').Client} client Discord client
  * @returns {Promise<{ok: Boolean, buffer: Buffer, type: String}>}
  */
 const fetchImageUrl = async (imageUrl, client) => {

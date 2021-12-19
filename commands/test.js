@@ -43,7 +43,7 @@ exports.run = async (msg, args) => {
     // author user
     debugEmbed = { description: '```json\n' + json(msg.author) + '\n```' }
   } else if (args[0] === 'member') {
-    // author user
+    // author guild member
     debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id)) + '\n```' }
   } else if (args[0] === 'perms') {
     // author user
