@@ -118,13 +118,10 @@ exports.run = async (msg, args) => {
   if (content) finalMessage.content = content
   if (embed) finalMessage.embeds = [embed]
 
-  // fetch the message if there is a given message id
+  // fetch the message to reply to if there is a given message id
   /** @type {Message} */
   let fetchedMsg
-  if (replyMsg) {
-    const messages = await channel.messages.fetch({ limit: 100 })
-    fetchedMsg = messages.get(clean(replyMsg))
-  }
+  if (clean(replyMsg)) fetchedMsg = await channel.messages.fetch(clean(replyMsg), { force: true })
   // check if input has valid content or embed
   if (content || embed) {
     // if the message is found

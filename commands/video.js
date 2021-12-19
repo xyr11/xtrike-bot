@@ -32,9 +32,8 @@ exports.run = async (msg, args) => {
   } else {
     // check if there is a reply
     if (msg.reference) {
-      // get message that is replied to
-      let repliedTo = await msg.channel.messages.fetch(msg.reference.messageId)
-      if (!repliedTo) repliedTo = (await msg.channel.messages.fetch({ limit: 100 })).get(msg.reference.messageId)
+      // get message that is being replied on
+      const repliedTo = await msg.channel.messages.fetch(msg.reference.messageId, { force: true })
       // message is fetched
       if (repliedTo) {
         // get links from message that is replied to
