@@ -31,6 +31,8 @@ class SendMsg {
     this.reference = message.reference
     /** @type {Discord.User} */
     this.author = message.author ?? message.user
+    /** @type {Discord.MessageEmbed[]} */
+    this.embeds = message.embeds
     /** @type {Discord.Collection<Discord.Snowflake, Discord.MessageAttachment>} */
     this.attachments = message.attachments
     /** @type {String} */
