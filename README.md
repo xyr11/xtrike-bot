@@ -309,16 +309,27 @@ console.log(stats)
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot). *If not*, then clone the repository via Git by opening your console and entering the following command:
+*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+
+*If not*, then clone the repository via Git by opening your console and entering the following commands:
 ```
 cd "C:/path/of/repo/folder"
-git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot && npm i
+git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot
+npm i
 ```
 
+### Set up the bot account
+On https://discord.com/developers/applications, click "New Application". Add your application name and press "Create" to create a new application. You can set your bot description in this page.
+
+After that, go to the "Bot" tab. Click the "Add Bot" button and press the confirmation button. After that, enable all privileged intents in the "Privileged Gateway Intents" tab so that the bot can properly fetch data. You can also set a custom bot name and bot avatar in this page.
+
+### Add config variables
 After that, rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot. There are comments to help you out.
 
 ### Run repository
-*If you're on Replit*, press the big "**Run**" button. *If not*, open your console and enter the following command to start your bot:
+*If you're on Replit*, press the big "Run" button.
+
+*If not*, open your console and enter the following command to start your bot:
 ```
 npm start
 ```
