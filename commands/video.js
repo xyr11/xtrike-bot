@@ -7,7 +7,7 @@ exports.info = {
   description: 'Extract videos from the given url. {{[Check out the list of supported sites here.](https://ytdl-org.github.io/youtube-dl/supportedsites.html)}}',
   usage: '`$$video <url/urls> [quality]` or reply with "`$$video`" to a message.',
   option: '`[quality]`: specify a video quality using the video height (e.g. `480`)',
-  aliases: ['vid', 'vids', 'ytdl', 'youtube-dl'],
+  aliases: ['videos', 'vid', 'vids', 'ytdl', 'youtube-dl'],
   permLevel: 'User',
   options: [
     { type: 3, name: 'link', description: 'The link to extract video, can be more than 1 link.', required: true },

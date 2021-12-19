@@ -7,7 +7,6 @@ exports.info = {
   category: 'Bot Info',
   description: 'Show what the different commands of the bot does',
   usage: '`$$help <command>`',
-  aliases: ['help'],
   permLevel: 'User',
   options: [
     {
@@ -56,12 +55,13 @@ exports.run = async (msg, args) => {
     else embed.addField('Please try again', 'Make sure to check the spelling of the command.')
   } else {
     // create the embed
-    const { name, description, usage, thumbnail, option, similar } = cmd.info
+    const { name, description, usage, aliases, thumbnail, option, similar } = cmd.info
     embed.setColor(botColor)
       .setTitle(`${prefix}${name} command`)
       .setThumbnail(thumbnail ?? '')
       .setDescription(description.replace(/{{|}}/g, '')) // remove `{{` and `}}`
     if (usage) embed.addFields({ name: 'Usage', value: usage.replaceAll('$$', prefix) })
+    if (aliases) embed.addField('Aliases', aliases.map(n => `\`${prefix}${n}\``).join(', '))
     if (option) embed.addFields({ name: 'Options', value: option })
     if (similar) embed.addFields({ name: 'Similar', value: similar.split(' ').join(', ').replaceAll('$$', prefix) })
   }

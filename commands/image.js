@@ -14,7 +14,7 @@ exports.info = {
     '`--disable <channel|server>`\n' +
     '`--enable <channel|server>`',
   isBeta: true,
-  aliases: ['images'],
+  aliases: ['images', 'img'],
   permLevel: 'User',
   requiredArgs: true,
   options: [

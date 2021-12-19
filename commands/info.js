@@ -6,7 +6,7 @@ exports.info = {
   category: 'Bot Info',
   description: 'Show information about the bot.',
   usage: '`$$info`',
-  aliases: ['bot', 'version', 'information', 'xtrike'],
+  aliases: ['bot', 'version', 'information'],
   permLevel: 'User'
 }
 
