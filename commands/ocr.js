@@ -47,12 +47,14 @@ exports.run = async (msg, args) => {
     } else if (msg.reference) {
       // get attachments on the message that is being replied on
       const repliedTo = await msg.channel.messages.fetch(msg.reference.messageId, { force: true })
-      imgs.push(...getImages(repliedTo))
-    } else {
-      // get links
-      const links = msg.content.match(/https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g)
-      if (links) imgs.push(...links)
+      if (repliedTo) {
+        const msgImgs = getImages(repliedTo)
+        if (msgImgs) imgs.push(...msgImgs)
+      }
     }
+    // get links
+    const links = msg.content.match(/https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g)
+    if (links) imgs.push(...links)
   }
   // remove duplicate values and limit to 10 images
   imgs = [...new Set(imgs)].slice(0, 10)
