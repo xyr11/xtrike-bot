@@ -1,16 +1,36 @@
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
 const chalk = require('chalk')
-const { time } = require('./base')
+const { prefix, time } = require('./base')
 
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */
   constructor (message) {
-    // set the message property to the message
-    /** @type {Discord.Message|Discord.CommandInteraction} */
+    // Set custom properties -------------------------------------------
+    /**
+     * The original message
+     * @type {Discord.Message|Discord.CommandInteraction}
+     */
     this.message = message
-    // set the type
+    /* Type of the message whether it's a Message or a CommandInteraction */
     this.isSlash = !!this.message.applicationId
     this.isMsg = !this.message.applicationId
+    /**
+     * Author of the message
+     * @type {Discord.User}
+     */
+    this.author = message.author ?? message.user
+    /**
+     * Content of the message excluding the prefix and extra spaces before and after text (basically the args)
+     * @type {String}
+     */
+    this.text = message.content.replace(new RegExp(`\\s*(${prefix}|/|pls) *\\w+`), '').replace(/^ *| *$/g, '')
+    /**
+     * The sent response to the message (for the methods)
+     * @type {Discord.Message}
+     */
+    this.sent = undefined
+
+    // Set common properties -------------------------------------------
     /** @type {Discord.Client} */
     this.client = message.client
     /** @type {Discord.Guild} */
@@ -23,22 +43,34 @@ class SendMsg {
     this.channelId = message.channelId
     /** @type {Discord.Snowflake} */
     this.id = message.id
-    /** @type {String} */
-    this.commandName = message.commandName
-    /** @type {Discord.CommandInteractionOptionResolver} */
-    this.options = message.options
-    /** @type {Discord.MessageReference} */
-    this.reference = message.reference
-    /** @type {Discord.User} */
-    this.author = message.author ?? message.user
+    /** @type {Date} */
+    this.createdAt = message.createdAt
+    /** @type {Date} */
+    this.editedAt = message.editedAt
+    /** @type {number} */
+    this.createdTimestamp = message.createdTimestamp
+    /** @type {number} */
+    this.editedTimestamp = message.editedTimestamp
     /** @type {Discord.MessageEmbed[]} */
     this.embeds = message.embeds
     /** @type {Discord.Collection<Discord.Snowflake, Discord.MessageAttachment>} */
     this.attachments = message.attachments
-    /** @type {String} */
+    /** @type {string} */
     this.content = message.content
-    /** @type {Discord.Message} */
-    this.sent = undefined
+    /** @type {Discord.GuildMember} */
+    this.member = message.member
+    /** @type {Discord.MessageReference} */
+    this.reactions = message.reactions
+    /** @type {String} */
+    this.url = message.url
+    /** @type {Discord.MessageReference} */
+    this.reference = message.reference
+    /** @type {string} */
+    this.commandName = message.commandName
+    /** @type {string} */
+    this.token = message.token
+    /** @type {Discord.CommandInteractionOptionResolver} */
+    this.options = message.options
   }
 
   /** Console logger. Use `.log()` instead please */
@@ -58,7 +90,7 @@ class SendMsg {
   /**
    * Log text after sending a message
    * @param {'none'|'info'|'warn'|'err'|'good'} type
-   * @param {Any[]} text
+   * @param {String[]} text
    */
   log (type, ...text) {
     if (!text.length) return
