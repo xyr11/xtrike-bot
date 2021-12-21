@@ -45,9 +45,9 @@ exports.run = async (msg, args) => {
   } else if (args[0] === 'member') {
     // author guild member
     debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id)) + '\n```' }
-  } else if (args[0] === 'perms') {
-    // author user
-    debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id).permissions.serialize()) + '\n```' }
+  } else if (args[0] === 'reference') {
+    // message reference
+    if (msg.isMsg && msg.reference) debugEmbed = { description: '```json\n' + json(msg.channel.messages.cache.get(msg.reference.messageId)) + '\n```' }
   } else if (args[0] === 'bot') {
     // client bot user
     debugEmbed = { description: '```json\n' + json(client.user) + '\n```' }
