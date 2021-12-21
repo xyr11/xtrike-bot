@@ -3,8 +3,8 @@ const { botName, botDescription, botColor, infoFields } = require('../modules/ba
 
 exports.info = {
   name: 'info',
-  category: 'Bot Info',
-  description: 'Show information about the bot.',
+  category: 'Bot',
+  description: 'Show information about the bot',
   usage: '`$$info`',
   aliases: ['bot', 'version', 'information'],
   permLevel: 'User'

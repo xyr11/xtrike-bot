@@ -2,7 +2,7 @@ const { MessageEmbed } = require('discord.js')
 
 exports.info = {
   name: 'message',
-  category: 'Developer',
+  category: 'General',
   description: 'Message as the bot',
   usage: '`$$message [messageId] [<content> and/or <embed>]`',
   option: '`[messageId]`: the id of the message to reply on (optional)\n' +

@@ -3,7 +3,7 @@ const { prefix, discordTime } = require('../modules/base')
 
 exports.info = {
   name: 'user',
-  category: 'Miscellaneous',
+  category: 'Random',
   description: 'Get info about a Discord user',
   usage: '`$$user [user @ / user id / username]`',
   aliases: ['users', 'me', 'member', 'members'],
@@ -23,52 +23,48 @@ const rand = int => Math.floor(Math.random() * int)
  */
 exports.run = async (msg, args) => {
   await msg.setDefer()
-  const { guild } = msg
+  let { guild, text } = msg
 
-  // get the content of the message
-  // remove the prefix and extra spaces before and after the content
-  let content = msg.content.replace(/\s*(;|\/) *\w+/, '').replace(/^ *| *$/g, '')
+  // If there's no given args
+  if (!text) text = msg.author.id
 
-  // if there's no given args
-  if (!content) content = msg.author.id
-
-  // variable that stores GuildMembers
+  // Variable that stores GuildMembers
   /** @type {Map<Discord.Snowflake, Discord.GuildMember>} */
   const givenMembers = new Map()
 
-  // search user tags and user ids
-  const tags = content.match(/((?<=(?<!<)(\s|^)(@|(?!@|<|([0-9]{17,21}))))((?!#[0-9]{4}(\s|$)).)+#[0-9]{4})/g)
-  const ids = content.match(/([0-9]{17,21})/g)
+  // Search user tags and user ids
+  const tags = text.match(/((?<=(?<!<)(\s|^)(@|(?!@|<|([0-9]{17,21}))))((?!#[0-9]{4}(\s|$)).)+#[0-9]{4})/g)
+  const ids = text.match(/([0-9]{17,21})/g)
   if (tags || ids) {
-    // get the user tag (@name#0000 or name#0000)
+    // Get the user tag (@name#0000 or name#0000)
     if (tags) {
-      // get all tags in the guild and set the values as their user ids
+      // Get all tags in the guild and set the values as their user ids
       const members = [...(guild.members.cache).values()]
-      // get user id from tags object
+      // Get user id from tags object
       for (const tag of tags) {
         let member = members.find(member => member.user.tag === tag)
-        // check if no member is found or if the member is already recorded
+        // Check if no member is found or if the member is already recorded
         if (!member || givenMembers.has(member.user.tag)) continue
-        // fetch user
+        // Fetch user
         member = await member.fetch()
         givenMembers.set(member.user.tag, member)
       }
     }
-    // get the user ids snowflake (<@12345678> or 12345678)
+    // Get the user ids snowflake (<@12345678> or 12345678)
     if (ids) {
       for (const id of ids) {
         let member = await guild.members.cache.get(id)
-        // check if no member is found or if the member is already recorded
+        // Check if no member is found or if the member is already recorded
         if (!member || givenMembers.has(member.user.tag)) continue
-        // fetch user
+        // Fetch user
         member = await member.fetch()
         givenMembers.set(member.user.id, member)
       }
     }
   } else {
-    // search for the user name
-    let member = await guild.members.search({ query: content })
-    // check if no member is found or if the member is already recorded
+    // Search for the user name
+    let member = await guild.members.search({ query: text })
+    // Check if no member is found or if the member is already recorded
     if (member && !givenMembers.has([...member.values()][0].user.id)) {
       member = await member.fetch()
       const id = [...member.values()][0].user.id
@@ -76,18 +72,18 @@ exports.run = async (msg, args) => {
     }
   }
 
-  // if there are no users found
+  // If there are no users found
   if (givenMembers.size < 1) return msg.reply("I didn't find any user with that name or tag.")
 
-  // for each given users
+  // For each given users
   for (const member of givenMembers.values()) {
-    // get User of given user
+    // Get User of given user
     const user = member.user
-    // get these variables from the objects
+    // Get these variables from the objects
     const { tag, username, id, bot, createdAt, banner, hexAccentColor, flags } = user
     const { displayHexColor, nickname, pending, joinedAt, premiumSince, roles, voice } = member
     const { mute, serverMute, deaf, serverDeaf, streaming, requestToSpeakTimestamp, suppress, channel: vc } = voice
-
+    // Set the embed
     const embed = new Discord.MessageEmbed().setTitle(tag)
       .setThumbnail(user.displayAvatarURL({ size: 512 }))
       .setColor(displayHexColor)
@@ -97,7 +93,7 @@ exports.run = async (msg, args) => {
         `Id: ${id} \n` +
         (pending ? 'Pending: **Yes** \n' : '') +
         (bot
-          ? (rand(4) === 3 ? 'Sentient: Prob–I mean ' : '') + 'Bot: Yes ' +
+          ? (rand(4) === 3 ? 'Sentient: Prob—I mean ' : '') + 'Bot: Yes ' +
             (rand(6) === 2 ? '[𓄿](http://crom. "01101000 01101001")' : '') + '\n' // an easter egg? (http://scp-wiki.net/command-query-separation)
           : '') +
         `Created ${discordTime(createdAt, 'R')} \n` +
@@ -119,14 +115,14 @@ exports.run = async (msg, args) => {
             (streaming ? 'Streaming: Yes \n' : '') +
             (requestToSpeakTimestamp ? `Requested to speak: Yes (${discordTime(requestToSpeakTimestamp, 'R')}) \n` : '') +
             (suppress ? 'Suppressed: Yes (in stage channel)' : ''), true)
-    // add banner as embed image
+    // Add banner as embed image
     if (banner) embed.setImage(banner)
-    // add user flags
+    // Add user flags
     if (flags.toArray().length) embed.addField('Flags', `\`${flags.toArray().join(', ').toLowerCase()}\``)
-    // add user perms in channel
+    // Add user perms in channel
     const permissions = member.permissionsIn(msg.channelId)
     embed.addField('Permissions (in channel)', `\`${permissions.has('ADMINISTRATOR') ? 'all (administrator)' : permissions.toArray().join(', ').toLowerCase()}\``)
-    // add footer text if user is the bot
+    // Add footer text if user is the bot
     if (id === msg.client.user.id) embed.setFooter(rand(3) !== 1 ? `enter ${prefix}info for more info about the bot!` : "look mom, that's me! :)")
     msg.reply({ embeds: [embed] })
   }

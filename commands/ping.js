@@ -3,18 +3,12 @@ const { botColor } = require('../modules/base')
 
 exports.info = {
   name: 'ping',
-  category: 'Bot Info',
-  description: "Get the bot's ping.",
+  category: 'Bot',
+  description: "Get the bot's current ping",
   usage: '`$$ping`',
   aliases: ['speed', 'latency'],
   permLevel: 'User',
-  options: [
-    {
-      type: 4,
-      name: 'repeat',
-      description: 'How many times will the bot ping'
-    }
-  ]
+  options: [{ type: 4, name: 'repeat', description: 'How many times will the bot ping' }]
 }
 
 /**
@@ -27,32 +21,32 @@ exports.run = async (msg, args) => {
   const clientPing = []
   const logs = []
 
-  // send initial message
+  // Send initial message
   await msg.setDefer()
   await msg.reply({ embeds: [{ description: 'Loading...' }] })
 
-  // number of loops
+  // Number of loops
   const loops = (Number(args[0]) && args[0] > 0 && args[0] < 31) ? args[0] : 3
   let referenceTime
-  // loop
+  // Loop for repetitions
   for (let i = loops; i--;) {
-    // edit the message
+    // Edit the message
     await msg.edit({ embeds: [{ description: '🏃‍♂️ Pinging..... ' + '/-\\|'.split('')[i % 4] }] }).then(async editedMsg => {
-      // get the time difference between the message edits
+      // Get the time difference between the message edits
       botPing.push(Math.floor((editedMsg.editedTimestamp - (referenceTime || editedMsg.createdTimestamp)) / 10) * 10)
       clientPing.push(Math.round(client.ws.ping))
-      // if debug mode is turned on
+      // If debug mode is turned on
       if (loops !== 3) logs.push(`<t:${Math.floor(editedMsg.editedTimestamp / 1000)}:T> ping: ${editedMsg.editedTimestamp - (referenceTime || editedMsg.createdTimestamp)} | ${client.ws.ping}`)
-      // set reference time for next edit
+      // Set reference time for next edit
       referenceTime = editedMsg.editedTimestamp
     })
   }
 
-  // compute average
+  // Compute average
   /** @param {Number[]} arr */
   const average = arr => Math.floor(arr.reduce((a, b) => a + b, 0) / arr.length) || 0
 
-  // send the results
+  // Send the results
   await msg.edit({
     embeds: [new MessageEmbed()
       .setTitle('🏓 Ping!')

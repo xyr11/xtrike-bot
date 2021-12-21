@@ -13,7 +13,7 @@ exports.info = {
 }
 
 /**
- * check if file exists
+ * Check if file exists
  * @param {fs.PathLike} filePath path of the file
  * @returns {Boolean|undefined}
  */
@@ -33,38 +33,38 @@ exports.run = async (msg, args) => {
   const commandName = args[0]
 
   try {
-    // name of the module that will be reloaded
+    // Name of the module that will be reloaded
     let reloadedName
     // Check if bot will reload autoresponses
-    // from https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js), MIT License
+    // From https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js), MIT License
     if (commandName === 'auto') {
-      // reload all autoresponses
+      // Reload all autoresponses
       client.autoresponses = []
       client.autoresponseNames = []
       for (const file of fs.readdirSync('./autoresponses').filter(file => file.endsWith('.js'))) {
-        // delete cache
+        // Delete cache
         delete require.cache[require.resolve(`../autoresponses/${file}`)]
-        // re-add the module
+        // Re-add the module
         const autoresponse = require(`../autoresponses/${file}`)
-        // add to arrays
+        // Add to arrays
         client.autoresponses.push(autoresponse)
         client.autoresponseNames.push(file.split('.')[0])
       }
       reloadedName = 'All autoresponses have been reloaded'
     } else if (commandName === 'err') {
-      // reload the errorCatch module
-      // delete cache
+      // Reload the errorCatch module
+      // Delete cache
       delete require.cache[require.resolve('../modules/errorCatch.js')]
-      // re-add the module
+      // Re-add the module
       require('../modules/errorCatch.js')
       reloadedName = 'The errorCatch module has been reloaded'
     } else if (commandName === 'activity' && args[1]) {
-      // reload the presence activity
+      // Reload the presence activity
       if (['PLAYING', 'LISTENING', 'WATCHING'].indexOf(args[1].toUpperCase()) > -1 && args[2]) {
-        // if args[1] is a valid activity type, use it
+        // If args[1] is a valid activity type, use it
         client.user.setActivity(args.slice(2).join(' '), { type: args[1].toUpperCase() })
       } else {
-        // use the whole args[] on the activity text
+        // Use the whole args[] on the activity text
         client.user.setActivity(args.slice(1).join(' '), { type: presence.activityType || 'PLAYING' })
       }
       reloadedName = 'The presence activity of the bot has been reloaded'
@@ -72,20 +72,20 @@ exports.run = async (msg, args) => {
       const fileExists = await doesExist(`./commands/${commandName}.js`)
       // Check if the command can be found in client.commands
       if (!client.commands.has(commandName)) {
-        // check if file of the command exists
+        // Check if file of the command exists
         if (!fileExists) return msg.reply('That command does not exist')
-        // add the module
+        // Add the module
         const props = require(`./${commandName}.js`)
         client.commands.set(commandName, props)
         reloadedName = `The command \`${prefix}${commandName}\` has been successfully loaded`
       } else {
-        // delete the command on client.commands
+        // Delete the command on client.commands
         client.commands.delete(commandName)
-        // check if file of the command is deleted
+        // Check if file of the command is deleted
         if (!fileExists) return msg.reply('Command has been deleted')
-        // delete cache
+        // Delete cache
         delete require.cache[require.resolve(`./${commandName}.js`)]
-        // re-add the module
+        // Re-add the module
         const props = require(`./${commandName}.js`)
         client.commands.set(commandName, props)
         reloadedName = `The command \`${prefix}${commandName}\` has been reloaded`

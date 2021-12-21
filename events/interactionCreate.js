@@ -40,7 +40,7 @@ exports.execute = async interaction => {
     else if (type === 'STRING') args.push(...value.split(/ +/g)) // split each words using spaces
   }
   // add the text equivalent of the application command options
-  msg.content = `/${msg.commandName} ${args.join(' ')}`
+  msg.setContent(`/${msg.commandName} ${args.join(' ')}`)
 
   while (true) {
     try {

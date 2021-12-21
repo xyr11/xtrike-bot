@@ -34,86 +34,85 @@ const getImages = msg => {
  */
 exports.run = async (msg, args) => {
   await msg.setDefer()
+  let imgs = [] // variable to store images
 
-  // variable to store images
-  let imgs = []
   if (msg.isSlash) {
-    // get url from string
+    // Get url from string
     imgs.push(...msg.content.match(/https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g))
   } else {
     if (msg.attachments.size) {
-      // get png, jpeg, tif, and bmp files
+      // Get png, jpeg, tif, and bmp files
       imgs.push(...getImages(msg))
     } else if (msg.reference) {
-      // get attachments on the message that is being replied on
+      // Get attachments on the message that is being replied on
       const repliedTo = await msg.channel.messages.fetch(msg.reference.messageId, { force: true })
       if (repliedTo) {
         const msgImgs = getImages(repliedTo)
         if (msgImgs) imgs.push(...msgImgs)
       }
     }
-    // get links
+    // Get links
     const links = msg.content.match(/https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g)
     if (links) imgs.push(...links)
   }
-  // remove duplicate values and limit to 10 images
+  // Remove duplicate values and limit to 10 images
   imgs = [...new Set(imgs)].slice(0, 10)
 
-  // check if there are any images given
+  // Check if there are any images given
   if (!imgs.length) return msg.reply("I didn't find any image in your message.")
 
-  // get text in each image link and send it
+  // Get text in each image link and send it
   for (const img of imgs) {
-    // get the text inside the image using OCR API
-    // this part is an infinite loop, so if fetch() gets a FetchError
+    // Get the text inside the image using OCR API
+    // This part is an infinite loop, so if fetch() gets a FetchError
     // or if the API has IsErroredOnProcessing then it will repeat.
-    // if there are no errors then the infinite loop will break
+    // If there are no errors then the infinite loop will break
     let results
     while (results === undefined) {
       let fetched, ocrKey
-      // fetch
+      // Fetch
       try {
         ocrKey = ocrKeys[Math.floor(Math.random() * ocrKeys.length)]
         fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrKey + '&url=' + img).then(res => res.json())
       } catch (err) {
         if (err.name !== 'FetchError') {
-          // stop the infinite loop if bot encountered an error NOT related to FetchError
+          // Stop the infinite loop if bot encountered an error NOT related to FetchError
           results = null
           require('../modules/errorCatch')(err, msg.client)
           msg.reply(`I wasn't able to find any text in \`${img}\`.`)
           continue
         }
       }
-      // check if api key is ratelimited
+      // Check if api key is ratelimited
       if (fetched === 'You may only perform this action upto maximum 500 number of times within 86400 seconds') {
-        // api key is ratelimited
+        // Api key is ratelimited
         OcrKeys.set(ocrKey, 'ratelimited')
-        // check if every single api key is ratelimited
+        // Check if every single api key is ratelimited
         if ([...OcrKeys.values()].every(a => a === 'ratelimited')) {
-          // if yes then stop the loop and log it
+          // If yes then stop the loop and log it
           results = null
           require('./errorCatch')(new Error('All OCR API keys are ratelimited.'), msg.client)
           msg.reply(`I wasn't able to find any text in \`${img}\`.`); continue
         }
       } else {
-        // api key is not ratelimited
+        // Api key is not ratelimited
         OcrKeys.set(ocrKey, 'ok')
         results = null
         if (fetched && !fetched.IsErroredOnProcessing) results = fetched.ParsedResults // get the text
       }
     }
-    // return if encountered an error while fetching from OCR API
+    // Return if encountered an error while fetching from OCR API
     if (!results) {
       msg.reply(`I wasn't able to find any text in \`${img}\`.`); continue
     }
 
-    // extract the text from the result
+    // Extract the text from the result
     let text = results.reduce((a, b) => ({ text: (a.ParsedText || '') + ' ' + b.ParsedText }), []).text
-    // filter text
+    // Filter text
     text = text.replace(/(\r?\n)+/g, '\n') // remove extra newlines
       .replace(/^\s*|\s*$/gs, '') // remove spaces before and after string
 
-    // reply text
+    // Reply text
     if (!text) msg.reply(`I wasn't able to find any text in \`${img}\`.`)
     else msg.reply({ embeds: [{ color: botColor, description: text + `\n[(Image link)](${img})` }] })
   }

@@ -29,26 +29,28 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
-  // get the nth deleted message
+  await msg.setDefer() // set defer
+
+  // Get the nth deleted message
   let index = !isNaN(args[0]) ? +Math.floor(args[0]) : undefined
-  // if given index is less than 1
+  // If given index is less than 1
   if (index && index < 1) index = 1
 
-  // if there is a specified channel then snipe from that channel, if not then snipe from the current channel
+  // If there is a specified channel then snipe from that channel, if not then snipe from the current channel
   let channelId = msg.channelId
-  // channel is in the 2nd arg
+  // Channel is in the 2nd arg
   if (index && args[1]) channelId = isChannel(args[1]) ?? channelId
-  // there's no `number` value, so channel is in the 1st arg
+  // There's no `number` value, so channel is in the 1st arg
   if (!index && args[0]) channelId = isChannel(args[0]) ?? channelId
 
-  // find the channel in the guild
+  // Find the channel in the guild
   const channel = msg.guild.channels.cache.get(channelId)
-  // check if the given channel is in the same guild
+  // Check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
-  // get editsnipe data
+  // Get editsnipe data
   const edits = await sniper('b', channelId)
-  // if there's no value
+  // If there's no value
   if (!edits && !edits.length) return msg.reply("There's nothing to snipe!")
 
   /**
@@ -61,15 +63,15 @@ exports.run = async (msg, args) => {
    * @property {String} t Edited timestamp
    */
   /** @type {Edited} */
-  // get the edited entry
+  // Get the edited entry
   let edited = edits
-  // if editsnipe data is an array, get the index instead
+  // If editsnipe data is an array, get the index instead
   if (Array.isArray(edits)) edited = edits[index - 1] || edits[0]
 
-  // remove non-rich embeds
+  // Remove non-rich embeds
   edited.e = edited.e.filter(e => e.type === 'rich')
 
-  // create embed
+  // Create embed
   const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edited.i}` // message url
   const author = await msg.client.users.fetch(edited.a, { force: true }) // get author
   const embeds = []
@@ -83,9 +85,9 @@ exports.run = async (msg, args) => {
       ` [(go to original message)](${msgUrl})`)
     .setFooter(`#${channel.name}`)
     .setTimestamp(edited.t))
-  // check if there are any removed embeds and include them
+  // Check if there are any removed embeds and include them
   if (edited.e) edited.e.forEach(e => embeds.push(e))
-  // check if there are any deleted files
+  // Check if there are any deleted files
   if (edited.f.length === 1) embeds[0].setImage(edited.f[0])
   else if (edited.f.length > 1) edited.f.forEach(url => files.push(new MessageAttachment(url)))
   await msg.reply({ embeds, files })

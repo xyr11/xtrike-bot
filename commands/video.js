@@ -3,7 +3,7 @@ const ytdlVids = require('../modules/ytdlVids')
 
 exports.info = {
   name: 'video',
-  category: 'Miscellaneous',
+  category: 'Media',
   description: 'Extract videos from the given url. {{[Check out the list of supported sites here.](https://ytdl-org.github.io/youtube-dl/supportedsites.html)}}',
   usage: '`$$video <url/urls> [quality]` or reply with "`$$video`" to a message.',
   option: '`[quality]`: specify a video quality using the video height (e.g. `480`)',
@@ -20,55 +20,53 @@ exports.info = {
  * @param {String[]} args
  */
 exports.run = async (msg, args) => {
+  await msg.setDefer() // set defer
   const { client } = msg
   const linkRegex = /https?:\/\/[^./]+(.|\/)([\]:;"'.](?=[^<\s])|[^\]:;"'.<\s])+/g
 
   let links = []
   let matches
 
-  await msg.setDefer()
-
   if (msg.isSlash) {
-    // get links from interaction
+    // Get links from interaction
     matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   } else {
-    // check if there is a reply
+    // Check if there is a reply
     if (msg.reference) {
-      // get message that is being replied on
+      // Get message that is being replied on
       const repliedTo = await msg.channel.messages.fetch(msg.reference.messageId, { force: true })
-      // message is fetched
+      // Message is fetched
       if (repliedTo) {
-        // get links from message that is replied to
+        // Get links from message that is replied to
         matches = repliedTo.content.match(linkRegex)
         if (matches) links.push(...matches)
       }
     }
-    // get links from message
+    // Get links from message
     matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   }
 
-  // remove duplicated links
+  // Remove duplicated links
   links = [...new Set(links)]
 
-  // get quality
+  // Get quality
   const lastArgs = args[args.length - 1]
   let quality = 480
   if (!isNaN(lastArgs)) quality = +lastArgs
 
-  // check if there are links
+  // Check if there are links
   if (!links.length) return msg.reply("There aren't any links in the message!")
 
-  // fetch each link
+  // Fetch each link
   links.forEach(link => {
     ytdlVids(link, client, quality).then(async files => {
-      // no video
       if (!files) {
-        // no video
+        // No video
         await msg.reply(`I wasn't able to find a video in "\`${link}\`".`)
       } else if (files.error === 'File too big') {
-        // file too big
+        // File too big
         await msg.reply({
           content: 'File too big to upload.',
           embeds: [new MessageEmbed()
@@ -76,7 +74,7 @@ exports.run = async (msg, args) => {
             .setFooter('Note that the link may expire quickly')]
         })
       } else {
-        // send video
+        // Send video
         msg.reply({ files })
       }
     })

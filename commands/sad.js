@@ -2,9 +2,9 @@ const { botName } = require('../modules/base')
 
 exports.info = {
   name: 'sad',
-  category: 'Miscellaneous',
+  category: 'Random',
   description: `Let ${botName} cheer you if you're sad!`,
-  usage: 'sad',
+  usage: '`$$sad`',
   permLevel: 'User'
 }
 

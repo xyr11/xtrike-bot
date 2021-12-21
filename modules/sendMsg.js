@@ -5,31 +5,6 @@ const { prefix, time } = require('./base')
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */
   constructor (message) {
-    // Set custom properties -------------------------------------------
-    /**
-     * The original message
-     * @type {Discord.Message|Discord.CommandInteraction}
-     */
-    this.message = message
-    /* Type of the message whether it's a Message or a CommandInteraction */
-    this.isSlash = !!this.message.applicationId
-    this.isMsg = !this.message.applicationId
-    /**
-     * Author of the message
-     * @type {Discord.User}
-     */
-    this.author = message.author ?? message.user
-    /**
-     * Content of the message excluding the prefix and extra spaces before and after text (basically the args)
-     * @type {String}
-     */
-    this.text = message.content.replace(new RegExp(`\\s*(${prefix}|/|pls) *\\w+`), '').replace(/^ *| *$/g, '')
-    /**
-     * The sent response to the message (for the methods)
-     * @type {Discord.Message}
-     */
-    this.sent = undefined
-
     // Set common properties -------------------------------------------
     /** @type {Discord.Client} */
     this.client = message.client
@@ -56,7 +31,7 @@ class SendMsg {
     /** @type {Discord.Collection<Discord.Snowflake, Discord.MessageAttachment>} */
     this.attachments = message.attachments
     /** @type {string} */
-    this.content = message.content
+    this.content = message.content || ''
     /** @type {Discord.GuildMember} */
     this.member = message.member
     /** @type {Discord.MessageReference} */
@@ -71,6 +46,40 @@ class SendMsg {
     this.token = message.token
     /** @type {Discord.CommandInteractionOptionResolver} */
     this.options = message.options
+
+    // Set custom properties -------------------------------------------
+    /**
+     * The original message
+     * @type {Discord.Message|Discord.CommandInteraction}
+     */
+    this.message = message
+    /* Type of the message whether it's a Message or a CommandInteraction */
+    this.isSlash = !!this.message.applicationId
+    this.isMsg = !this.message.applicationId
+    /**
+    * Author of the message
+    * @type {Discord.User}
+    */
+    this.author = message.author ?? message.user
+    /**
+    * Content of the message excluding the prefix and extra spaces before and after text (basically the args)
+    * @type {String}
+    */
+    this.text = this.content.replace(new RegExp(`\\s*(${prefix}|/|pls) *\\w+`), '').replace(/^ *| *$/g, '')
+    /**
+    * The sent response to the message (for the methods)
+    * @type {Discord.Message}
+    */
+    this.sent = undefined
+  }
+
+  /**
+   * The correct way to replace the content of the message, so that other properties will be updated
+   * @param {String} content
+   */
+  setContent (content) {
+    this.content = content
+    this.text = content.replace(new RegExp(`\\s*(${prefix}|/|pls) *\\w+`), '').replace(/^ *| *$/g, '')
   }
 
   /** Console logger. Use `.log()` instead please */

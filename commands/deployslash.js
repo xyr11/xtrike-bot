@@ -15,23 +15,23 @@ exports.info = {
 
 /** @param {import('../modules/sendMsg')} msg */
 exports.run = async msg => {
-  // check if there is a test server given
+  // Check if there is a test server given
   if (!deploySlash && !testingServer) throw new Error('No test server id was found in your config.js')
 
   await msg.reply('Deploying slash commands...')
 
-  // get each command
+  // Get each command
   const body = Array.from(msg.client.commands, ([name, value]) => value.info)
     .filter(a => PermLevels[a.permLevel].level < 4) // filter commands available to bot admins and below
     .map(({ name, description, options }) => ({ name, description, options })) // get the name, description, and options properties
-  // clean description field
+  // Clean description field
   body.forEach(a => {
     a.description = a.description.replace(/{{((?!}}).)+}}/g, ' ') // remove all stuff enclosed by `{{` and `}}`
       .replace(/(\s|\n)+/g, ' ') // remove newlines and double spaces
       .replace(/^ *| *$/g, '') // remove extra spaces before and after the string
   })
 
-  // deploy
+  // Deploy
   const rest = new REST({ version: '9' }).setToken(discordToken)
   rest.put(
     deploySlash

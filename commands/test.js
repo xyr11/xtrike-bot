@@ -24,7 +24,7 @@ exports.info = {
 exports.run = async (msg, args) => {
   const { client } = msg
 
-  // reply
+  // Reply
   await msg.reply(`Test received! ${args.length ? '\nargs: ' + args.join(',') : ''}`)
 
   /** @param {Object|Array} obj */
@@ -32,37 +32,37 @@ exports.run = async (msg, args) => {
 
   /** @type {import('discord.js').MessageEmbed} */
   let debugEmbed
-  // debug options
+  // Debug options
   if (args[0] === 'embed') {
     // should produce a ReferenceError error
     msg.reply(testing_the_error_embed_dont_mind) // eslint-disable-line no-undef
   } else if (args[0] === 'debug') {
-    // message/interaction object
+    // Message/Interaction object
     debugEmbed = { description: '```json\n' + json({ ...msg }) + '```' }
   } else if (args[0] === 'author') {
-    // author user
+    // author User
     debugEmbed = { description: '```json\n' + json(msg.author) + '\n```' }
   } else if (args[0] === 'member') {
-    // author guild member
+    // author guildMember
     debugEmbed = { description: '```json\n' + json(msg.guild.members.cache.get(msg.author.id)) + '\n```' }
   } else if (args[0] === 'reference') {
-    // message reference
+    // Message Reference
     if (msg.isMsg && msg.reference) debugEmbed = { description: '```json\n' + json(msg.channel.messages.cache.get(msg.reference.messageId)) + '\n```' }
   } else if (args[0] === 'bot') {
-    // client bot user
+    // clientUser
     debugEmbed = { description: '```json\n' + json(client.user) + '\n```' }
   } else if (args[0] === 'commands') {
-    // output all commands
+    // Output all commands
     console.log(client.commands)
   } else if (args[0] === 'help') {
-    // return the help info of each command
+    // Return the help info of each command
     if (msg.isMsg) for (const cmd of client.commands.map(a => a.info.name)) client.commands.get('help').run(msg, null, [cmd])
   } else if (args[0] === 'options') {
-    // show interaction options
+    // Show interaction options
     if (msg.isSlash) debugEmbed = { description: '```json\n' + json(msg.options.data) + '\n```' }
   }
 
-  // send debug messages
+  // Send debug embed
   if (!debugEmbed) return
   msg.send({ embeds: [debugEmbed] })
 }

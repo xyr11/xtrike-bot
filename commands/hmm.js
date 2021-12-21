@@ -1,6 +1,6 @@
 exports.info = {
   name: 'hmm',
-  category: 'General',
+  category: 'Random',
   description: 'Reply with "hmm..."',
   usage: '`$$hmm [extra text]`',
   aliases: ['hmmm', 'hmmmm', 'hmmmmm'],

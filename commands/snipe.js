@@ -29,24 +29,26 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
-  // get the nth deleted message
+  await msg.setDefer() // set defer
+
+  // Get the nth deleted message
   let index = !isNaN(args[0]) ? Math.floor(args[0]) : undefined
-  // if given index is less than 1
+  // If given index is less than 1
   if (index && index < 1) index = 1
 
-  // if there is a specified channel then snipe from that channel, if not then snipe from the current channel
+  // If there is a specified channel then snipe from that channel, if not then snipe from the current channel
   let channelId = msg.channelId
-  // channel is in the 2nd arg
+  // Channel is in the 2nd arg
   if (index && args[1]) channelId = isChannel(args[1]) ?? channelId
-  // there's no `number` value, so channel is in the 1st arg
+  // There's no `number` value, so channel is in the 1st arg
   if (!index && args[0]) channelId = isChannel(args[0]) ?? channelId
 
-  // find the channel in the guild
+  // Find the channel in the guild
   const channel = msg.guild.channels.cache.get(channelId)
   // check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
-  // get snipe data
+  // Get snipe data
   const deletes = await sniper('a', channelId)
   if (!deletes && !deletes.length) return msg.reply("There's nothing to snipe!")
 
@@ -59,15 +61,15 @@ exports.run = async (msg, args) => {
    * @property {String} t Created timestamp
    */
   /** @type {Deleted} */
-  // get the deleted entry
+  // Get the deleted entry
   let deleted = deletes
-  // if snipe data is an array, get the index instead
+  // If snipe data is an array, get the index instead
   if (Array.isArray(deletes)) deleted = deletes[index - 1] || deletes[0]
 
-  // remove non-rich embeds
+  // Remove non-rich embeds
   deleted.e = deleted.e.filter(e => e.type === 'rich')
 
-  // create message
+  // Create message
   const author = await msg.client.users.fetch(deleted.a, { force: true }) // get author
   const embeds = []
   const files = []
@@ -79,9 +81,9 @@ exports.run = async (msg, args) => {
       (deleted.e.length ? ' [Message has embeds]' : '')) // if there are embeds
     .setFooter(`#${channel.name}`)
     .setTimestamp(deleted.t))
-  // check if there are any deleted embeds and include them
+  // Check if there are any deleted embeds and include them
   if (deleted.e) deleted.e.forEach(e => embeds.push(e))
-  // check if there are any deleted files
+  // Check if there are any deleted files
   if (deleted.f.length === 1) embeds[0].setImage(deleted.f[0])
   else if (deleted.f.length > 1) deleted.f.forEach(url => files.push(new MessageAttachment(url)))
   await msg.reply({ embeds, files })
