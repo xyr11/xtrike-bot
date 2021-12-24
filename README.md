@@ -19,30 +19,63 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
-### 0.3 ***(Dev To-do List)***
-*Short description not found*
+### 0.3
+New commands and command aliases + other stuff
 
 #### General
-- [ ] Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
+- Unified and modularized logger (5b3f63b)
+- Customizable bot name, description, color and `;info` text (b436be0)
 
-errorCatch
-- [x] Show serialized error object in the console too
+Error catching
+- Show serialized error object in the console too (cde3395)
+
+Slash commands handler
+- Use `interaction.options.data` to get options (0f7110a)
+- Better `options` parser and support for all 8 option types (0f7110a)
+- Retry if "Unknown Interaction" error (0f7110a)
 
 #### Commands
-- [ ] Support for command aliases
-- [ ] More commands?
+- Support for command aliases (1723f8b) and categories (a96f17b)
+- Unified and modularized message sender for both `message` and `interaction` (05c9fa6)
+- When a message is deferred (not a slash command) then react to the message so that the user knows that it's been seen (7a6bab1)
+
+Help
+- Show command aliases (ad32634) and their category (a96f17b) in the help embed
+- Support for aliases (1723f8b) and categories as input (a96f17b)
+- List all commands if there are no inputs (a96f17b)
 
 Image search
-- [ ] New schema spec to support new features and fixes below
-- [ ] Fix the `Cannot read properties of undefined (reading 'IsErroredOnProcessing')` error
-- [ ] Fix the `E11000 duplicate key error collection` error
-- [ ] Check if image already exists in the database to avoid data duplication
-- [ ] Filter images that are deleted or images that no longer exists
-- [ ] Use the dominant color of the image as the embed color instead of the author profile color
-- [ ] Switch autoresponse to `fetchImage.js` so that it can be reloaded using `reload`
+- Moved autoresponse to its own file (21a9a25)
+- Check if image has been deleted and remove it (21a9a25)
+- Use the dominant color of the image as the embed color when displaying search results (21a9a25)
+- Efficiently fetch image data when fetching images and using the `image` command by using async functions (21a9a25)
+- Don't save images which does not have any text (21a9a25)
+- [New schema spec (0.3)](./guides/fetchImage.md) to support new features and fixes below (21a9a25)
+- Support for multiple attachments in message (21a9a25)
+- Check if image already exists in the database by checking image links and using image hashes (21a9a25)
 
-video
-- [ ] Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
+Info
+- Added the bot avatar (b436be0)
+
+message
+- Better text parser and help guide (b71f81d)
+
+ocr
+- Added the `ocr` command to get text from images in attachments or links (cf768ed)
+
+Sniper
+- Record up to 10 snipes and don't save embed updates (04cc0d8)
+
+test
+- Added more slash commands options for testing (2ac9303)
+
+user
+- Added the `user` command to get Discord info about a user (3b8a223)
+
+ytdl and video
+- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports (c70a6b1)
+- added support for specifying video quality (c70a6b1)
+- instead of downloading the video, just use the buffer stream (c70a6b1)
 
 ### 0.2.1
 <details>
@@ -372,12 +405,10 @@ git fetch --all && git reset --hard origin/main && npm i
 <summary>To-do's for future versions</summary>
 
 - Command that temporarily disables other commands
-- Switch commands and autoresponses to Class
-- Auto-generate `Options` field in the help embed from the options property for slash commands
-- Unified and modularized logger
-- Unified and modularized message sender for both `message` and `interaction`
+- Use a unified class for commands
 - Get the total number of messages the bot has sent
 - Re-add `oxford` command
+- Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
 - More probably...
 
 </details>
