@@ -1,1 +1,1 @@
-exports.execute = (...args) => require('../modules/sniper').e('a', ...args)
+exports.execute = require('../modules/sniper').delete

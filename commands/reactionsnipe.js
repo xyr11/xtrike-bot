@@ -3,79 +3,87 @@
  * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
  */
 
-const { Message, Interaction, MessageEmbed, ReactionEmoji, GuildEmoji } = require('discord.js') // eslint-disable-line no-unused-vars
+const Discord = require('discord.js')
+const { isChannel } = require('../modules/base')
 const { sniper } = require('../modules/sniper')
 
 exports.info = {
   name: 'reactionsnipe',
   category: 'General',
   thumbnail: 'https://imgur.com/dRSYp1f.png',
-  description: 'Give the most recently removed reaction in the current or given channel.\n\n' +
+  description: 'Get the most recently removed reactions.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
-  usage: '`$$reactionsnipe [channel]`',
+  usage: '`$$reactionsnipe [number] [channel]`',
+  option: '`[number]`: Get the *nth* removed reaction, default is `1` (most recent) and max is `10` \n `[channel]`: the channel to get deleted messages (optional)',
+  aliases: ['reactsnipe'],
   similar: '`$$snipe` `$$editsnipe`',
   permLevel: 'User',
   dank: true,
   options: [
-    {
-      type: 7, // text channel
-      name: 'channel',
-      description: 'The channel to snipe'
-    }
+    { type: 4, name: 'number', description: 'Get the nth removed reaction' },
+    { type: 7, name: 'channel', description: 'The channel to snipe' }
   ]
 }
 
 /**
- * @param {Message} message
- * @param {Interaction} interaction
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const thing = message || interaction
+exports.run = async (msg, args) => {
+  await msg.setDefer() // set defer
 
-  // if there is a specified channel then snipe from that channel, if
-  // not then snipe from the current channel.
-  // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const channelId = (args[0] && args[0].match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]) ?? thing.channel.id
-  const channel = thing.guild.channels.cache.get(channelId)
+  // Get the nth deleted message
+  let index = !isNaN(args[0]) ? +Math.floor(args[0]) : undefined
+  // If given index is less than 1
+  if (index && index < 1) index = 1
 
-  // check if the given channel is in the same guild
-  if (!channel) return thing.reply("There's nothing to snipe!")
+  // If there is a specified channel then snipe from that channel, if not then snipe from the current channel
+  let channelId = msg.channelId
+  // Channel is in the 2nd arg
+  if (index && args[1]) channelId = isChannel(args[1]) ?? channelId
+  // There's no `number` value, so channel is in the 1st arg
+  if (!index && args[0]) channelId = isChannel(args[0]) ?? channelId
 
-  // get reactionsnipe data
+  // Find the channel in the guild
+  const channel = msg.guild.channels.cache.get(channelId)
+  // Check if the given channel is in the same guild
+  if (!channel) return msg.reply("There's nothing to snipe!")
+
+  // Get reactionsnipe data
+  const reactions = await sniper('c', channelId)
+  // If there's no value
+  if (!reactions && !reactions.length) return msg.reply("There's nothing to snipe!")
+
   /**
    * @typedef {Object} ReactRemove
    * @property {String} a Author id
-   * @property {ReactionEmoji|GuildEmoji} e Emoji
+   * @property {Discord.ReactionEmoji|Discord.GuildEmoji} e Emoji
    * @property {String} i Message id
    * @property {String} t Removed timestamp
    */
   /** @type {ReactRemove} */
-  const reacted = await sniper('c', channelId)
-
-  // if there's no value
-  if (!reacted) return thing.reply("There's nothing to snipe!")
-
-  // message url
-  const messageUrl = `https://discord.com/channels/${thing.guildId}/${channelId}/${reacted.i}`
-
-  // get author
-  const author = await thing.client.users.cache.get(reacted.a)
+  // Get the removed reaction entry
+  let reacted = reactions
+  // If reactionsnipe data is an array, get the index instead
+  if (Array.isArray(reactions)) reacted = reactions[index - 1] || reactions[0]
 
   /**
-   * @param {ReactionEmoji|GuildEmoji} emoji
+   * @param {Discord.ReactionEmoji|Discord.GuildEmoji} emoji
    * @returns Emoji string
    */
   const formatEmoji = emoji => !emoji.id || emoji.available
     ? emoji.s // bot has access or unicode emoji
     : `[:${emoji.name}:](${emoji.url})` // bot cannot use the emoji
 
-  // create embed
-  const embed = new MessageEmbed()
-    .setAuthor(author.tag, author.avatarURL(), messageUrl)
-    .setColor(author.hexAccentColor)
-    .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${messageUrl})`)
-    .setFooter(`#${channel.name}`)
-    .setTimestamp(reacted.t)
-  await thing.reply({ embeds: [embed] })
+  // Create embed
+  const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${reacted.i}` // message url
+  const author = await msg.client.users.fetch(reacted.a, { force: true }) // get author
+  msg.reply({
+    embeds: [new Discord.MessageEmbed()
+      .setAuthor(author.tag, author.avatarURL(), msgUrl)
+      .setColor(author.hexAccentColor)
+      .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${msgUrl})`)
+      .setFooter(`#${channel.name}`)
+      .setTimestamp(reacted.t)]
+  })
 }

@@ -19,6 +19,64 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
+### 0.3
+New commands and command aliases + other stuff
+
+#### General
+- Unified and modularized logger
+- Customizable bot name, description, color and `;info` text
+
+Error catching
+- Show serialized error object in the console too
+
+Slash commands handler
+- Use `interaction.options.data` to get options
+- Better `options` parser and support for all 8 option types
+- Retry if "Unknown Interaction" error
+
+#### Commands
+- Support for command aliases and categories
+- Unified and modularized message sender for both `message` and `interaction`
+- When a message is deferred (not a slash command) then react to the message so that the user knows that it's been seen
+
+Help
+- Show command aliases and their category in the help embed
+- Support for aliases and categories as input
+- List all commands if there are no inputs
+
+Image search
+- Moved autoresponse to its own file
+- Check if image has been deleted and remove it
+- Use the dominant color of the image as the embed color when displaying search results
+- Efficiently fetch image data when fetching images and using the `image` command by using async functions
+- Don't save images which does not have any text
+- [New schema spec (0.3)](./guides/fetchImage.md) to support new features and fixes below
+- Support for multiple attachments in message
+- Check if image already exists in the database by checking image links and using image hashes
+
+Info
+- Added the bot avatar
+
+message
+- Better text parser and help guide
+
+ocr
+- Added the `ocr` command to get text from images in attachments or links
+
+Sniper
+- Record up to 10 snipes and don't save embed updates
+
+test
+- Added more slash commands options for testing
+
+user
+- Added the `user` command to get Discord info about a user
+
+ytdl and video
+- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
+- added support for specifying video quality
+- instead of downloading the video, just use the buffer stream
+
 ### 0.2.1
 <details>
 <summary>Updates on config file, ytdlVideos, reload, sniper & added some files</summary>
@@ -284,16 +342,27 @@ console.log(stats)
 + [Replit account (optional)](https://replit.com)
 
 ### Configure repository
-*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot). *If not*, then clone the repository via Git by opening your console and entering the following command:
+*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+
+*If not*, then clone the repository via Git by opening your console and entering the following commands:
 ```
 cd "C:/path/of/repo/folder"
-git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot && npm i
+git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot
+npm i
 ```
 
+### Set up the bot account
+On https://discord.com/developers/applications, click "New Application". Add your application name and press "Create" to create a new application. You can set your bot description in this page.
+
+After that, go to the "Bot" tab. Click the "Add Bot" button and press the confirmation button. After that, enable all privileged intents in the "Privileged Gateway Intents" tab so that the bot can properly fetch data. You can also set a custom bot name and bot avatar in this page.
+
+### Add config variables
 After that, rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot. There are comments to help you out.
 
 ### Run repository
-*If you're on Replit*, press the big "**Run**" button. *If not*, open your console and enter the following command to start your bot:
+*If you're on Replit*, press the big "Run" button.
+
+*If not*, open your console and enter the following command to start your bot:
 ```
 npm start
 ```
@@ -310,14 +379,17 @@ You can customize the bot by replacing the default value of the optional variabl
 
 Variable | Default value | Description
 -- | -- | --
-`botPrefix` | "`;`" | Prefix of the bot. You can do more than 1 symbol here BUT not a whole word. This will have no effect if the user used slash commands (if slash commands are already deployed).
-`botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change
-`timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+`botPrefix` | "`;`" | You can use more than 1 character here and any character except a space. This will have no effect if user used slash commands (if slash commands are deployed).
+`botName` | "`Xtrike Bot`" | Name of the bot.
+`botDescription` | "`Xtrike Bot is a multi-purpose bot.`" | Description of the bot. It can have multiple lines and Discord embed formatting.
+`botColor` | "`#E3E5E8`" | Used for the color of embeds sent by the bot. Use a hex color value like "#RRGGBB".
+`infoFields` | Check file | Info fields. This is an array of fields that will be shown in the `;info` embed. Fields needs a `name` and `value` property, and they support Discord embed formatting too.
+`botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change.
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
-`status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`
-`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`
+`status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`.
+`actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`.
 `actName` | "`;info`" | Activity name, the text that will show up in "Playing..."
-`isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`
+`isMobile` | `false` | If you want to set the status to "Online in mobile device". If true, this will ignore `actType`.
 
 </details>
 
@@ -332,15 +404,11 @@ git fetch --all && git reset --hard origin/main && npm i
 <details>
 <summary>To-do's for future versions</summary>
 
-- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
-- Support for command aliases
 - Command that temporarily disables other commands
-- Switch commands and autoresponses to Class
-- Auto-generate `Options` field in the help embed from the options property for slash commands
-- Unified and modularized logger
-- Unified and modularized message sender for both `message` and `interaction`
+- Use a unified class for commands
 - Get the total number of messages the bot has sent
 - Re-add `oxford` command
+- Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
 - More probably...
 
 </details>

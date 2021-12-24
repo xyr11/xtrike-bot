@@ -1,1 +1,1 @@
-exports.execute = (...args) => require('../modules/sniper').e('c', ...args)
+exports.execute = require('../modules/sniper').react

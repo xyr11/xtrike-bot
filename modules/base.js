@@ -1,18 +1,29 @@
-const { Intents, Message, Interaction } = require('discord.js') // eslint-disable-line no-unused-vars
-const chalk = require('chalk')
-const { botPrefix, status, actType, actName, timezone } = require('../config')
+const { Intents, Permissions } = require('discord.js')
+let { prefix, botName, botDescription, botColor, infoFields, status, actType, actName } = require('../config')
+const { logUrgent } = require('./logger')
 
 /** Bot intents */
 const intents = [
   Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_VOICE_STATES,
+  Intents.FLAGS.GUILD_PRESENCES,
   Intents.FLAGS.GUILD_MESSAGES,
   Intents.FLAGS.GUILD_MESSAGE_REACTIONS
 ]
 /** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
 const partials = ['MESSAGE', 'REACTION', 'USER']
 
-/** Prefix of the bot */
-const prefix = botPrefix || ';'
+// Bot name
+botName = botName || 'Xtrike Bot'
+// Bot description
+botDescription = botDescription || 'Xtrike Bot is a multi-purpose bot.'
+// Info fields
+if (typeof infoFields !== 'object') infoFields = {}
+// Bot color
+botColor = botColor || '#E3E5E8'
+// Bot prefix
+prefix = prefix || ';'
 
 // User ids of various important people
 /** Bot developer user ids */
@@ -36,13 +47,6 @@ const colors = {
 }
 
 /**
- * Get date and time string formatted using the timezone given in .env
- * @param {String} [unixTime] Unix time
- * @returns {String} Date and time string
- */
-const time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: timezone ?? 'Etc/GMT' })
-
-/**
  * Return a formatted Discord time string
  * @param {String} [unixTime] Unix time
  * @param {String} [suffix] Custom suffix.
@@ -60,44 +64,38 @@ const time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us',
 const discordTime = (unixTime = Date.now(), suffix = '') => `<t:${Math.floor(unixTime / 1000)}${suffix ? ':' + suffix : ''}>`
 
 /**
- * Get user from Message or Interaction
- * @param {Message|Interaction} thing
- * @returns User object
+ * Check if string is a Discord channel.
+ * @param {String} text Channel in "`<#11111111111111111>`" format
+ * @returns {String} Channel id
  */
-const user = thing => thing.author ?? thing.user
+// valid snowflakes have 17-20 numbers (see /guides/snowflakes.md)
+const isChannel = text => text && text.match(/(?<=<#)[0-9]{17,20}(?=>)/) && text.match(/(?<=<#)[0-9]{17,20}(?=>)/)[0]
 
 /** The different permission levels and their checks */
 const PermLevels = {
   lmao: {
     level: 5,
-    // Check the list of developer user ids
-    check: message => devs.includes(user(message).id)
+    // Check if the message author is in the list of developers
+    /** @param {import('./sendMsg')} msg */
+    check: msg => devs.includes(msg.author.id)
   },
   'Bot Support': {
     level: 4,
-    // Check the list of botSupport user ids
-    check: message => botSupport.includes(user(message).id)
+    // Check if the message author is in the list of bot support people
+    /** @param {import('./sendMsg')} msg */
+    check: msg => botSupport.includes(msg.author.id)
   },
-  'Server Owner': {
+  Administrator: {
     level: 3,
-    // If the guild owner id matches the message author's ID, then it will return true.
-    check: message => message.guild?.ownerId === user(message).id
+    // Check if the message author has the 'Administrator' permission
+    /** @param {import('./sendMsg')} msg */
+    check: msg => msg.guild.members.cache.get(msg.author.id).permissions.any(Permissions.FLAGS.ADMINISTRATOR)
   },
   Moderator: {
     level: 2,
-    // The following lines check the guild the message came from for the roles.
-    // Then it checks if the member that authored the message has the role.
-    // If they do return true, which will allow them to execute the command in question.
-    // If they don't then return false, which will prevent them from executing the command.
-    check: message => {
-      try {
-        const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase()) ||
-          message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase())
-        if (modRole && message.member.roles.cache.has(modRole.id)) return true
-      } catch (e) {
-        return false
-      }
-    }
+    // Check if the message author has the 'Manage Messages' or 'Manage Roles' permission
+    /** @param {import('./sendMsg')} msg */
+    check: msg => msg.guild.members.cache.get(msg.author.id).permissions.any(Permissions.FLAGS.MANAGE_MESSAGES + Permissions.FLAGS.MANAGE_ROLES)
   },
   User: {
     level: 1,
@@ -107,16 +105,16 @@ const PermLevels = {
 
 /**
  * Get the user permission level
- * @param {Client} message Client message
+ * @param {import('./sendMsg')} msg Client message
  * @returns {Number} The permission level
  */
-const userPerms = message => {
-  // get the user perm level
+const userPerms = msg => {
+  // Get the user perm level
   let userPermLevel = 1
-  // by checking each permission
+  // By checking each permission
   for (const perm of Object.values(PermLevels)) {
-    // record the *highest* perm level the user have
-    if (perm.check(message) && userPermLevel < perm.level) userPermLevel = perm.level
+    // Record the *highest* perm level the user have
+    if (perm.check(msg) && userPermLevel < perm.level) userPermLevel = perm.level
   }
   return userPermLevel
 }
@@ -124,20 +122,20 @@ const userPerms = message => {
 /**
  * Check if user has the appropriate permission level for a certain command
  * @param {Object} command The command object
- * @param {Discord} message Discord  message
+ * @param {import('./sendMsg')} msg Discord message
  * @returns {Boolean} True or false
  */
-const hasPerms = (command, message) => {
-  // find the object that has the same name as the permName
+const hasPerms = (command, msg) => {
+  // Get the perm object
   const perm = PermLevels[command.info.permLevel]
   if (perm) {
-    // check if the user perm level is equal to or greater than the perm given
-    return userPerms(message) >= perm.level
+    // Check if the user perm level is equal to or greater than the perm given
+    return userPerms(msg) >= perm.level
   } else {
-    console.log(chalk.red(`Error: No ${command.info.permLevel} permLevel for ${command}!`))
+    logUrgent(`Error: No ${command.info.permLevel} permLevel for ${command}!`)
     return false
   }
 }
 
-// export the variables
-module.exports = { intents, partials, prefix, botSupport, devs, presence, colors, time, discordTime, user, PermLevels, userPerms, hasPerms }
+// Export the variables
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }

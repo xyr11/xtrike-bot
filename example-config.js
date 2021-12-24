@@ -1,5 +1,33 @@
 // Inspired by https://github.com/AnIdiotsGuide/guidebot (config.js.example), MIT License
 
+// Main bot stuff
+// Prefix of the bot (optional, default is ";") ========================
+// You can use more than 1 character here and any character except a
+// space. This will have no effect if user used slash commands (if slash
+// commands are deployed).
+const botPrefix = ';'
+// Name of the bot (optional) ==========================================
+const botName = 'Xtrike Bot'
+// Description of the bot (optional) ===================================
+// It can have multiple lines and Discord embed formatting.
+const botDescription = 'Xtrike Bot is a multi-purpose bot.'
+// Bot theme color (optional) ==========================================
+// Used for the color of embeds sent by the bot. Use a hex color value
+// like "#RRGGBB". Default value is "#E3E5E8"
+const botColor = '#E3E5E8'
+// Info fields (optional) ==============================================
+// This is an array of fields that will be shown in the `;info` embed.
+// Fields needs a `name` and `value` property, and they support Discord
+// embed formatting too.
+const infoFields = [
+  {
+    name: '💬 Commands',
+    value: `Prefix: \`${botPrefix}\`
+For commands, type \`${botPrefix}commandName\`.
+To get help, enter \`${botPrefix}help commandName\``
+  }
+]
+
 // Discord Client ID and token =========================================
 // Can be found in https://discord.com/developers/applications
 // Go to the OAuth2 tab > Client information > Client ID
@@ -17,13 +45,6 @@ const mongoURI = 'mongodb://username:password@host/'
 // For multiple keys, split them using a pipe ("|")
 const ocrApi = 'your-ocrspace-key'
 
-// Prefix of the bot (optional, default is ";") ========================
-// You need to place the prefix of the bot in every command to run it,
-// so make sure that it's easy to type. You can do more than 1 symbol
-// here BUT not a whole word. This will have no effect if the user
-// used slash commands (if slash commands are already deployed).
-const botPrefix = ';'
-
 // User IDs of people that has the 'Developer' role ====================
 // They can reload a command, reboot the bot, and deploy slash
 // commands. They also have access to beta commands (`isBeta: true`).
@@ -39,11 +60,6 @@ const botSupport = [
   // add values
   '012345678901234567'
 ]
-
-// Timezone (for console logging of time) ==============================
-// Needs to be a valid TZ name, you can learn more about it on
-// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-const timezone = 'Etc/GMT'
 
 // Slash commands options
 // Deploy slash commands in all servers? ===============================
@@ -69,4 +85,5 @@ const actName = ';info'
 const isMobile = false
 
 // export the variables
-module.exports = { clientId, discordToken, mongoURI, ocrApi, botPrefix, devs, botSupport, timezone, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }
+// don't touch this please!
+module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, devs, botSupport, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }

@@ -1,8 +1,7 @@
-const { Client } = require('discord.js') // eslint-disable-line no-unused-vars
-const chalk = require('chalk')
 const express = require('express')
 const cors = require('cors')
 const { getInfo, getKeys, getAll } = require('../modules/botInfo')
+const { logGood } = require('./logger')
 
 const app = express()
 
@@ -18,12 +17,12 @@ app.delete('*', (req, res) => {
   res.status(404)
 })
 
-// api to check the bot status
+// Api to check the bot status
 app.all('/', (req, res) => {
   res.status(200).send('le alive')
 })
 
-// get bot statistics
+// Get bot statistics
 app.all('/stats', async (req, res) => {
   const stats = {};
   (await getAll()).forEach(e => { stats[e._id] = e.d })
@@ -44,6 +43,4 @@ app.all('/stats/:id', async (req, res) => {
   else res.status(404).send()
 })
 
-module.exports = () => app.listen(3000, () => {
-  console.log(chalk.green('Server is up 🚀'))
-})
+module.exports = () => app.listen(3000, () => logGood('Server is up 🚀'))

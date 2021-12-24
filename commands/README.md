@@ -23,7 +23,9 @@ Command | Added | Status
 `editsnipe` | 0.2.0 | ✅
 `reactionsnipe` | 0.2.0 | ✅
 `stats`     | 0.2.0 | ✅
-`oxford`    |  ???  | 🔨
+`video`     | 0.3.0 | ✅
+`user`      | 0.3.0 | ✅
+`ocr`       | 0.3.0 | ✅
 
 ### All pre-v0.1 commands
 <details>
@@ -43,7 +45,7 @@ Command | Comments
 ~~`pls`~~   | 🚫
 `hmm`       |
 `test`      |
-~~`oxford`~~| (Added on v0.0.4) 🔨
+~~`oxford`~~| 🔨
 
 </details>
 

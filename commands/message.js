@@ -1,22 +1,21 @@
-const { Message, MessageEmbed, MessagePayload } = require('discord.js') // eslint-disable-line no-unused-vars
+const { MessageEmbed } = require('discord.js')
 
 exports.info = {
   name: 'message',
-  category: 'Developer',
+  category: 'General',
   description: 'Message as the bot',
   usage: '`$$message [messageId] [<content> and/or <embed>]`',
-  option: '`[messageId]` is the message id of the message to reply to (optional)\n' +
-    '`<content>` is the content of the message\n' +
-    '`<embed>` is an embed. To create an embed, the options are: \n' +
-`- \`$a\`: Author, \`$n\`: Author icon (url), \`$r\`: Author link (url)
-- \`$t\`: Title, \`$u\`: Title link (url)
-- \`$d\`: Description
-- \`$c\`: Color (names on all caps like "BLUE", or hex "#042069")
-- \`$i\`: Image (url), \`$h\`: Thumbnail (small image at the top) (url)
-- \`$f\`: Footer, \`$o\`: Footer icon (url)
-- \`$s\`: Timestamp (none, "2020-03-11", or "11:11:11 AM March 11, 2020")
-You can remove extra options, but a title, description, or author is required. \n\n` +
-    'Example: `;message Content $a Author $t Title $d Description $c #ffffff $f Footer $s`. Try it out to see where stuff goes, especially the embed options.',
+  option: '`[messageId]`: the id of the message to reply on (optional)\n' +
+    '`<content>`: content of the message\n' +
+    '`<embed>`: embed of the message. To create one, add the following prefixes that correspond to parts of an embed (the author, body, OR title is required): \n' +
+    '— `$a`: Author, `$r`: Author link (it will turn the author part to a link), `$n`: Author icon (url of the icon) \n' +
+    '— `$t`: Title, `$u`: Title link \n' +
+    '— `$d`: Body or description (Discord formatting works here!) \n' +
+    '— `$c`: Color (Common names like "blue" or hex values like "#77E4FF") \n' +
+    '— `$i`: Image (url), `$h`: Thumbnail (a small image at the corner) (url) \n' +
+    '— `$f`: Footer, `$o`: Footer icon (url) \n' +
+    '— `$s`: Timestamp ("2020-03-11", "11:11:11 AM March 11, 2020", "1583925071000", or just the prefix only) \n\n' +
+    '**Example:** `;msg check below! $d **body!!** $c #E4676E $t Rly 😎 embd titl $f bottom text $s`',
   aliases: ['msg'],
   permLevel: 'User',
   requiredArgs: true
@@ -29,112 +28,91 @@ You can remove extra options, but a title, description, or author is required. \
 const clean = text => text.replace(/^\s*|\s*$/gs, '')
 
 /**
- * Format string to a correct dateString
- * @param {String} input
- * @returns {Number|String} dateString
- */
-const date = input => {
-  const unixTime = input.match(/^[0-9]+$/)
-  // if string is unix time then convert it to a number, if not then return the string
-  return unixTime ? +unixTime[0] : input
-}
-
-/**
- * @param {Message} message
+ * @param {import('../modules/sendMsg')} msg
  * @param {Array} args
  */
-exports.run = async (message, interaction, args) => {
-  const channel = message.channel // current channel
+exports.run = async (msg, args) => {
+  // Check if command is run via slash commands
+  msg.setEphemeral()
+  if (msg.isSlash) return msg.reply('Please use `;message` instead because slash commands is not supported.')
 
-  // text parser
+  let { channel, text } = msg
+
+  /*
+  Structure of the command:
+  ;message 802494274238808105 Content $t Title $d Description $a author $c #000 $s $i example.com
+  |______| |________________| |_____| |_________________________________________________________|
+  command   msg to reply on  msg content         msg embed (check the options above)
+  */
+
+  // Get message id of the message to reply to, if there's anything
+  // Valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
+  const replyMsgId = text.search(/[0-9]{17,21}/) === 0 ? text.match(/[0-9]{17,21}\s*/g)[0] : ''
+  text = text.substring(replyMsgId.length) // remove from the text variable
+
+  // Get message content
   /** @type {String} */
-  const text = args.join(' ')
-  // sample input: `;message 802494274238808105 Content $t Title $d Description $a author $c #000 $s $i example.com`
+  const contentText = text.match(/^((?!\$[A-z]).)+((?=\$[A-z])|$)/s)
+  const content = contentText ? contentText[0] : ''
 
-  // get message id of the message to reply to, if there's anything
-  // valid snowflakes have 17-20 numbers (see guides/snowflakes.md)
-  const replyMsg = text.search(/[0-9]{17,21}/) === 0 ? text.match(/[0-9]{8,25}\s*/g)[0] : ''
-
-  // get message content
-  /** @type {String} */
-  let content = text.substring(replyMsg.length).match(/^((?!\$[A-z]).)+((?=\$[A-z])|$)/s)
-  content = content ? content[0] : ''
-
-  // setup embed
-  const textEmbed = text.substring(replyMsg.length + content.length)
+  // Get embed
+  const embedText = text.substring(content.length) // remove the content from var
   let embed
-  const embedRgx = {
-    t: 'setTitle',
-    d: 'setDescription',
-    a: 'setAuthor',
-    u: 'setURL',
-    c: 'setColor',
-    f: 'setFooter',
-    i: 'setImage',
-    h: 'setThumbnail'
-    // TODO: fields
-  }
-  const embedAddonsRgx = {
-    n: (embed, value) => embed.author ? embed.setAuthor(embed.author.name, value) : '',
-    r: (embed, value) => embed.author ? embed.setAuthor(embed.author.name, embed.author.iconURL || '', value) : '',
-    o: (embed, value) => embed.footer ? embed.setFooter(embed.footer.text, value) : ''
-  }
-  if (textEmbed.match(/(?<=\$(t|d|a) *(?=\S))/s)) {
-    embed = new MessageEmbed()
-    // check each property of embedRgx
-    for (const key of Object.keys(embedRgx)) {
-      const regex = new RegExp(`(?<=\\$${key} *)((?!\\$[A-z]).)+`, 's')
-      // get matches
-      const match = textEmbed.match(regex)
-      // if there is a match then get the value
+  if (embedText && embedText.match(/(?<=\$(t|d|a) *(?=\S))/s)) {
+    const embData = {}
+    // Check all options and add them on the embed variable as a property
+    const strProperties = { a: 'authorName', r: 'authorUrl', n: 'authorIcon', t: 'title', u: 'url', d: 'description', c: 'hexColor', i: 'image', h: 'thumbnail', f: 'footerText', o: 'footerIcon' }
+    for (const key of Object.keys(strProperties)) {
+      const match = embedText.match(new RegExp(`(?<=\\$${key} *)((?!\\$[A-z]).)+`, 's'))
+      // If there is a match then add to the `value` variable
       const value = match ? clean(match[0]) : ''
-      // if there is a match then set that value to the embed
-      if (value) embed[embedRgx[key]](value)
+      // Store the value to the given property name
+      if (value) embData[strProperties[key]] = value
     }
-    // check each property of embedAddonsRgx
-    // these are passed as extra arguments in the MessageEmbed methods
-    // so they are separated from embedRgx
-    for (const key of Object.keys(embedAddonsRgx)) {
-      const regex = new RegExp(`(?<=\\$${key} *)((?!\\$[A-z]).)+`, 's')
-      const match = textEmbed.match(regex)
-      const value = match ? clean(match[0]) : ''
-      // if there is a match then run the function that sets the value
-      if (value) embedAddonsRgx[key](embed, value)
-    }
-
-    // manually set the timestamp option
-    const time = textEmbed.match(/(?<=\$s *)((?!\$[A-z]).)*/s) // check if there is `$s`
+    // Transform embData to a message embed
+    embed = new MessageEmbed(embData)
+    // Set color, author, and footer values
+    const { hexColor, authorName, authorUrl, authorIcon, footerText, footerIcon } = embData
+    if (embData.hexColor) embed.setColor(hexColor.toUpperCase())
+    if (authorName) embed.setAuthor(authorName, authorIcon, authorUrl)
+    if (footerText) embed.setFooter(footerText, footerIcon)
+    // Manually set the timestamp option
+    // check if there is `$s`
+    const time = embedText.match(/(?<=\$s *)((?!\$[A-z]).)*/s)
     // if there is a value after `$s` then use that value, if there are no values then use the current time
-    if (time) embed.setTimestamp(date(clean(time[0])) || Date.now())
+    if (time) {
+      let timestamp = clean(time[0])
+      // if string is unix time then convert it to a number
+      const unixTime = timestamp.match(/^[0-9]+$/)
+      timestamp = unixTime ? +unixTime[0] : new Date(timestamp || new Date())
+      embed.setTimestamp(timestamp)
+    }
   }
 
-  // prepare message
-  /** @type {Message} */
-  const finalMessage = {}
-  if (content) finalMessage.content = content
-  if (embed) finalMessage.embeds = [embed]
+  // Set the message var to send
+  /** @type {import('discord.js').Message} */
+  const parsed = {}
+  if (clean(content)) parsed.content = clean(content)
+  if (embed && JSON.stringify(embed) !== '{}') parsed.embeds = [embed]
 
-  // fetch the message if there is a given message id
-  /** @type {Message} */
-  let fetchedMsg
-  if (replyMsg) {
-    const messages = await channel.messages.fetch({ limit: 100 })
-    fetchedMsg = messages.get(clean(replyMsg))
-  }
-  // check if input has valid content or embed
+  // Fetch the message to reply to if there is a given message id
+  /** @type {import('discord.js').Message} */
+  const fetchedMsg = clean(replyMsgId) ? await channel.messages.fetch(clean(replyMsgId), { force: true }) : ''
+
+  // Check if there are valid inputs
   if (content || embed) {
-    // if the message is found
-    if (fetchedMsg) await fetchedMsg.reply(finalMessage)
-    // if the message is not found or there are no given message id
-    else await channel.send(finalMessage)
+    // If the message to reply to is found, reply to that message
+    if (fetchedMsg) await fetchedMsg.reply({ ...parsed, allowedMentions: { repliedUser: false } })
+    // If the message is not found or there are no given message id, just send it
+    else await channel.send(parsed)
   } else {
-    message.author.send("There's no valid content or embed found in your message.")
+    msg.author.send({ embeds: [{ description: `I can't find a valid input in your message. Please try again. \nYour message: \`${msg.content}\`` }] })
   }
 
-  // delete user message
-  message.delete().catch(err => {
+  // Delete user message
+  msg.message.delete().catch(err => {
     // if the bot doesn't have permissions then dm the user
-    if (err.message === 'Missing Permissions') return message.author.send(`I cannot delete your message because I have missing permissions in <#${channel.id}>`)
-    require('../modules/errorCatch')(err, message.client, message)
+    if (err.message === 'Missing Permissions') return msg.author.send({ embeds: [{ description: `I can't delete your message because I have missing permissions in <#${channel.id}>.` }] })
+    require('../modules/errorCatch')(err, msg.client, msg)
   })
 }
