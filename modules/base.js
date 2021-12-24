@@ -14,15 +14,15 @@ const intents = [
 /** Bot partials (https://discordjs.guide/popular-topics/partials.html) */
 const partials = ['MESSAGE', 'REACTION', 'USER']
 
-// bot name
+// Bot name
 botName = botName || 'Xtrike Bot'
-// bot description
+// Bot description
 botDescription = botDescription || 'Xtrike Bot is a multi-purpose bot.'
-// info fields
+// Info fields
 if (typeof infoFields !== 'object') infoFields = {}
-// bot color
+// Bot color
 botColor = botColor || '#E3E5E8'
-// bot prefix
+// Bot prefix
 prefix = prefix || ';'
 
 // User ids of various important people
@@ -109,11 +109,11 @@ const PermLevels = {
  * @returns {Number} The permission level
  */
 const userPerms = msg => {
-  // get the user perm level
+  // Get the user perm level
   let userPermLevel = 1
-  // by checking each permission
+  // By checking each permission
   for (const perm of Object.values(PermLevels)) {
-    // record the *highest* perm level the user have
+    // Record the *highest* perm level the user have
     if (perm.check(msg) && userPermLevel < perm.level) userPermLevel = perm.level
   }
   return userPermLevel
@@ -126,10 +126,10 @@ const userPerms = msg => {
  * @returns {Boolean} True or false
  */
 const hasPerms = (command, msg) => {
-  // get the perm object
+  // Get the perm object
   const perm = PermLevels[command.info.permLevel]
   if (perm) {
-    // check if the user perm level is equal to or greater than the perm given
+    // Check if the user perm level is equal to or greater than the perm given
     return userPerms(msg) >= perm.level
   } else {
     logUrgent(`Error: No ${command.info.permLevel} permLevel for ${command}!`)
@@ -137,5 +137,5 @@ const hasPerms = (command, msg) => {
   }
 }
 
-// export the variables
+// Export the variables
 module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }

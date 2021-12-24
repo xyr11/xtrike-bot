@@ -29,27 +29,27 @@ const { getInfo, storeInfo } = require('./botInfo')
  * @prop {Number}  w   Timestamp (use `getTimestamp()`)
  */
 
-// variables and functions in creating a unique guild identifier
+// Variables and functions in creating a unique guild identifier
 
-// internal counter
+// Internal counter
 let counter = 0
 const getCounter = () => counter
-// when the bot starts, get the counter from the database
+// When the bot starts, get the counter from the database
 const syncCounter = async () => await getInfo('imageCounter').then(value => { counter = value || 0 })
 syncCounter()
 
-/** function to generate a random character */
+/** Function to generate a random character */
 const randChar = () => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[Math.floor(Math.random() * 52)]
 
 /**
- * variable for guild identifiers
+ * Variable for guild identifiers
  *
  * Format: Map<`guildId`, `guildIdentifier`>
  * @type {Map<String, String>}
  */
 const guildIdentifiers = new Map()
 const getGuildIdentifiers = () => guildIdentifiers
-// also get all guild identifiers from the database
+// Also get all guild identifiers from the database
 const syncGuildIdentifiers = async () => ImagesModel.find({ f: true }).then(fetchedConfig => {
   if (!fetchedConfig) return
   for (const config of fetchedConfig) guildIdentifiers.set(config.g, config._id)
@@ -92,14 +92,14 @@ const imgEntry = {
    */
   update: async object => {
     const { _id } = object
-    // check if there are any entries with the same id
+    // Check if there are any entries with the same id
     const results = await ImagesModel.find({ _id })
-    // if there are, then update that one
+    // If there are, then update that one
     if (results.length) {
       delete object._id // delete the id because it wont be updated
       await ImagesModel.updateOne({ _id }, object)
     } else {
-      // if there are no entries then create a new one instead
+      // If there are no entries then create a new one instead
       imgEntry.add(object)
     }
   },
@@ -112,14 +112,14 @@ const imgEntry = {
    */
   set: async (object, oldId = null) => {
     const { _id } = object
-    // check if there are any entries with the same id
+    // Check if there are any entries with the same id
     const results = await ImagesModel.find({ _id: oldId || _id })
-    // if there are, then replace that one
+    // If there are, then replace that one
     if (results.length && !oldId) {
       delete object._id // delete the id because it wont be updated
       await ImagesModel.updateOne({ _id }, object)
     } else {
-      // if there are no entries or `_id` is updated then create a new one instead
+      // If there are no entries or `_id` is updated then create a new one instead
       await imgEntry.add(object)
       if (oldId) await imgEntry.remove(oldId)
     }
@@ -140,11 +140,11 @@ const config = {
      * @param {String} channelId message.channelId
      */
     channel: async (configEntry, channelId) => {
-      // get the array
+      // Get the array
       const excluded = configEntry.d.e
-      // remove the channel from the array
+      // Remove the channel from the array
       excluded.splice(excluded.indexOf(channelId), 1)
-      // update config entry
+      // Update config entry
       await imgEntry.update({ _id: configEntry._id, d: { e: excluded } })
     },
 
@@ -153,10 +153,10 @@ const config = {
      * @param {import('./sendMsg')} message message
      */
     server: async message => {
-      // generate guild identifier
+      // Generate guild identifier
       counter++ // add 1 to counter
       const guildIdentifier = counter + randChar() + randChar()
-      // create new config entry
+      // Create new config entry
       /** @type {ConfigEntry} */
       const configEntry = {
         f: true,
@@ -208,7 +208,7 @@ const fetchImageUrl = async (imageUrl, client) => {
       buffer = await fetched.buffer() // get image buffer
     } catch (err) {
       if (err.name !== 'FetchError') {
-        // stop the infinite loop if bot encountered an error NOT related to FetchError
+        // Stop the infinite loop if bot encountered an error NOT related to FetchError
         ok = false
         require('../modules/errorCatch')(err, client)
       }
@@ -222,25 +222,25 @@ const fetchImageUrl = async (imageUrl, client) => {
  * @param {String} guildId
  */
 const updatePreV020 = async () => {
-  // find entries created below v0.2.0
+  // Find entries created below v0.2.0
   const oldDatas = await imgEntry.getAll({ data: { $exists: true } })
-  // if there are none, it means that all are updated
+  // If there are none, it means that all are updated
   if (oldDatas.length === 0) return
 
   for (const oldData of oldDatas) {
-    // please look at guides/fetchImage.md for more info!
+    // Please look at guides/fetchImage.md for more info!
 
-    // get variables
+    // Get variables
     const { _id, guildId: guild, data, excludedChannels, totalToday, messageInit } = oldData
 
-    // check if there is an updated config entry for the guild
+    // Check if there is an updated config entry for the guild
     let guildIdentifier = guildIdentifiers.get(guild)
     if (guildIdentifier) {
-      // generate guild identifier
-      counter++ // add 1 to counter
+      // Generate guild identifier
+      counter++ // Add 1 to counter
       guildIdentifier = counter + randChar() + randChar()
 
-      // add new config entry with new _id
+      // Add new config entry with new _id
       /** @type {ConfigEntry} */
       const configEntry = {
         f: true,
@@ -257,12 +257,12 @@ const updatePreV020 = async () => {
       await storeInfo('imageCounter', counter) // update counter
     }
 
-    // add each input entry to their own input entries
+    // Add each input entry to their own input entries
     for (const d of data) {
       let { url, channel, id, author, image, text, when } = d
       id = url ? url.match(/(?<=\/)[0-9]+$/)[0] : id // extract message id from url
 
-      // add new input entry
+      // Add new input entry
       /** @type {InputEntry} */
       const inputEntry = {
         f: false,
@@ -277,7 +277,7 @@ const updatePreV020 = async () => {
       await imgEntry.set(inputEntry) // save input entry to db
     }
 
-    // delete old entry
+    // Delete old entry
     await imgEntry.remove(_id)
   }
 }
@@ -289,5 +289,5 @@ const updatePreV020 = async () => {
  */
 const awaitImgHash = input => new Promise((resolve, reject) => { imageHash(input, 10, true, (err, data) => { if (err) reject(err); resolve(data) }) })
 
-// export the variables
+// Export the variables
 module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, config, fetchImageUrl, updatePreV020, awaitImgHash }

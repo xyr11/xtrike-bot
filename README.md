@@ -23,59 +23,59 @@ Hang tight.
 New commands and command aliases + other stuff
 
 #### General
-- Unified and modularized logger (5b3f63b)
-- Customizable bot name, description, color and `;info` text (b436be0)
+- Unified and modularized logger
+- Customizable bot name, description, color and `;info` text
 
 Error catching
-- Show serialized error object in the console too (cde3395)
+- Show serialized error object in the console too
 
 Slash commands handler
-- Use `interaction.options.data` to get options (0f7110a)
-- Better `options` parser and support for all 8 option types (0f7110a)
-- Retry if "Unknown Interaction" error (0f7110a)
+- Use `interaction.options.data` to get options
+- Better `options` parser and support for all 8 option types
+- Retry if "Unknown Interaction" error
 
 #### Commands
-- Support for command aliases (1723f8b) and categories (a96f17b)
-- Unified and modularized message sender for both `message` and `interaction` (05c9fa6)
-- When a message is deferred (not a slash command) then react to the message so that the user knows that it's been seen (7a6bab1)
+- Support for command aliases and categories
+- Unified and modularized message sender for both `message` and `interaction`
+- When a message is deferred (not a slash command) then react to the message so that the user knows that it's been seen
 
 Help
-- Show command aliases (ad32634) and their category (a96f17b) in the help embed
-- Support for aliases (1723f8b) and categories as input (a96f17b)
-- List all commands if there are no inputs (a96f17b)
+- Show command aliases and their category in the help embed
+- Support for aliases and categories as input
+- List all commands if there are no inputs
 
 Image search
-- Moved autoresponse to its own file (21a9a25)
-- Check if image has been deleted and remove it (21a9a25)
-- Use the dominant color of the image as the embed color when displaying search results (21a9a25)
-- Efficiently fetch image data when fetching images and using the `image` command by using async functions (21a9a25)
-- Don't save images which does not have any text (21a9a25)
-- [New schema spec (0.3)](./guides/fetchImage.md) to support new features and fixes below (21a9a25)
-- Support for multiple attachments in message (21a9a25)
-- Check if image already exists in the database by checking image links and using image hashes (21a9a25)
+- Moved autoresponse to its own file
+- Check if image has been deleted and remove it
+- Use the dominant color of the image as the embed color when displaying search results
+- Efficiently fetch image data when fetching images and using the `image` command by using async functions
+- Don't save images which does not have any text
+- [New schema spec (0.3)](./guides/fetchImage.md) to support new features and fixes below
+- Support for multiple attachments in message
+- Check if image already exists in the database by checking image links and using image hashes
 
 Info
-- Added the bot avatar (b436be0)
+- Added the bot avatar
 
 message
-- Better text parser and help guide (b71f81d)
+- Better text parser and help guide
 
 ocr
-- Added the `ocr` command to get text from images in attachments or links (cf768ed)
+- Added the `ocr` command to get text from images in attachments or links
 
 Sniper
-- Record up to 10 snipes and don't save embed updates (04cc0d8)
+- Record up to 10 snipes and don't save embed updates
 
 test
-- Added more slash commands options for testing (2ac9303)
+- Added more slash commands options for testing
 
 user
-- Added the `user` command to get Discord info about a user (3b8a223)
+- Added the `user` command to get Discord info about a user
 
 ytdl and video
-- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports (c70a6b1)
-- added support for specifying video quality (c70a6b1)
-- instead of downloading the video, just use the buffer stream (c70a6b1)
+- Dedicated `video` command for extracting videos on platforms `youtube-dl` supports
+- added support for specifying video quality
+- instead of downloading the video, just use the buffer stream
 
 ### 0.2.1
 <details>

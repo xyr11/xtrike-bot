@@ -35,9 +35,9 @@ const save = async (type, args) => {
   if (type === 'a') {
     /** @type {Message} */
     const del = args[0]
-    // check if given args is a partial (there's no data)
+    // Check if given args is a partial (there's no data)
     if (del.partial) return
-    // set the _id and data
+    // Set the _id and data
     _id = del.channel.id
     data = {
       a: del.author.id,
@@ -53,11 +53,11 @@ const save = async (type, args) => {
     /** @type {Message} */
     const edited = args[1]
     const editedFiles = [...edited.attachments.values()].map(a => a.proxyURL)
-    // check if given args is a partial (there's no data)
+    // Check if given args is a partial (there's no data)
     if (orig.partial) return
-    // check if only the embeds are updated
+    // Check if only the embeds are updated
     if (orig.content === edited.content && origFiles.toString() === editedFiles.toString()) return
-    // set the _id and data
+    // Set the _id and data
     _id = orig.channel.id
     data = {
       a: orig.author.id,
@@ -72,9 +72,9 @@ const save = async (type, args) => {
     let react = args[0]
     /** @type {User} */
     const user = args[1]
-    // check if given args is a partial (there's no data)
+    // Check if given args is a partial (there's no data)
     if (react.partial) react = await react.fetch()
-    // set the _id and data
+    // Set the _id and data
     _id = react.message.channel.id
     const { id, available, name, url } = react.emoji
     data = {
@@ -86,23 +86,23 @@ const save = async (type, args) => {
   }
   _id += type
 
-  // store
+  // Store
   Snipes.findOne({ _id }).then(async stored => {
-    // check if there are any previous entries
+    // Check if there are any previous entries
     if (stored) {
       let storedData = stored.d
-      // convert object to array
+      // Convert object to array
       if (!Array.isArray(stored.d)) storedData = [stored.d]
-      // add new data to array
+      // Add new data to array
       storedData.push(data)
-      // sort from the latest one to the oldest one using the timestamp
+      // Sort from the latest one to the oldest one using the timestamp
       storedData.sort((a, b) => b.t - a.t)
-      // get the last 10 items
+      // Get the last 10 items
       storedData.slice(Math.max(stored.length - 10, 0))
-      // update the entry
+      // Update the entry
       await Snipes.updateOne({ _id }, { d: storedData })
     } else {
-      // if no then create a new one instead
+      // If no then create a new one instead
       await new Snipes({ _id, d: [data] }).save()
     }
   })

@@ -17,12 +17,12 @@ app.delete('*', (req, res) => {
   res.status(404)
 })
 
-// api to check the bot status
+// Api to check the bot status
 app.all('/', (req, res) => {
   res.status(200).send('le alive')
 })
 
-// get bot statistics
+// Get bot statistics
 app.all('/stats', async (req, res) => {
   const stats = {};
   (await getAll()).forEach(e => { stats[e._id] = e.d })
