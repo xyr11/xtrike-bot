@@ -1,6 +1,6 @@
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
-const chalk = require('chalk')
-const { prefix, time } = require('./base')
+const logger = require('./logger')
+const { prefix } = require('./base')
 
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */
@@ -82,30 +82,18 @@ class SendMsg {
     this.text = content.replace(new RegExp(`\\s*(${prefix}|/|pls) *\\w+`), '').replace(/^ *| *$/g, '')
   }
 
-  /** Console logger. Use `.log()` instead please */
-  logger () {
-    if (!this.logText || !this.logText.length) return
-    const text = this.logText.map(a => {
-      if (typeof a === 'object') a = JSON.stringify(a) // convert to string
-      return a
-    })
-    if (!this.log) console.log(time(), text)
-    if (this.log === 'info') console.log(chalk.blue(time(), text))
-    if (this.log === 'warn') console.log(chalk.yellow(time()), text)
-    if (this.log === 'err') console.log(chalk.red(time()), text)
-    if (this.log === 'good') console.log(chalk.green(time(), text))
-  }
-
-  /**
-   * Log text after sending a message
-   * @param {'none'|'info'|'warn'|'err'|'good'} type
-   * @param {String[]} text
-   */
-  log (type, ...text) {
-    if (!text.length) return
-    this.logText = text
-    this.log = type
-  }
+  /** Default log */
+  log (...text) { logger.logger(null, ...text) }
+  /** Info log (color is blue) */
+  info (...text) { logger.logger('info', ...text) }
+  /** Warn log (color is yellow) */
+  warn (...text) { logger.logger('warn', ...text) }
+  /** Urgent log (color is red) */
+  urgent (...text) { logger.logger('err', ...text) }
+  /** Success log (color is green) */
+  good (...text) { logger.logger('good', ...text) }
+  /* logs stuff in a gray color i really dont know what to add here */
+  logGray (...text) { logger('gray', ...text) }
 
   /**
    * React to the message
@@ -161,7 +149,6 @@ class SendMsg {
     }
     // after the async stuff finishes:
     this.sent = e
-    this.logger()
     return e
   }
 
@@ -189,7 +176,6 @@ class SendMsg {
     }
     // after the async stuff finishes:
     this.sent = e
-    this.logger()
     return e
   }
 
@@ -203,7 +189,6 @@ class SendMsg {
     const e = this.isMsg ? await this.sent.edit(payload) : await this.message.editReply(payload)
     // after the async stuff finishes:
     this.sent = e
-    this.logger()
     return e
   }
 
@@ -223,7 +208,6 @@ class SendMsg {
     if (this.deferReact) this.deferReact.remove() // remove reaction
     // after the async stuff finishes:
     this.sent = e
-    this.logger()
     return e
   }
 }

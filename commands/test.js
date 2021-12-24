@@ -53,7 +53,7 @@ exports.run = async (msg, args) => {
     debugEmbed = { description: '```json\n' + json(client.user) + '\n```' }
   } else if (args[0] === 'commands') {
     // Output all commands
-    console.log(client.commands)
+    msg.log(client.commands)
   } else if (args[0] === 'help') {
     // Return the help info of each command
     if (msg.isMsg) for (const cmd of client.commands.map(a => a.info.name)) client.commands.get('help').run(msg, null, [cmd])

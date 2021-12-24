@@ -1,6 +1,6 @@
 const { Intents, Permissions } = require('discord.js')
-const chalk = require('chalk')
-let { prefix, botName, botDescription, botColor, infoFields, status, actType, actName, timezone } = require('../config')
+let { prefix, botName, botDescription, botColor, infoFields, status, actType, actName } = require('../config')
+const { logUrgent } = require('./logger')
 
 /** Bot intents */
 const intents = [
@@ -45,13 +45,6 @@ const colors = {
   red: '#F04848',
   green: '#2ecc71'
 }
-
-/**
- * Get date and time string formatted using the timezone given in .env
- * @param {String} [unixTime] Unix time
- * @returns {String} Date and time string
- */
-const time = (unixTime = Date.now()) => new Date(+unixTime).toLocaleString('us', { timeZone: timezone ?? 'Etc/GMT' })
 
 /**
  * Return a formatted Discord time string
@@ -139,10 +132,10 @@ const hasPerms = (command, msg) => {
     // check if the user perm level is equal to or greater than the perm given
     return userPerms(msg) >= perm.level
   } else {
-    console.log(chalk.red(`Error: No ${command.info.permLevel} permLevel for ${command}!`))
+    logUrgent(`Error: No ${command.info.permLevel} permLevel for ${command}!`)
     return false
   }
 }
 
 // export the variables
-module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, time, discordTime, isChannel, PermLevels, userPerms, hasPerms }
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }

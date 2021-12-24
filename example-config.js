@@ -61,11 +61,6 @@ const botSupport = [
   '012345678901234567'
 ]
 
-// Timezone (for console logging of time) ==============================
-// Needs to be a valid TZ name, you can learn more about it on
-// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-const timezone = 'Etc/GMT'
-
 // Slash commands options
 // Deploy slash commands in all servers? ===============================
 // If false, slash commands will only deploy on the testing server
@@ -91,4 +86,4 @@ const isMobile = false
 
 // export the variables
 // don't touch this please!
-module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, devs, botSupport, timezone, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }
+module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, devs, botSupport, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }

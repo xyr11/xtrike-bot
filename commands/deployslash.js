@@ -1,8 +1,7 @@
-const chalk = require('chalk')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 const { discordToken, clientId, deploySlash, testingServer } = require('../config')
-const { time, PermLevels } = require('../modules/base')
+const { PermLevels } = require('../modules/base')
 
 exports.info = {
   name: 'deployslash',
@@ -39,7 +38,7 @@ exports.run = async msg => {
       : Routes.applicationGuildCommands(clientId, testingServer), // deploy in bot server
     { body }
   ).then(() => {
-    console.log(chalk.blue('Successfully registered application commands.'), chalk.bgBlueBright.black(`(${time()})`))
-    msg.send('Successfully registered application commands.')
+    msg.send('Successfully registered application commands')
+    msg.info('Successfully registered application commands')
   })
 }

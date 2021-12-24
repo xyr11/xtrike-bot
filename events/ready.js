@@ -1,13 +1,15 @@
-const chalk = require('chalk')
 const Amongoose = require('mongoose')
 const config = require('../config')
-const { presence, time } = require('../modules/base')
+const { presence } = require('../modules/base')
 const { storeInfo, getInfo } = require('../modules/botInfo')
+const { logGood, logInfo } = require('../modules/logger')
 
 /** @param {import('discord.js').Client} client */
 exports.execute = async client => {
-  console.log(chalk.green(`Ready as ${client.user.tag}! 🤖`, chalk.bgGreenBright.black(`(${time()})`)))
-  // presence
+  // Log to console
+  logGood(`Ready as ${client.user.tag}! 🤖`)
+
+  // Presence
   if (presence.activity) {
     client.user.setPresence({
       activities: [{ name: presence.activity, type: presence.activityType.toUpperCase() }],
@@ -15,18 +17,18 @@ exports.execute = async client => {
     })
   }
 
-  // server
+  // Run server
   require('../modules/express')()
 
-  // mongodb
+  // Connect to MongoDB server
   await Amongoose.connect(config.mongoURI, { keepAlive: true })
 
-  // statistics
-  // server count
-  console.log(chalk.blue(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`))
+  // Statistics
+  // Server count
+  logInfo(`Stats: Currently in ${client.guilds.cache.size} servers with a combined amount of ${client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)} members`)
   storeInfo('serverCount', client.guilds.cache.size)
-  // uptime
+  // Uptime
   if (!await getInfo('upSince')) storeInfo('upSince', Date.now()) // dont update if there is already a value
-  // bot ready
+  // Bot ready
   storeInfo('botReady', (await getInfo('botReady') || 0) + 1)
 }

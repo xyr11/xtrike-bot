@@ -1,6 +1,5 @@
-const chalk = require('chalk')
 const fs = require('fs')
-const { prefix, time, presence } = require('../modules/base')
+const { prefix, presence } = require('../modules/base')
 
 exports.info = {
   name: 'reload',
@@ -92,7 +91,7 @@ exports.run = async (msg, args) => {
       }
     }
     msg.reply(reloadedName)
-    console.log(chalk.green(reloadedName), chalk.bgGreenBright.black(time()))
+    msg.good(reloadedName)
   } catch (error) {
     await require('../modules/errorCatch')(error, client, msg)
     await msg.reply('I have encountered an error while trying to reload. \n⚠️ Because the reload command is very powerful, this error can cause massive disruption. Therefore, the bot will REBOOT shortly. ⚠️')

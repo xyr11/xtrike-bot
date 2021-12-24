@@ -1,8 +1,8 @@
 const { MessageEmbed } = require('discord.js')
-const chalk = require('chalk')
 const { serializeError } = require('serialize-error')
-const { botName, time, discordTime, colors } = require('./base')
+const { botName, discordTime, colors } = require('./base')
 const { errorLogging } = require('../config')
+const { logUrgent } = require('./logger')
 
 /** Some cute error emotes for the damned */
 const errEmotes = '🐞 🐛 😕 📢 💢 🧭 📡 🧩 🤦 😵‍💫 🧐 🚫 ❗'.split(' ')
@@ -39,7 +39,7 @@ const dontSendToChannel = err =>
  * Send an error in current channel and in error logging channel, and in the console
  * @param {Error} error
  * @param {import('discord.js').Client} client
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../modules/sendMsg')|import('discord.js').Message} msg
  */
 module.exports = (error, client, msg) => {
   // Check if the error can be ignored
@@ -51,7 +51,7 @@ module.exports = (error, client, msg) => {
   const errObj = serializeError(error) // serialize the error object
 
   // Display it to console first
-  console.error(chalk.red(`${error.name || 'Error'}`), chalk.bgRedBright.black(time(timeSent)))
+  logUrgent(error.name || 'Error')
   console.error(error, errObj)
 
   // Send the error embed to corresponding channel, if there are any

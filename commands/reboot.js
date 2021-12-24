@@ -1,5 +1,4 @@
-const chalk = require('chalk')
-const { presence, time } = require('../modules/base')
+const { presence } = require('../modules/base')
 const { storeInfo } = require('../modules/botInfo')
 
 exports.info = {
@@ -16,7 +15,7 @@ exports.run = async msg => {
   const { client } = msg
 
   // Log to console
-  console.log(chalk.red('Bot is shutting down. 🤖'), chalk.bgRedBright.black(`(${time()})`))
+  msg.urgent('Bot is shutting down. 🤖')
 
   // Set activity
   await client.user.setActivity('none. Rebooting...', { type: presence.activityType })

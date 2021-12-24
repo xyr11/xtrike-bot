@@ -352,7 +352,6 @@ Variable | Default value | Description
 `botColor` | "`#E3E5E8`" | Used for the color of embeds sent by the bot. Use a hex color value like "#RRGGBB".
 `infoFields` | Check file | Info fields. This is an array of fields that will be shown in the `;info` embed. Fields needs a `name` and `value` property, and they support Discord embed formatting too.
 `botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change.
-`timezone` | "`Etc/GMT`" | Timezone for console logging of time. Needs to be a valid TZ name, you can learn more about it on https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
 `status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`.
 `actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`.
