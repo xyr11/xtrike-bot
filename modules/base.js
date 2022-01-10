@@ -49,7 +49,7 @@ const colors = {
 /**
  * Return a formatted Discord time string
  * @param {String} [unixTime] Unix time
- * @param {String} [suffix] Custom suffix.
+ * @param {'F'|'d'|'D'|'t'|'T'|'R'} [suffix] Custom suffix.
  * + Default: short date time (`June 27, 2021 9:48 PM`)
  * + `F`: long date time      (`Sunday, June 27, 2021 9:48 PM`)
  * + `d`: short date          (`06/27/2021`)
