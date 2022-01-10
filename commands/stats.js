@@ -11,7 +11,7 @@ exports.info = {
   permLevel: 'User'
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = async msg => {
   await msg.setDefer() // defer reply
 

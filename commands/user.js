@@ -18,7 +18,7 @@ exports.info = {
 const rand = int => Math.floor(Math.random() * int)
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {String[]} args
  */
 exports.run = async (msg, args) => {

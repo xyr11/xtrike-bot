@@ -26,7 +26,7 @@ exports.info = {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {

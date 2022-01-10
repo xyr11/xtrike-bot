@@ -10,7 +10,7 @@ exports.info = {
   permLevel: 'User'
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = msg => msg.send({
   embeds: [new MessageEmbed()
     .setTitle(botName)

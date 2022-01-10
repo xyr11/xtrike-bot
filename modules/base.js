@@ -76,25 +76,25 @@ const PermLevels = {
   lmao: {
     level: 5,
     // Check if the message author is in the list of developers
-    /** @param {import('./sendMsg')} msg */
+    /** @param {import('../class/sendMsg')} msg */
     check: msg => devs.includes(msg.author.id)
   },
   'Bot Support': {
     level: 4,
     // Check if the message author is in the list of bot support people
-    /** @param {import('./sendMsg')} msg */
+    /** @param {import('../class/sendMsg')} msg */
     check: msg => botSupport.includes(msg.author.id)
   },
   Administrator: {
     level: 3,
     // Check if the message author has the 'Administrator' permission
-    /** @param {import('./sendMsg')} msg */
+    /** @param {import('../class/sendMsg')} msg */
     check: msg => msg.guild.members.cache.get(msg.author.id).permissions.any(Permissions.FLAGS.ADMINISTRATOR)
   },
   Moderator: {
     level: 2,
     // Check if the message author has the 'Manage Messages' or 'Manage Roles' permission
-    /** @param {import('./sendMsg')} msg */
+    /** @param {import('../class/sendMsg')} msg */
     check: msg => msg.guild.members.cache.get(msg.author.id).permissions.any(Permissions.FLAGS.MANAGE_MESSAGES + Permissions.FLAGS.MANAGE_ROLES)
   },
   User: {
@@ -105,7 +105,7 @@ const PermLevels = {
 
 /**
  * Get the user permission level
- * @param {import('./sendMsg')} msg Client message
+ * @param {import('../class/sendMsg')} msg Client message
  * @returns {Number} The permission level
  */
 const userPerms = msg => {
@@ -122,7 +122,7 @@ const userPerms = msg => {
 /**
  * Check if user has the appropriate permission level for a certain command
  * @param {Object} command The command object
- * @param {import('./sendMsg')} msg Discord message
+ * @param {import('../class/sendMsg')} msg Discord message
  * @returns {Boolean} True or false
  */
 const hasPerms = (command, msg) => {

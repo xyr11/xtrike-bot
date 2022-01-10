@@ -1,6 +1,6 @@
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
-const logger = require('./logger')
-const { prefix } = require('./base')
+const logger = require('../modules/logger')
+const { prefix } = require('../modules/base')
 
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */

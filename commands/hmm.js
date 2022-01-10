@@ -8,5 +8,5 @@ exports.info = {
   options: [{ type: 3, name: 'text', description: 'Extra text' }]
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = msg => msg.send(`${msg.author} ${msg.text ? msg.text + ' ' : ''}hmmmm... 🤔`)

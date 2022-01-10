@@ -8,5 +8,5 @@ exports.info = {
   permLevel: 'User'
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = msg => msg.reply(`Hey ${msg.author.username}, there's no room to be sad. Cheering on you through the hard times! <3`)

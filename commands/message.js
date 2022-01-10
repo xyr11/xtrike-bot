@@ -28,7 +28,7 @@ exports.info = {
 const clean = text => text.replace(/^\s*|\s*$/gs, '')
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {

@@ -39,7 +39,7 @@ const dontSendToChannel = err =>
  * Send an error in current channel and in error logging channel, and in the console
  * @param {Error} error
  * @param {import('discord.js').Client} client
- * @param {import('../modules/sendMsg')|import('discord.js').Message} msg
+ * @param {import('../class/sendMsg')|import('discord.js').Message} msg
  */
 module.exports = (error, client, msg) => {
   // Check if the error can be ignored
