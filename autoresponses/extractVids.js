@@ -27,7 +27,7 @@ module.exports = async message => {
   // fetch each link
   links.forEach(link => ytdlVids(link, message.client).then(async files => {
     // send video
-    if (!files || !files.error) return
+    if (!files || files.error) return
     while (true) {
       try {
         await message.reply({ files, allowedMentions: { repliedUser: false } })
