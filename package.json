@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "test": "npm init -y && npm i --save-dev node@16 && npm config set prefix=$(pwd)/node_modules/node && export PATH=$(pwd)/node_modules/node/bin:$PATH"
   },
-  "author": "Xyrus Roldan <xyruskurt11@gmail.com>",
+  "author": "xyr11",
   "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^0.2.0-canary.0",
