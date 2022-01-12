@@ -19,7 +19,7 @@ ocrKeys.forEach(key => OcrKeys.set(key, 'ok'))
 
 /**
  * Get images from the Message object
- * @param {import('../modules/sendMsg')|import('discord.js').Message} msg
+ * @param {import('../class/sendMsg')|import('discord.js').Message} msg
  */
 const getImages = msg => {
   const links = []
@@ -29,7 +29,7 @@ const getImages = msg => {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {String[]} args
  */
 exports.run = async (msg, args) => {

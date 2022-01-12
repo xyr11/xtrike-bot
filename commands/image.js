@@ -13,7 +13,6 @@ exports.info = {
     '`--all` to include images sent 8+ months ago\n' +
     '`--disable <channel|server>`\n' +
     '`--enable <channel|server>`',
-  isBeta: true,
   aliases: ['images', 'img'],
   permLevel: 'User',
   requiredArgs: true,
@@ -209,7 +208,7 @@ const msgNotEnabled = `A moderator or admin hasn't enabled this command yet. \nT
 const msgDisableWarning = "When you disable the image command, you won't be able to use it until a moderator enables it back again. It will also remove ALL data regarding images sent so you wouldn't be able to search for them again. \nAre you really sure about this? Enter `" + prefix + 'image --disable server YES` to go ahead.'
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
@@ -364,7 +363,7 @@ exports.run = async (msg, args) => {
         .setColor(color)
         .setImage(image)
         .setTimestamp(timestamp)
-        .setFooter(`🔎 "${args.join(' ')}"`))
+        .setFooter({ text: `🔎 "${args.join(' ')}"` }))
     } else {
       // Image already exists
       imgEntry.remove(result._id) // delete entry in db

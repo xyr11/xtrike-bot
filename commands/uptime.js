@@ -11,7 +11,7 @@ exports.info = {
   permLevel: 'User'
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = async msg => {
   await msg.setDefer() // defer reply
 
@@ -40,7 +40,7 @@ exports.run = async msg => {
         (h ? `${h}h ` : '') +
         (m ? `${m}m ` : '') +
         (s ? `${s}s ` : ''))
-      .setFooter('Last reboot:')
+      .setFooter({ text: 'Last reboot:' })
       .setTimestamp(upSince)]
   })
 }

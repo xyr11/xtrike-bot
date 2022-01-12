@@ -24,7 +24,7 @@ const doesExist = async filePath => {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {String[]} args
  */
 exports.run = async (msg, args) => {

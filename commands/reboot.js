@@ -10,7 +10,7 @@ exports.info = {
 }
 
 // From https://github.com/AnIdiotsGuide (commands/reboot.js), MIT License
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = async msg => {
   const { client } = msg
 

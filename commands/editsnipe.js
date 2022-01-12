@@ -25,7 +25,7 @@ exports.info = {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
@@ -77,13 +77,13 @@ exports.run = async (msg, args) => {
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
-    .setAuthor(author.tag, author.avatarURL(), msgUrl)
+    .setAuthor({ name: author.tag, iconURL: author.avatarURL(), url: msgUrl })
     .setColor(author.hexAccentColor)
     .setDescription(edited.c +
       (edited.f.length ? ' [Message has attachments]' : '') + // if there are attachments
       (edited.e.length ? ' [Message has embeds, see below]' : '') + // if there are embeds
       ` [(go to original message)](${msgUrl})`)
-    .setFooter(`#${channel.name}`)
+    .setFooter({ text: `#${channel.name}` })
     .setTimestamp(edited.t))
   // Check if there are any removed embeds and include them
   if (edited.e) edited.e.forEach(e => embeds.push(e))

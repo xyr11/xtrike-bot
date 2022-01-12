@@ -26,7 +26,7 @@ exports.info = {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
@@ -80,10 +80,10 @@ exports.run = async (msg, args) => {
   const author = await msg.client.users.fetch(reacted.a, { force: true }) // get author
   msg.reply({
     embeds: [new Discord.MessageEmbed()
-      .setAuthor(author.tag, author.avatarURL(), msgUrl)
+      .setAuthor({ name: author.tag, iconURL: author.avatarURL(), url: msgUrl })
       .setColor(author.hexAccentColor)
       .setDescription(`reacted with ${formatEmoji(reacted.e)} on [this message](${msgUrl})`)
-      .setFooter(`#${channel.name}`)
+      .setFooter({ text: `#${channel.name}` })
       .setTimestamp(reacted.t)]
   })
 }

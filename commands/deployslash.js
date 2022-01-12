@@ -12,7 +12,7 @@ exports.info = {
   permLevel: 'lmao'
 }
 
-/** @param {import('../modules/sendMsg')} msg */
+/** @param {import('../class/sendMsg')} msg */
 exports.run = async msg => {
   // Check if there is a test server given
   if (!deploySlash && !testingServer) throw new Error('No test server id was found in your config.js')

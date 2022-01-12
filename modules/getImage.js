@@ -150,7 +150,7 @@ const config = {
 
     /**
      * Activate `;image` in server
-     * @param {import('./sendMsg')} message message
+     * @param {import('../class/sendMsg')} message message
      */
     server: async message => {
       // Generate guild identifier

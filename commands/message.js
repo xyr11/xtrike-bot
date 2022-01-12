@@ -2,7 +2,7 @@ const { MessageEmbed } = require('discord.js')
 
 exports.info = {
   name: 'message',
-  category: 'General',
+  category: 'Random',
   description: 'Message as the bot',
   usage: '`$$message [messageId] [<content> and/or <embed>]`',
   option: '`[messageId]`: the id of the message to reply on (optional)\n' +
@@ -28,7 +28,7 @@ exports.info = {
 const clean = text => text.replace(/^\s*|\s*$/gs, '')
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
@@ -75,7 +75,7 @@ exports.run = async (msg, args) => {
     const { hexColor, authorName, authorUrl, authorIcon, footerText, footerIcon } = embData
     if (embData.hexColor) embed.setColor(hexColor.toUpperCase())
     if (authorName) embed.setAuthor(authorName, authorIcon, authorUrl)
-    if (footerText) embed.setFooter(footerText, footerIcon)
+    if (footerText) embed.setFooter({ text: footerText, iconURL: footerIcon })
     // Manually set the timestamp option
     // check if there is `$s`
     const time = embedText.match(/(?<=\$s *)((?!\$[A-z]).)*/s)

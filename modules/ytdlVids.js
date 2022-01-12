@@ -97,7 +97,7 @@ module.exports = async (link, client, quality = 0) => {
     }
     // Return if encountered an error while downloading the video
     if (!buffer) return
-
+    // Return Discord attachment
     return new MessageAttachment(Readable.from(buffer), link.replace(new URL(link).origin, '').slice(1).replace(/\W+/g, '-') + '.' + format.ext)
   }
 

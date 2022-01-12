@@ -12,7 +12,7 @@ exports.info = {
 }
 
 /**
- * @param {import('../modules/sendMsg')} msg
+ * @param {import('../class/sendMsg')} msg
  * @param {String[]} args
  */
 exports.run = async (msg, args) => {
@@ -31,7 +31,7 @@ exports.run = async (msg, args) => {
   const getCmd = name => commands.get(name) || commands.get([...commands.keys()].filter(i => commands.get(i).info.aliases && commands.get(i).info.aliases.indexOf(name) > -1)[0])
 
   // Embed variable
-  const embed = new MessageEmbed().setColor(botColor).setFooter(`${botName} v${process.env.npm_package_version}`)
+  const embed = new MessageEmbed().setColor(botColor).setFooter({ text: `${botName} v${process.env.npm_package_version}` })
 
   // Change the prefix depending if the message is a slash command or not
   prefix = msg.isSlash ? '/' : prefix

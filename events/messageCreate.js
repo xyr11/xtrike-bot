@@ -1,4 +1,4 @@
-const SendMsg = require('../modules/sendMsg')
+const SendMsg = require('../class/sendMsg')
 const { prefix, userPerms, hasPerms } = require('../modules/base')
 const errorCatch = require('../modules/errorCatch')
 const recordStats = require('../modules/recordStatistics')
