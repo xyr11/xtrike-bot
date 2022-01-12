@@ -18,7 +18,15 @@ Hang tight.
 
 ## Versions
 ### 0.3.1
-*working on it...*
+New commands and updated discord.js to v13.5.1
+
+#### General
+- updated discord.js to v13.5.1
+
+#### Commands
+- forgot to remove the `isBeta` status on the `image` command, it should work now
+- added the `server` command to get all available info on the current server, and the `oxford` command that gives word definitions (powered by Oxford Dictionaries)
+- updated the `user` command to include the presence status
 
 You can see past changelogs [in the CHANGELOG.md file.](./CHANGELOG.md)
 
@@ -53,7 +61,8 @@ console.log(stats)
 + [Node.js 16.6 or later (preferably the latest version)](https://nodejs.org/en/download/)
 + [a MongoDB database](https://www.mongodb.com/)
 + [an OCRSpace API key](https://ocr.space/ocrapi)
-+ [Replit account (optional)](https://replit.com)
++ [Replit account](https://replit.com) (optional)
++ [Oxford Dictionaries API ID and key](https://developer.oxforddictionaries.com/) (for the `oxford` command, optional)
 
 ### Configure repository
 *If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
@@ -121,7 +130,6 @@ git fetch --all && git reset --hard origin/main && npm i
 - Command that temporarily disables other commands
 - Use a unified class for commands
 - Get the total number of messages the bot has sent
-- Re-add `oxford` command
 - Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
 - More probably...
 
