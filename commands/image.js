@@ -13,7 +13,6 @@ exports.info = {
     '`--all` to include images sent 8+ months ago\n' +
     '`--disable <channel|server>`\n' +
     '`--enable <channel|server>`',
-  isBeta: true,
   aliases: ['images', 'img'],
   permLevel: 'User',
   requiredArgs: true,
