@@ -26,11 +26,13 @@ Command | Added | Status
 `video`     | 0.3.0 | ✅
 `user`      | 0.3.0 | ✅
 `ocr`       | 0.3.0 | ✅
+`server`    | 0.3.1 | ✅
+`define`    | 0.3.1 | ✅
 
 ### All pre-v0.1 commands
 <details>
 
-All were added on v0.0.1 unless stated otherwise
+All commands were added on v0.0.1 unless stated otherwise
 Command | Comments
 --          | --
 `ping`      |
@@ -45,7 +47,7 @@ Command | Comments
 ~~`pls`~~   | 🚫
 `hmm`       |
 `test`      |
-~~`oxford`~~| 🔨
+`oxford`    | (added on v0.0.4) Renamed to `define`
 
 </details>
 

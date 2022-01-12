@@ -41,9 +41,19 @@ const discordToken = 'your-discord-token'
 const mongoURI = 'mongodb://username:password@host/'
 
 // OCR API key =========================================================
-// Your OCR API key for getting text inside images
-// For multiple keys, split them using a pipe ("|")
+// Your OCR API key for getting text inside images. For multiple keys,
+// split them using a pipe ("|").
 const ocrApi = 'your-ocrspace-key'
+
+// Oxford Dictionaries API ID and key ==================================
+// Powered by Oxford Dictionaries. You can add multiple keys for each ID
+// by splitting them with a pipe ("|").
+const oxfordApi = [
+  {
+    id: 'myApiId',
+    key: 'myApiKey|myApiKey2'
+  }
+]
 
 // User IDs of people that has the 'Developer' role ====================
 // They can reload a command, reboot the bot, and deploy slash
@@ -86,4 +96,4 @@ const isMobile = false
 
 // export the variables
 // don't touch this please!
-module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, devs, botSupport, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }
+module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, oxfordApi, devs, botSupport, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }
