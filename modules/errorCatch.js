@@ -65,7 +65,7 @@ module.exports = (error, client, msg) => {
         .setTitle(`${errEmote} I have encountered an error!`)
         .setColor(colors.red)
         .setDescription(`From \`${msg.content}\` at ${discordTime(timeSent)}:\n\`\`\`${error}\`\`\``)
-        .setFooter(foot)]
+        .setFooter({ text: foot })]
     })
   }
 
