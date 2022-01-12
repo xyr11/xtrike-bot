@@ -24,9 +24,11 @@ New commands and updated discord.js to v13.5.1
 - updated discord.js to v13.5.1
 
 #### Commands
+- fixed `extractVids` autoresponse not working
 - forgot to remove the `isBeta` status on the `image` command, it should work now
-- added the `server` command to get all available info on the current server, and the `oxford` command that gives word definitions (powered by Oxford Dictionaries)
-- updated the `user` command to include the presence status
+- updated the `user` command to include the presence status and server timeout
+- added the `server` command to get all available info on the current server
+- also added the `oxford` command which gives word definitions (powered by Oxford Dictionaries)
 
 You can see past changelogs [in the CHANGELOG.md file.](./CHANGELOG.md)
 
