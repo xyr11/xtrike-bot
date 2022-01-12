@@ -71,7 +71,7 @@ exports.run = async (msg, args) => {
           content: 'File too big to upload.',
           embeds: [new MessageEmbed()
             .setDescription(`The video format that I found is too big to upload. \n You can download the video directly [in this link](${files.link}).`)
-            .setFooter('Note that the link may expire quickly')]
+            .setFooter({ text: 'Note that the link may expire quickly' })]
         })
       } else {
         // Send video

@@ -74,12 +74,12 @@ exports.run = async (msg, args) => {
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
-    .setAuthor(author.tag, author.avatarURL())
+    .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
     .setColor(author.hexAccentColor)
     .setDescription(deleted.c +
       (deleted.f.length ? ' [Message has attachments]' : '') + // if there are attachments
       (deleted.e.length ? ' [Message has embeds]' : '')) // if there are embeds
-    .setFooter(`#${channel.name}`)
+    .setFooter({ text: `#${channel.name}` })
     .setTimestamp(deleted.t))
   // Check if there are any deleted embeds and include them
   if (deleted.e) deleted.e.forEach(e => embeds.push(e))

@@ -40,7 +40,7 @@ exports.run = async msg => {
         (h ? `${h}h ` : '') +
         (m ? `${m}m ` : '') +
         (s ? `${s}s ` : ''))
-      .setFooter('Last reboot:')
+      .setFooter({ text: 'Last reboot:' })
       .setTimestamp(upSince)]
   })
 }

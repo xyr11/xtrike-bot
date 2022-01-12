@@ -33,7 +33,7 @@ exports.run = async msg => {
       .setTitle('Xtrike Bot Command Statistics')
       .setDescription(cmdsStats.join('\n') || 'No available data yet')
       .setColor(colors.main)
-      .setFooter('Statistics for the whole bot')
+      .setFooter({ text: 'Statistics for the whole bot' })
       .setTimestamp()]
   })
 }

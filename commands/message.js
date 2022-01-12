@@ -75,7 +75,7 @@ exports.run = async (msg, args) => {
     const { hexColor, authorName, authorUrl, authorIcon, footerText, footerIcon } = embData
     if (embData.hexColor) embed.setColor(hexColor.toUpperCase())
     if (authorName) embed.setAuthor(authorName, authorIcon, authorUrl)
-    if (footerText) embed.setFooter(footerText, footerIcon)
+    if (footerText) embed.setFooter({ text: footerText, iconURL: footerIcon })
     // Manually set the timestamp option
     // check if there is `$s`
     const time = embedText.match(/(?<=\$s *)((?!\$[A-z]).)*/s)

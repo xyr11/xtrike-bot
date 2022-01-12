@@ -141,7 +141,9 @@ exports.run = async (msg, args) => {
     const permissions = member.permissionsIn(msg.channelId)
     embed.addField('Permissions (in channel)', `\`${permissions.has('ADMINISTRATOR') ? 'all (administrator)' : permissions.toArray().join(', ').toLowerCase()}\``)
     // Add footer text if user is the bot
-    if (id === msg.client.user.id) embed.setFooter(rand(3) !== 1 ? `enter ${prefix}info for more info about the bot!` : "look mom, that's me! :)")
+    if (id === msg.client.user.id) {
+      embed.setFooter({ text: rand(3) !== 1 ? `enter ${prefix}info for more info about the bot!` : "look mom, that's me! :)" })
+    }
     // Reply
     msg.reply({ embeds: [embed] })
   }

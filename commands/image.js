@@ -363,7 +363,7 @@ exports.run = async (msg, args) => {
         .setColor(color)
         .setImage(image)
         .setTimestamp(timestamp)
-        .setFooter(`🔎 "${args.join(' ')}"`))
+        .setFooter({ text: `🔎 "${args.join(' ')}"` }))
     } else {
       // Image already exists
       imgEntry.remove(result._id) // delete entry in db
