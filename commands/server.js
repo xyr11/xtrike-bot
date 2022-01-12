@@ -3,7 +3,7 @@ const { discordTime } = require('../modules/base')
 
 exports.info = {
   name: 'server',
-  category: 'Random',
+  category: 'General',
   description: 'Get all available info on this Discord server',
   usage: '`$$server`',
   aliases: ['guild'],

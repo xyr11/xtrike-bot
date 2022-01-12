@@ -3,7 +3,7 @@ const { prefix, discordTime } = require('../modules/base')
 
 exports.info = {
   name: 'user',
-  category: 'Random',
+  category: 'General',
   description: 'Get all available info on a Discord user',
   usage: '`$$user [user @ / user id / username]`',
   aliases: ['users', 'me', 'member', 'members'],
