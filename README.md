@@ -18,17 +18,20 @@ Hang tight.
 
 ## Versions
 ### 0.3.1
-New commands and updated discord.js to v13.5.1
+New commands, new year bug fixes and updated discord.js to v13.5.1
 
-#### General
+#### Breaking changes
 - updated discord.js to v13.5.1
+- moved the SendMsg class to its own folder
+- new config entry for Oxford Dictionaries API
 
-#### Commands
+#### Other stuff
 - fixed `extractVids` autoresponse not working
-- forgot to remove the `isBeta` status on the `image` command, it should work now
 - updated the `user` command to include the presence status and server timeout
 - added the `server` command to get all available info on the current server
-- also added the `oxford` command which gives word definitions (powered by Oxford Dictionaries)
+- forgot to remove the `isBeta` status on the `image` command, command should work now
+- added the `define` command which gives word definitions (powered by Oxford Dictionaries)
+- recategorized some commands
 
 You can see past changelogs [in the CHANGELOG.md file.](./CHANGELOG.md)
 
