@@ -1,5 +1,5 @@
 # Xtrike Bot
-A multi-purpose Discord bot written in [Discord.js](https://discord.js.org) that does all sorts of bot stuff.
+A multi-purpose Discord bot written in [discord.js](https://discord.js.org) that does all sorts of bot stuff.
 
 [![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
 
@@ -17,6 +17,9 @@ Hang tight.
 *The invite link will be available once the bot gets out of beta.*
 
 ## Versions
+### 0.3.2 (upcoming)
+...
+
 ### 0.3.1
 New commands, new year bug fixes and updated discord.js to v13.5.1
 
@@ -142,9 +145,6 @@ git fetch --all && git reset --hard origin/main && npm i
 
 ## License
 The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE).
-
-## Contact
-[Join the official support and dev Discord server!](https://discord.gg/x3F22hN)
 
 ## Credits
 Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thank also to [Replit](https://replit.com) for the bot hosting.
