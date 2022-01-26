@@ -116,6 +116,7 @@ Variable | Default value | Description
 `botColor` | "`#E3E5E8`" | Used for the color of embeds sent by the bot. Use a hex color value like "#RRGGBB".
 `infoFields` | Check file | Info fields. This is an array of fields that will be shown in the `;info` embed. Fields needs a `name` and `value` property, and they support Discord embed formatting too.
 `botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change.
+`deferEmoji` | "`💭`" | It's like the counterpart to the "Xtrike Bot is thinking..." text in slash commands, but instead it will react a certain emoji to the message. You can place a unicode emoji like "💭", or an id of a custom Discord emoji (bot must be in the server where the custom emoji is from) like "921418001826340904".
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
 `status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`.
 `actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`.

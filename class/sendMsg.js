@@ -1,6 +1,6 @@
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
 const logger = require('../modules/logger')
-const { prefix } = require('../modules/base')
+const { deferEmoji, prefix } = require('../modules/base')
 
 class SendMsg {
   /** @param {Discord.Message|Discord.CommandInteraction} message */
@@ -93,7 +93,7 @@ class SendMsg {
   /** Success log (color is green) */
   good (...text) { logger.logger('good', ...text) }
   /* logs stuff in a gray color i really dont know what to add here */
-  logGray (...text) { logger('gray', ...text) }
+  logGray (...text) { logger.logger('gray', ...text) }
 
   /**
    * React to the message
@@ -118,16 +118,23 @@ class SendMsg {
     /** @type {Discord.MessageReaction|Discord.Message} */
     let e
     if (this.isMsg) {
-      // add reaction as a response that the message has been acknowledged
-      e = await this.react(this.client.emojis.cache.get('921418001826340904') || '✅')
+      // If deferEmoji is a snowflake then get the GuildEmoji representation of it, otherwise return the unicode emoji
+      const guildEmote = deferEmoji.match(/[0-9]{2,}/) ? this.client.emojis.cache.get(deferEmoji) : deferEmoji
+      // Add reaction as a response that the message has been acknowledged, much like how the "Xtrike Bot is thinking..." works
+      e = await this.react(guildEmote).catch(() => this.react('💭').catch(() => {}))
       /** @type {Discord.MessageReaction} */
       this.deferReact = e
     } if (this.isSlash) {
-      // defer command application
+      // Defer command application
       e = await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
       this.deferred = true
     }
     return e
+  }
+
+  /** Remove defer reaction (for Messages) */
+  async removeDeferReact () {
+    return this.deferReact && this.deferReact.remove().catch(() => {})
   }
 
   /**
@@ -140,7 +147,7 @@ class SendMsg {
     // send as Message
     if (this.isMsg) {
       e = await this.channel.send(payload)
-      if (this.deferReact) await this.deferReact.remove() // remove reaction
+      this.removeDeferReact()
     } else {
       // send as Interaction
       if (this.sent) e = await this.message.followUp(payload) // follow up if there's a sent message already
@@ -167,7 +174,7 @@ class SendMsg {
       // if not then add the allowedMentions property to the given object
       else payload = { ...payload, allowedMentions: { repliedUser: pingUser } }
       e = await this.message.reply(payload)
-      if (this.deferReact) await this.deferReact.remove() // remove reaction
+      this.removeDeferReact()
     } else {
       // send as Interaction
       if (this.sent) e = await this.message.followUp(payload) // follow up if there's a sent message already
@@ -205,7 +212,7 @@ class SendMsg {
     } else {
       e = await this.message.followUp(payload)
     }
-    if (this.deferReact) this.deferReact.remove() // remove reaction
+    this.removeDeferReact()
     // after the async stuff finishes:
     this.sent = e
     return e

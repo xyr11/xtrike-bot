@@ -1,5 +1,5 @@
 const { Intents, Permissions } = require('discord.js')
-let { prefix, botName, botDescription, botColor, infoFields, status, actType, actName } = require('../config')
+let { prefix, botName, botDescription, botColor, infoFields, deferEmoji, status, actType, actName } = require('../config')
 const { logUrgent } = require('./logger')
 
 /** Bot intents */
@@ -24,6 +24,8 @@ if (typeof infoFields !== 'object') infoFields = {}
 botColor = botColor || '#E3E5E8'
 // Bot prefix
 prefix = prefix || ';'
+// Defer reaction
+deferEmoji = deferEmoji || '💭'
 
 // User ids of various important people
 /** Bot developer user ids */
@@ -138,4 +140,4 @@ const hasPerms = (command, msg) => {
 }
 
 // Export the variables
-module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, deferEmoji, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }
