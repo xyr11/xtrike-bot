@@ -50,7 +50,7 @@ exports.run = async (msg, args) => {
 
   // Get snipe data
   const deletes = await sniper('a', channelId)
-  if (!deletes && !deletes.length) return msg.reply("There's nothing to snipe!")
+  if (!deletes || !deletes.length) return msg.reply("There's nothing to snipe!")
 
   /**
    * @typedef {Object} Deleted

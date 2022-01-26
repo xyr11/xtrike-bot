@@ -52,7 +52,7 @@ exports.run = async (msg, args) => {
   // Get reactionsnipe data
   const reactions = await sniper('c', channelId)
   // If there's no value
-  if (!reactions && !reactions.length) return msg.reply("There's nothing to snipe!")
+  if (!reactions || !reactions.length) return msg.reply("There's nothing to snipe!")
 
   /**
    * @typedef {Object} ReactRemove

@@ -51,7 +51,7 @@ exports.run = async (msg, args) => {
   // Get editsnipe data
   const edits = await sniper('b', channelId)
   // If there's no value
-  if (!edits && !edits.length) return msg.reply("There's nothing to snipe!")
+  if (!edits || !edits.length) return msg.reply("There's nothing to snipe!")
 
   /**
    * @typedef {Object} Edited
