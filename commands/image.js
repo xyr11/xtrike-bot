@@ -352,6 +352,7 @@ exports.run = async (msg, args) => {
   const embeds = []
   for (const p in results) {
     const result = results[p]
+    if (!result || embeds.length > 10) return // limit to 10 embeds only
     // Check if image already exists in the embeds array by using the image url and hash
     const hashes = embeds.map(e => e.hash)
     const images = embeds.map(e => e.image)
