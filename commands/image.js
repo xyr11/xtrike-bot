@@ -228,47 +228,47 @@ exports.run = async (msg, args) => {
   const isExcluded = configEntry.d.e.indexOf(channelId) > -1
 
   // Activate/deactivate command
-  if (userPerms(msg) < 2) { // check user permission level
-    msg.reply('You need to be at least a moderator to be able to do this.')
-  } else {
-    if (args[0] === '--activate' || args[0] === '--enable') {
-      if (args[1] === 'channel') {
-        // Activate channel
-        // Check if command is not activated in server
-        if (!configEntry) return msg.reply(msgNotEnabled)
-        // Check if channel is not excluded
-        if (!isExcluded) return msg.reply(`This channel is already enabled. By default, all channels are enabled. \nTo disable a channel, try \`${prefix}image --disable channel\`.`)
-        await imgConfig.activate.channel(configEntry, channelId)
-        return msg.reply('Successfully included this channel for image monitoring.')
-      } else if (!args[1] || (args[1] && args[1] === 'server')) {
-        // Activate server
-        // Check if command is already activated
-        if (configEntry) return msg.reply('You have enabled this server already!')
-        await imgConfig.activate.server(msg.message)
-        return msg.reply({
-          content: 'Success!',
-          embeds: [{ description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
-        })
-      }
-    } else if (args[0] === '--deactivate' || args[0] === '--disable') {
+  if (args[0] === '--activate' || args[0] === '--enable') {
+    // Check user permission level
+    if (userPerms(msg) < 2) return msg.reply('You need to be at least a moderator to be able to do this.')
+    if (args[1] === 'channel') {
+      // Activate channel
       // Check if command is not activated in server
       if (!configEntry) return msg.reply(msgNotEnabled)
-      if (!args[1]) {
-        // Deactivate server warning
-        msg.reply(msgDisableWarning)
-      } else if (args[1] === 'channel') {
-        // Deactivate channel
-        if (isExcluded) {
-          return msg.reply('This channel is already excluded!')
-        }
-        await imgConfig.deactivate.channel(configEntry, channelId)
-        return msg.reply('Successfully excluded this channel for image monitoring.')
-      } else if (args[1] === 'server') {
-        // Show deactivate server warning
-        if (args[2].toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
-        await imgConfig.deactivate.server(guildId)
-        return msg.reply('Successfully disabled this command!')
+      // Check if channel is not excluded
+      if (!isExcluded) return msg.reply(`This channel is already enabled. By default, all channels are enabled. \nTo disable a channel, try \`${prefix}image --disable channel\`.`)
+      await imgConfig.activate.channel(configEntry, channelId)
+      return msg.reply('Successfully included this channel for image monitoring.')
+    } else if (!args[1] || (args[1] && args[1] === 'server')) {
+      // Activate server
+      // Check if command is already activated
+      if (configEntry) return msg.reply('You have enabled this server already!')
+      await imgConfig.activate.server(msg.message)
+      return msg.reply({
+        content: 'Success!',
+        embeds: [{ description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
+      })
+    }
+  } else if (args[0] === '--deactivate' || args[0] === '--disable') {
+    // Check user permission level
+    if (userPerms(msg) < 2) return msg.reply('You need to be at least a moderator to be able to do this.')
+    // Check if command is not activated in server
+    if (!configEntry) return msg.reply(msgNotEnabled)
+    if (!args[1]) {
+      // Deactivate server warning
+      msg.reply(msgDisableWarning)
+    } else if (args[1] === 'channel') {
+      // Deactivate channel
+      if (isExcluded) {
+        return msg.reply('This channel is already excluded!')
       }
+      await imgConfig.deactivate.channel(configEntry, channelId)
+      return msg.reply('Successfully excluded this channel for image monitoring.')
+    } else if (args[1] === 'server') {
+      // Show deactivate server warning
+      if (args[2].toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
+      await imgConfig.deactivate.server(guildId)
+      return msg.reply('Successfully disabled this command!')
     }
   }
 
