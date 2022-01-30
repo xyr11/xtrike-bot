@@ -113,18 +113,22 @@ class SendMsg {
   /**
    * If you want to defer the reply for an application command
    * @param {Discord.InteractionReplyOptions} interactionOptions
+   * @param {Boolean} hasEmoji whether to add emoji or not (for Messages)
    */
-  async setDefer (interactionOptions) {
+  async setDefer (interactionOptions, hasEmoji) {
+    // Check if message is already deferred
+    if (this.deferred || this.deferReact) return
     /** @type {Discord.MessageReaction|Discord.Message} */
     let e
     if (this.isMsg) {
+      if (!hasEmoji) return
       // If deferEmoji is a snowflake then get the GuildEmoji representation of it, otherwise return the unicode emoji
       const guildEmote = deferEmoji.match(/[0-9]{2,}/) ? this.client.emojis.cache.get(deferEmoji) : deferEmoji
       // Add reaction as a response that the message has been acknowledged, much like how the "Xtrike Bot is thinking..." works
       e = await this.react(guildEmote).catch(() => this.react('💭').catch(() => {}))
       /** @type {Discord.MessageReaction} */
       this.deferReact = e
-    } if (this.isSlash) {
+    } else if (this.isSlash) {
       // Defer command application
       e = await this.message.deferReply({ ...interactionOptions, ephemeral: this.ephemeral || false })
       this.deferred = true
