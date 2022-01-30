@@ -132,7 +132,7 @@ const imgEntry = {
   remove: async _id => await ImagesModel.deleteOne({ _id })
 }
 
-const config = {
+const imgConfig = {
   activate: {
     /**
      * Activate `;image` in channel
@@ -150,7 +150,7 @@ const config = {
 
     /**
      * Activate `;image` in server
-     * @param {import('../class/sendMsg')} message message
+     * @param {import('../class/sendMsg')|{ id: String, guildId: String }} message message
      */
     server: async message => {
       // Generate guild identifier
@@ -290,4 +290,4 @@ const updatePreV020 = async () => {
 const awaitImgHash = input => new Promise((resolve, reject) => { imageHash(input, 10, true, (err, data) => { if (err) reject(err); resolve(data) }) })
 
 // Export the variables
-module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, config, fetchImageUrl, updatePreV020, awaitImgHash }
+module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, config: imgConfig, imgConfig, fetchImageUrl, updatePreV020, awaitImgHash }
