@@ -139,5 +139,19 @@ const hasPerms = (command, msg) => {
   }
 }
 
+/** @param {import('discord.js').Client} client */
+const registerSlashCommandsBody = client => {
+  const body = Array.from(client.commands, ([name, value]) => value.info)
+    .filter(a => PermLevels[a.permLevel].level < 4) // filter commands available to bot admins and below
+    .map(({ name, description, options }) => ({ name, description, options })) // get the name, description, and options properties
+  // Clean description field
+  body.forEach(a => {
+    a.description = a.description.replace(/{{((?!}}).)+}}/g, ' ') // remove all stuff enclosed by `{{` and `}}`
+      .replace(/(\s|\n)+/g, ' ') // remove newlines and double spaces
+      .replace(/^ *| *$/g, '') // remove extra spaces before and after the string
+  })
+  return body
+}
+
 // Export the variables
-module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, deferEmoji, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms }
+module.exports = { intents, partials, prefix, botColor, infoFields, botName, botDescription, deferEmoji, botSupport, devs, presence, colors, discordTime, isChannel, PermLevels, userPerms, hasPerms, registerSlashCommandsBody }
