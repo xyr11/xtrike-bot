@@ -2,7 +2,7 @@ const { MessageEmbed } = require('discord.js')
 const Fuse = require('fuse.js')
 const getPixels = require('get-pixels')
 const { prefix, colors, userPerms } = require('../modules/base')
-const { config: imgConfig, imgEntry, fetchImageUrl, updatePreV020, guildIdentifiers, awaitImgHash } = require('../modules/getImage')
+const { imgConfig, imgEntry, fetchImageUrl, updatePreV020, guildIdentifiers, awaitImgHash } = require('../modules/getImage')
 
 exports.info = {
   name: 'image',
@@ -214,7 +214,7 @@ const msgDisableWarning = "When you disable the image command, you won't be able
 exports.run = async (msg, args) => {
   const { id, channelId, guildId } = msg
   msg.setEphemeral()
-  await msg.setDefer() // defer reply
+  await msg.setDefer({}, false) // defer reply
 
   // Set the instance of the map
   maps[id] = new Map()
@@ -225,7 +225,7 @@ exports.run = async (msg, args) => {
   // Get server data
   const configEntry = await imgEntry.get({ f: true, g: guildId })
   // Check if current channel is excluded
-  const isExcluded = configEntry.d.e.indexOf(channelId) > -1
+  const isExcluded = configEntry && configEntry.d.e.indexOf(channelId) > -1
 
   // Activate/deactivate command
   if (args[0] === '--activate' || args[0] === '--enable') {
@@ -243,11 +243,10 @@ exports.run = async (msg, args) => {
       // Activate server
       // Check if command is already activated
       if (configEntry) return msg.reply('You have enabled this server already!')
-      await imgConfig.activate.server(msg.message)
-      return msg.reply({
+      return imgConfig.activate.server(msg.message).then(() => msg.reply({
         content: 'Success!',
-        embeds: [{ description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
-      })
+        embeds: [{ description: `🟢 Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
+      }))
     }
   } else if (args[0] === '--deactivate' || args[0] === '--disable') {
     // Check user permission level
@@ -266,14 +265,18 @@ exports.run = async (msg, args) => {
       return msg.reply('Successfully excluded this channel for image monitoring.')
     } else if (args[1] === 'server') {
       // Show deactivate server warning
-      if (args[2].toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
+      if (args[2]?.toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
       await imgConfig.deactivate.server(guildId)
       return msg.reply('Successfully disabled this command!')
     }
   }
 
-  // Return silently if server hasn't activated the command yet
-  if (!configEntry || isExcluded) return
+  // Return if command is disabled on server or channel
+  // If msg is a slash command then reply with a message, if not then return silently
+  if (!configEntry || isExcluded) return msg.isSlash && msg.reply('This channel is currently disabled for image monitoring.')
+
+  // show the defer emoji
+  await msg.setDefer()
 
   // Function to check if the given option is present in `args`
   const option = option => args.indexOf(option) > -1 && args.indexOf(option)
@@ -360,7 +363,7 @@ exports.run = async (msg, args) => {
       // Make an embed
       const { channel, msgId, user, avatar, color, image, timestamp } = result
       embeds.push(new MessageEmbed()
-        .setAuthor(`#${+p + 1} by ${user} (Link)`, avatar, `https://discord.com/channels/${msg.guildId}/${channel}/${msgId}`)
+        .setAuthor({ name: `#${+p + 1} by ${user} (Link)`, iconURL: avatar, url: `https://discord.com/channels/${msg.guildId}/${channel}/${msgId}` })
         .setColor(color)
         .setImage(image)
         .setTimestamp(timestamp)
