@@ -1,6 +1,6 @@
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
-const { discordToken, clientId, testingServer } = require('../config')
+const { discordToken, clientId } = require('../config')
 const { registerSlashCommandsBody } = require('../modules/base')
 
 exports.info = {
@@ -18,19 +18,14 @@ exports.info = {
  * @param {Array} args
  */
 exports.run = async (msg, args) => {
-  // Check if there is a test server given
-  if (!testingServer) throw new Error('No test server id was found in your config.js')
-
   await msg.reply('Deploying slash commands...')
 
   // Deploy
   const rest = new REST({ version: '9' }).setToken(discordToken)
-  rest.put(
-    args[0] === '--all'
-      ? Routes.applicationCommands(clientId) // deploy in all guilds
-      : Routes.applicationGuildCommands(clientId, testingServer), // deploy in bot server
-    { body: registerSlashCommandsBody(msg.client) }
-  ).then(() => {
+  const route = args[0] === '--all'
+    ? Routes.applicationCommands(clientId) // deploy in all guilds
+    : Routes.applicationGuildCommands(clientId, msg.guildId) // deploy in current server
+  rest.put(route, { body: registerSlashCommandsBody(msg.client) }).then(() => {
     msg.send('Successfully deployed application commands!')
     msg.info('Registered application commands', args[0] === '--all' ? 'in all guilds' : '')
   })
