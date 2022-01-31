@@ -71,10 +71,10 @@ exports.run = async (msg, args) => {
     embed.setTitle(`${prefix}${name} command`).setThumbnail(thumbnail)
       .setDescription(description.replace(/{{|}}/g, '')) // remove `{{` and `}}`
     if (usage) embed.addField('Usage', usage.replaceAll('$$', prefix)) // replace `$$` to the bot prefix
-    if (category) embed.addField('Category', `${capitalize(category)}`, true)
-    if (aliases) embed.addField('Aliases', aliases.map(n => `\`${prefix}${n}\``).join(', '), true)
     if (option) embed.addField('Options', option)
-    if (similar) embed.addField('Similar', similar.split(' ').join(', ').replaceAll('$$', prefix))
+    if (category) embed.addField('Category', `${capitalize(category)}`, true)
+    if (msg.isMsg && aliases) embed.addField('Aliases', aliases.map(n => `\`${prefix}${n}\``).join(', '), true)
+    if (similar) embed.addField('Similar', similar.split(' ').join(', ').replaceAll('$$', prefix), true)
   } else {
     // Input is neither a command or a category
     const commandNames = commands.map(a => a.info.name) // get command names
