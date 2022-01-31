@@ -12,7 +12,7 @@ exports.info = {
 }
 
 /** @param {String} str */
-const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+const capitalize = str => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : null
 
 // Prepositions to use in presence activities
 const prep = { PLAYING: '', STREAMING: '', LISTENING: 'to', WATCHING: '', COMPETING: 'in' }
@@ -89,11 +89,14 @@ exports.run = async (msg, args) => {
     const { tag, username, id, bot, createdAt, banner, hexAccentColor, flags } = user
     const { communicationDisabledUntil, displayHexColor, nickname, pending, joinedAt, premiumSince, presence, roles, voice } = member
     const { mute, serverMute, deaf, serverDeaf, streaming, requestToSpeakTimestamp, suppress, channel: vc } = voice
-    const { activities, clientStatus, status } = presence
-    // Get custom activity
-    const customAct = activities.filter(a => a.type === 'CUSTOM')
-    // Get non-custom activities
-    const acts = activities.filter(a => a.type !== 'CUSTOM').map(act => `${capitalize(act.type)} ${prep[act.type]} ${(act.url ? `[${act.name}](${act.url})` : act.name)}${act.details ? `: ${act.details}` : ''}${act.state ? ` — ${act.state}` : ''} (since ${discordTime(act.createdTimestamp, 'R')})`)
+    const { activities, clientStatus, status } = presence || {}
+    let customAct, acts
+    if (activities) {
+      // Get custom activity
+      customAct = activities.filter(a => a.type === 'CUSTOM')
+      // Get non-custom activities
+      acts = activities.filter(a => a.type !== 'CUSTOM').map(act => `${capitalize(act.type)} ${prep[act.type]} ${(act.url ? `[${act.name}](${act.url})` : act.name)}${act.details ? `: ${act.details}` : ''}${act.state ? ` — ${act.state}` : ''} (since ${discordTime(act.createdTimestamp, 'R')})`)
+    }
 
     // Create the embed
     const embed = new Discord.MessageEmbed()
@@ -101,7 +104,7 @@ exports.run = async (msg, args) => {
       .setThumbnail(user.displayAvatarURL({ size: 512 }))
       .setColor(displayHexColor)
       .setDescription(
-        (customAct[0] ? `${customAct[0].emoji.toString()} ${customAct[0].state} \n` : '') +
+        (customAct && customAct[0] ? `${customAct[0].emoji.toString()} ${customAct[0].state} \n` : '') +
         `Username: **${username}** (${user.toString()}) \n` +
         (nickname ? `Nickname: ${nickname} \n` : '') +
         `Id: ${id} \n` +
@@ -131,8 +134,8 @@ exports.run = async (msg, args) => {
             (requestToSpeakTimestamp ? `Requested to speak: Yes (${discordTime(requestToSpeakTimestamp, 'R')}) \n` : '') +
             (suppress ? 'Suppressed: Yes (in stage channel)' : ''), true)
       .addField('Presence',
-        `${capitalize(status)} ${(status !== 'offline' ? `in ${Object.keys(clientStatus)[0]} app` : '')} \n` +
-        (acts.length ? `${acts.join('\n')}` : ''))
+        `${capitalize(status) || 'Offline'} ${(clientStatus && status !== 'offline' ? `in ${Object.keys(clientStatus)[0]} app` : '')} \n` +
+        (acts && acts.length ? `${acts.join('\n')}` : ''))
     // Add banner as embed image
     if (banner) embed.setImage(banner)
     // Add user flags
