@@ -25,11 +25,11 @@ class BotCmd {
   /** @param {String} usage */
   setUsage (usage) { return this.#setX({ usage }) }
   /** @param {String} option */
-  setOption (option) { return this.#setX({ option }) }
+  setOptionText (option) { return this.#setX({ option }) }
   /** @param {String} similar */
   setSimilar (similar) { return this.#setX({ similar }) }
   /** @param {String[]} aliases */
-  setAliases (aliases) { return this.#setX({ aliases }) }
+  setAliases (...aliases) { return this.#setX({ aliases }) }
   /** @param {String} permLevel */
   setPerm (permLevel) { return this.#setX({ permLevel }) }
 
@@ -43,11 +43,11 @@ class BotCmd {
    * @param {Object} options
    */
   // todo: documentation of this
-  setOptions (options) { return this.#setX({ options }) }
+  setOptions (...options) { return this.#setX({ options }) }
 
   // The main function of the command
   /** @param {(msg: import('./sendMsg'), args: String[]) => Any} run */
-  func (run) { return this.#setX({ run }) }
+  setFunction (run) { return this.#setX({ run }) }
 }
 
 module.exports = BotCmd
