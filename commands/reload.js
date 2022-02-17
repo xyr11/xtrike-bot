@@ -1,3 +1,29 @@
+/**
+ * Inspired by https://github.com/AnIdiotsGuide/guidebot (commands/reload.js)
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018 YorkAARGH
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 const fs = require('fs')
 const { prefix, presence } = require('../modules/base')
 
@@ -34,8 +60,6 @@ exports.run = async (msg, args) => {
   try {
     // Name of the module that will be reloaded
     let reloadedName
-    // Check if bot will reload autoresponses
-    // From https://github.com/AnIdiotsGuide/guidebot/ (commands/reload.js), MIT License
     if (commandName === 'auto') {
       // Reload all autoresponses
       client.autoresponses = []
@@ -52,11 +76,17 @@ exports.run = async (msg, args) => {
       reloadedName = 'All autoresponses have been reloaded'
     } else if (commandName === 'err') {
       // Reload the errorCatch module
-      // Delete cache
-      delete require.cache[require.resolve('../modules/errorCatch.js')]
-      // Re-add the module
-      require('../modules/errorCatch.js')
+      delete require.cache[require.resolve('../modules/errorCatch.js')] // delete cache
+      require('../modules/errorCatch') // re-add the module
       reloadedName = 'The errorCatch module has been reloaded'
+    } else if (commandName === 'module' && args[1]) {
+      const path = `../modules/${args[1]}.js`
+      // Check if module exists
+      if (await doesExist(path)) return msg.reply('That module does not exist')
+      // Reload the module
+      if (require.resolve(path)) delete require.cache[require.resolve(path)] // delete cache
+      require(path) // re-add the module
+      reloadedName = `The ${args[1]}.js module has been reloaded`
     } else if (commandName === 'activity' && args[1]) {
       // Reload the presence activity
       if (['PLAYING', 'LISTENING', 'WATCHING'].indexOf(args[1].toUpperCase()) > -1 && args[2]) {
