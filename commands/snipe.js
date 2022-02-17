@@ -1,8 +1,3 @@
-/**
- * pls snipe
- * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
- */
-
 const { MessageEmbed, MessageAttachment } = require('discord.js')
 const { isChannel } = require('../modules/base')
 const { sniper } = require('../modules/sniper')
@@ -14,7 +9,7 @@ exports.info = {
   description: 'Get the most recently deleted messages.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$snipe [number] [channel]`',
-  option: '`[number]`: Get the *nth* deleted message, default is `1` (most recent) and max is `10` \n `[channel]`: the channel to get deleted messages.',
+  option: '`[number]`: Get the *nth* deleted message, default is `1` (most recent) and max is `50` \n `[channel]`: the channel to get deleted messages.',
   similar: '`$$editsnipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true,
@@ -48,43 +43,40 @@ exports.run = async (msg, args) => {
   // check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
-  // Get snipe data
-  const deletes = await sniper('a', channelId)
-  if (!deletes || !deletes.length) return msg.reply("There's nothing to snipe!")
+  /** @type {import('../modules/sniper').Deleted} */
+  //* (For older versions) Get snipe data object
+  let deletes = await sniper('a', channelId)
+  //* (For newer versions) If snipe data is an array, get the value inside the array
+  if (Array.isArray(deletes)) deletes = deletes[index - 1] || deletes[0]
+  // Check if sniped data exists
+  if (!deletes) return msg.reply("There's nothing to snipe!")
 
-  /**
-   * @typedef {Object} Deleted
-   * @property {String} a Author id
-   * @property {String} c Message content
-   * @property {Array} e Embeds
-   * @property {Array} f File attachments
-   * @property {String} t Created timestamp
-   */
-  /** @type {Deleted} */
-  // Get the deleted entry
-  let deleted = deletes
-  // If snipe data is an array, get the index instead
-  if (Array.isArray(deletes)) deleted = deletes[index - 1] || deletes[0]
-
-  // Remove non-rich embeds
-  deleted.e = deleted.e.filter(e => e.type === 'rich')
+  const del = {
+    authorId: deletes.a,
+    content: deletes.c,
+    time: deletes.t,
+    embeds: deletes.e || [],
+    attachments: deletes.f || [],
+    repliedOn: deletes.r
+  }
 
   // Create message
-  const author = await msg.client.users.fetch(deleted.a, { force: true }) // get author
+  const author = await msg.client.users.fetch(del.authorId, { force: true }) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
     .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
     .setColor(author.hexAccentColor)
-    .setDescription(deleted.c +
-      (deleted.f.length ? ' [Message has attachments]' : '') + // if there are attachments
-      (deleted.e.length ? ' [Message has embeds]' : '')) // if there are embeds
+    .setDescription(
+      (del.repliedOn ? `*Replying to [this message](https://discord.com/channels/${msg.guildId}/${msg.channelId}/${del.repliedOn}):*\n` : '') + // if message is a reply
+      del.content +
+      (!del.content && del.embeds.length ? ' *[has embeds]*' : '') + // if there are embeds and there is no message content
+      (del.attachments.length ? ' *[has attachments]*' : '')) // if there are attachments
     .setFooter({ text: `#${channel.name}` })
-    .setTimestamp(deleted.t))
-  // Check if there are any deleted embeds and include them
-  if (deleted.e) deleted.e.forEach(e => embeds.push(e))
-  // Check if there are any deleted files
-  if (deleted.f.length === 1) embeds[0].setImage(deleted.f[0])
-  else if (deleted.f.length > 1) deleted.f.forEach(url => files.push(new MessageAttachment(url)))
+    .setTimestamp(Number(del.time)))
+  // Check if there are sniped embeds
+  if (del.embeds) del.embeds.forEach(e => embeds.push(e))
+  // Check if there are sniped files
+  if (del.attachments.length) del.attachments.forEach(url => files.push(new MessageAttachment(url)))
   await msg.reply({ embeds, files })
 }

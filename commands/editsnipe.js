@@ -1,8 +1,3 @@
-/**
- * pls editsnipe
- * Given by Dank Memer at https://github.com/DankMemer/sniper, MIT License
- */
-
 const { MessageEmbed, MessageAttachment } = require('discord.js')
 const { isChannel } = require('../modules/base')
 const { sniper } = require('../modules/sniper')
@@ -14,7 +9,7 @@ exports.info = {
   description: 'Get the original message of the most recently edited messages.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$editsnipe [number] [channel]`',
-  option: '`[number]`: Get the *nth* edited message, default is `1` (most recent) and max is `10` \n `[channel]`: the channel to get deleted messages.',
+  option: '`[number]`: Get the *nth* edited message, default is `1` (most recent) and max is `50` \n `[channel]`: the channel to get deleted messages.',
   similar: '`$$snipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true,
@@ -48,47 +43,43 @@ exports.run = async (msg, args) => {
   // Check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
-  // Get editsnipe data
-  const edits = await sniper('b', channelId)
-  // If there's no value
-  if (!edits || !edits.length) return msg.reply("There's nothing to snipe!")
+  /** @type {import('../modules/sniper').Edited} */
+  //* (For older versions) Get editsnipe data object
+  let edits = await sniper('b', channelId)
+  //* (For newer versions) If editsnipe data is an array, get the value inside the array
+  if (Array.isArray(edits)) edits = edits[index - 1] || edits[0]
+  // Check if editsnipe data exits
+  if (!edits) return msg.reply("There's nothing to snipe!")
 
-  /**
-   * @typedef {Object} Edited
-   * @property {String} a Author id
-   * @property {String} c Message old content
-   * @property {Array} e Old embeds
-   * @property {Array} f Old file attachments
-   * @property {String} i Message id
-   * @property {String} t Edited timestamp
-   */
-  /** @type {Edited} */
-  // Get the edited entry
-  let edited = edits
-  // If editsnipe data is an array, get the index instead
-  if (Array.isArray(edits)) edited = edits[index - 1] || edits[0]
-
-  // Remove non-rich embeds
-  edited.e = edited.e.filter(e => e.type === 'rich')
+  const edit = {
+    authorId: edits.a,
+    content: edits.c,
+    id: edits.i,
+    time: edits.t,
+    embeds: edits.e || [],
+    attachments: edits.f || [],
+    repliedOn: edits.r
+  }
 
   // Create embed
-  const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edited.i}` // message url
-  const author = await msg.client.users.fetch(edited.a, { force: true }) // get author
+  const msgUrl = `https://discord.com/channels/${msg.guildId}/${channelId}/${edit.id}` // message url
+  const author = await msg.client.users.fetch(edit.authorId, { force: true }) // get author
   const embeds = []
   const files = []
   embeds.push(new MessageEmbed()
-    .setAuthor({ name: author.tag, iconURL: author.avatarURL(), url: msgUrl })
+    .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
     .setColor(author.hexAccentColor)
-    .setDescription(edited.c +
-      (edited.f.length ? ' [Message has attachments]' : '') + // if there are attachments
-      (edited.e.length ? ' [Message has embeds, see below]' : '') + // if there are embeds
+    .setDescription(
+      (edit.repliedOn ? `*Replying to [this message](https://discord.com/channels/${msg.guildId}/${msg.channelId}/${edit.repliedOn}):*\n` : '') + // if message is a reply
+      edit.content +
+      (!edit.content && edit.embeds.length ? ' *[has embeds]*' : '') + // if there are embeds and there is no message content
+      (edit.attachments.length ? ' *[has attachments]*' : '') + // if there are attachments
       ` [(go to original message)](${msgUrl})`)
     .setFooter({ text: `#${channel.name}` })
-    .setTimestamp(edited.t))
-  // Check if there are any removed embeds and include them
-  if (edited.e) edited.e.forEach(e => embeds.push(e))
-  // Check if there are any deleted files
-  if (edited.f.length === 1) embeds[0].setImage(edited.f[0])
-  else if (edited.f.length > 1) edited.f.forEach(url => files.push(new MessageAttachment(url)))
+    .setTimestamp(Number(edit.time)))
+  // Check if there are sniped embeds
+  if (edit.embeds) edit.embeds.forEach(e => embeds.push(e))
+  // Check if there are sniped files
+  if (edit.attachments.length) edit.attachments.forEach(url => files.push(new MessageAttachment(url)))
   await msg.reply({ embeds, files })
 }
