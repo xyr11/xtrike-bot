@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageAttachment } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const { isChannel } = require('../modules/base')
 const { sniper } = require('../modules/sniper')
 
@@ -77,6 +77,6 @@ exports.run = async (msg, args) => {
   // Check if there are sniped embeds
   if (del.embeds) del.embeds.forEach(e => embeds.push(e))
   // Check if there are sniped files
-  if (del.attachments.length) del.attachments.forEach(url => files.push(new MessageAttachment(url)))
+  if (del.attachments.length) del.attachments.forEach(url => files.push(url))
   await msg.reply({ embeds, files })
 }
