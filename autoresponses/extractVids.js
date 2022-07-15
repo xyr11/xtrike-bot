@@ -1,11 +1,22 @@
-const errorCatch = require('../modules/errorCatch')
 const ytdlVids = require('../modules/ytdlVids')
+const { prefix } = require('../modules/base')
+const videoCmdAliases = require('../commands/video').info.aliases
 
 // Check for video links and send the raw video file using youtube-dl
 /** @param {import('discord.js').Message} message */
 module.exports = async message => {
-  // If it's a `;video` command then return immediately
-  if (message.content.split(/ +/g)[0].toLowerCase() === ';video') return
+  let msgContent = message.content
+
+  // If it's a `;video` command then stop immediately
+  // Check for prefix
+  const prefixRegex = new RegExp(`\\s*${prefix} *`)
+  if (msgContent.search(prefixRegex) === 0) {
+    // If there is a prefix then remove it
+    msgContent = msgContent.replace(prefixRegex, '')
+    // Get the command and if it matches the ;video command, then return
+    const msgCommand = msgContent.split(/ +/)[0]
+    if (['video', ...videoCmdAliases].indexOf(msgCommand) > -1) return
+  }
 
   // Regex for getting links
   const ytdlRegex = new RegExp('(?<=.|^|\\s)https:\\/\\/(www\\.)?' + // get "https://" and "www." if present
@@ -23,17 +34,14 @@ module.exports = async message => {
     '(?=\\s|\\?|$)', 'g') // check if the next character is a space, a question mark or the end of the string
 
   // Get links from message and remove duplicates
-  const links = [...new Set(message.content.match(ytdlRegex))]
+  const links = [...new Set(msgContent.match(ytdlRegex))]
+
   // Fetch each link
-  links.forEach(link => ytdlVids(link, message.client).then(async files => {
-    // Send video
-    if (!files || files.error) return
-    while (true) {
-      try {
-        return await message.reply({ files, allowedMentions: { repliedUser: false } })
-      } catch (err) {
-        errorCatch(err, message.client)
-      }
-    }
-  }))
+  links.forEach(link =>
+    ytdlVids(link, message.client).then(async files => {
+      // Send video source link
+      if (!files) return
+      return message.reply({ content: files.join('\n'), allowedMentions: { repliedUser: false } })
+    })
+  )
 }

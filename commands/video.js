@@ -1,4 +1,3 @@
-const { MessageEmbed } = require('discord.js')
 const ytdlVids = require('../modules/ytdlVids')
 
 exports.info = {
@@ -27,56 +26,47 @@ exports.run = async (msg, args) => {
   let links = []
   let matches
 
-  if (msg.isSlash) {
+  if (msg.isSlash) { // If slash commands were used
     // Get links from interaction
     matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   } else {
-    // Check if there is a reply
-    if (msg.reference) {
-      // Get message that is being replied on
+    // Check if the message is a reply, and the message that is being replied to has links
+    if (msg.reference) { // Check if message is a reply
+      // Fetch the message that is being replied to
       const repliedTo = await msg.channel.messages.fetch(msg.reference.messageId, { force: true })
-      // Message is fetched
       if (repliedTo) {
         // Get links from message that is replied to
         matches = repliedTo.content.match(linkRegex)
         if (matches) links.push(...matches)
       }
     }
-    // Get links from message
+    // Check links on the message
     matches = msg.content.match(linkRegex)
     if (matches) links.push(...matches)
   }
 
-  // Remove duplicated links
+  // Remove duplicate links
   links = [...new Set(links)]
-
-  // Get quality
-  const lastArgs = args[args.length - 1]
-  let quality = 480
-  if (!isNaN(lastArgs)) quality = +lastArgs
 
   // Check if there are links
   if (!links.length) return msg.reply("There aren't any links in the message!")
+
+  // Get quality
+  let quality
+  // If last argument is a valid number then put it as the quality
+  const lastArgs = args[args.length - 1]
+  if (!isNaN(lastArgs)) quality = +lastArgs
 
   // Fetch each link
   links.forEach(link => {
     ytdlVids(link, client, quality).then(async files => {
       if (!files) {
         // No video
-        await msg.reply(`I wasn't able to find a video in "\`${link}\`".`)
-      } else if (files.error === 'File too big') {
-        // File too big
-        await msg.reply({
-          content: 'File too big to upload.',
-          embeds: [new MessageEmbed()
-            .setDescription(`The video format that I found is too big to upload. \n You can download the video directly [in this link](${files.link}).`)
-            .setFooter({ text: 'Note that the link may expire quickly' })]
-        })
-      } else {
-        // Send video
-        msg.reply({ files })
+        return msg.reply(`Sorry, I wasn't able to extract a video from "\`${link}\`".`)
       }
+      // Send video source link
+      return msg.reply(files.join('\n'))
     })
   })
 }
