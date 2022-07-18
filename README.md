@@ -105,6 +105,8 @@ If no errors are encountered, you should be able to see the following message:
 Ready as <Bot username>! 🤖 (<Date and time>)
 ```
 
+If you're on Replit and you want to update to the latest version of Node manually due to new builds, enter `npm run replit-node-latest` on your shell (beside the console).
+
 ### Customizing the bot
 You can customize the bot by replacing the default value of the optional variables on your `config.js` file.
 
