@@ -74,29 +74,31 @@ console.log(stats)
 + [OCRSpace API](https://ocr.space/ocrapi) (API key)
 + [Oxford Dictionaries API](https://developer.oxforddictionaries.com/) (API ID and key)
 
-### Configure repository
-*If you're using Replit*, click: \
-[![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot)
-
-*If not*, then clone the repository via Git by opening your console and entering the following commands:
+### Configuring the repository
+[Download the repo](https://github.com/xyr11/xtrike-bot/archive/refs/heads/main.zip) or clone it by entering this command on your console:
 ```
-cd "C:/path/of/repo/folder"
-git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot
-npm i
+git clone https://github.com/xyr11/xtrike-bot.git
 ```
 
-### Set up the bot account
+Then, install all the required dependencies using:
+```
+npm install
+```
+
+##### For Replit users:
+[![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot "'Run on Replit' button")](https://replit.com/github/xyr11/xtrike-bot) \
+(or go to https://replit.com/github/xyr11/xtrike-bot)
+
+### Setting up the bot account
 On https://discord.com/developers/applications, click "New Application". Add your application name and press "Create" to create a new application. You can set your bot description in this page.
 
 After that, go to the "Bot" tab. Click the "Add Bot" button and press the confirmation button. After that, enable all privileged intents in the "Privileged Gateway Intents" tab so that the bot can properly fetch data. You can also set a custom bot name and bot avatar in this page.
 
-### Add config variables
+### Adding config variables
 After that, rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot. There are comments to help you out.
 
-### Run repository
-*If you're on Replit*, press the big "Run" button.
-
-*If not*, open your console and enter the following command to start your bot:
+### Booting up the bot
+Open your console and enter the following command to start your bot:
 ```
 npm start
 ```
@@ -105,7 +107,10 @@ If no errors are encountered, you should be able to see the following message:
 Ready as <Bot username>! 🤖 (<Date and time>)
 ```
 
-If you're on Replit and you want to update to the latest version of Node manually due to new builds, enter `npm run replit-node-latest` on your shell (beside the console).
+##### For Replit users:
+Just press the big "Run" button.
+
+If you want to update to the latest version of Node manually due to new builds, enter `npm run replit-node-latest` on your shell (beside the console).
 
 ### Customizing the bot
 You can customize the bot by replacing the default value of the optional variables on your `config.js` file.
@@ -135,7 +140,7 @@ To update the code, enter:
 ```
 git fetch --all && git reset --hard origin/main && npm i
 ```
-***NOTE: This will overwrite all files that you have modified, so you will lose them.*** If you want it to be saved permanently then I suggest forking the repository instead and doing `git merge` with your own version every time there is a new update.
+**NOTE: This will overwrite files that you may have modified** (other than the `config.js` file). If you don't want it to be overwritten then you can instead fork the repository and do `git merge` with your own version every time a new update releases.
 
 ## Roadmap
 <details>
@@ -153,6 +158,6 @@ git fetch --all && git reset --hard origin/main && npm i
 The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE).
 
 ## Credits
-Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thank also to [Replit](https://replit.com) for the bot hosting.
+Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thanks also to [Replit](https://replit.com) for the bot hosting.
 
-[^1]: Supported sites: Facebook, Twitter, Tiktok. DISCLAIMER: The bot only temporarily saves the videos generated from this feature so that it can be send on Discord. You are entirely responsible for any and all content generated from these links.
+[^1]: Supported sites: facebook.com, twitter.com, tiktok.com. Disclaimer: The bot only shares the source url of the video from the post containing it.
