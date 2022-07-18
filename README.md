@@ -1,7 +1,10 @@
 # Xtrike Bot
 A multi-purpose Discord bot written in [discord.js](https://discord.js.org) that does all sorts of bot stuff.
 
-[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
+[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot)
+[![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
 
 ## Features
 ### Search for text in images!
@@ -14,29 +17,25 @@ It's a real inconvenience when you need to open links just to watch epic fails o
 Hang tight.
 
 ## Add the bot to your server
-*The invite link will be available once the bot gets out of beta.*
+*Invite link will be available once the bot gets out of beta.*
 
-## Versions
+## Changelog
+[Check the CHANGELOG.md file](./CHANGELOG.md) for the complete changelog.
+
 ### 0.3.2 (upcoming)
-...
+Major changes
+- Updated discord.js to v13.6.0 and other dependencies (3d3d9ac)
+- Automatically enable slash commands and the ;image command in newly joined servers (3685b3a, e7a1db9)
+- Update server count and delete ;image command data when bot leaves a server (756db7d)
+- `deployslash` and `testingServer` config entry is deprecated (e1b1de8, 47d8327)
+- Added the BotCmd class (cce09cb, 9e12a26, 582c127)
 
-### 0.3.1
-New commands, new year bug fixes and updated discord.js to v13.5.1
-
-#### Breaking changes
-- updated discord.js to v13.5.1
-- moved the SendMsg class to its own folder
-- new config entry for Oxford Dictionaries API
-
-#### Other stuff
-- fixed `extractVids` autoresponse not working
-- updated the `user` command to include the presence status and server timeout
-- added the `server` command to get all available info on the current server
-- forgot to remove the `isBeta` status on the `image` command, command should work now
-- added the `define` command which gives word definitions (powered by Oxford Dictionaries)
-- recategorized some commands
-
-You can see past changelogs [in the CHANGELOG.md file.](./CHANGELOG.md)
+Other stuff
+- Fixes to ;image (72cf0da, 183bfaf, b76c5a1, b2a4910), sniper commands (f22f3a0, effb9ca, c5cda22), ;help (57f095d), ;user (6e34280)
+- New config entry for `deferEmoji` for the sendMsg class (44ec18d, 8a8c7c0)
+- discord.js embed methods deprecation fixes (36d84c8, b2a4910)
+- Added reloading modules (57a4265)
+- Updated the video commands to give (112dddd)
 
 ## Endpoints
 You can either use `GET` or `POST`.
@@ -66,14 +65,18 @@ console.log(stats)
 
 ### Prerequisites
 + [Git](https://git-scm.com/downloads)
-+ [Node.js 16.6 or later (preferably the latest version)](https://nodejs.org/en/download/)
++ [Node.js 16.9.0 or later](https://nodejs.org/en/download/)
 + [a MongoDB database](https://www.mongodb.com/)
-+ [an OCRSpace API key](https://ocr.space/ocrapi)
-+ [Replit account](https://replit.com) (optional)
-+ [Oxford Dictionaries API ID and key](https://developer.oxforddictionaries.com/) (for the `oxford` command, optional)
++ [Replit account](https://replit.com) (*optional*)
++ API keys for the services below (*optional*)
+
+### API services
++ [OCRSpace API](https://ocr.space/ocrapi) (API key)
++ [Oxford Dictionaries API](https://developer.oxforddictionaries.com/) (API ID and key)
 
 ### Configure repository
-*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+*If you're using Replit*, click: \
+[![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot)
 
 *If not*, then clone the repository via Git by opening your console and entering the following commands:
 ```

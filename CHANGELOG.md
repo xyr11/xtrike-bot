@@ -1,6 +1,26 @@
 ## Xtrike Bot Changelog
 [Go back to the main thing](./README.md)
 
+### 0.3.1
+
+<details>
+<summary>New commands, new year bug fixes and updated discord.js to v13.5.1</summary>
+
+#### Breaking changes
+- updated discord.js to v13.5.1
+- moved the SendMsg class to its own folder
+- new config entry for Oxford Dictionaries API
+
+#### Other stuff
+- fixed `extractVids` autoresponse not working
+- updated the `user` command to include the presence status and server timeout
+- added the `server` command to get all available info on the current server
+- forgot to remove the `isBeta` status on the `image` command, command should work now
+- added the `define` command which gives word definitions (powered by Oxford Dictionaries)
+- recategorized some commands
+
+</details>
+
 ### 0.3
 <details>
 <summary>New commands and command aliases + other stuff</summary>
