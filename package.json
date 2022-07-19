@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "fuse.js": "^6.4.6",
     "get-pixels": "^3.3.3",
+    "got": "^11.8.5",
     "image-hash": "^5.3.1",
     "mongoose": "^6.4.4",
     "node-fetch": "^2",

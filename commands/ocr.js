@@ -1,4 +1,4 @@
-const fetch = require('node-fetch')
+const got = require('got')
 const { botColor } = require('../modules/base')
 const { ocrApi } = require('../config')
 
@@ -64,16 +64,16 @@ exports.run = async (msg, args) => {
   // Get text in each image link and send it
   for (const img of imgs) {
     // Get the text inside the image using OCR API
-    // This part is an infinite loop, so if fetch() gets a FetchError
+    // This part is an infinite loop, so if `got` gets a FetchError
     // or if the API has IsErroredOnProcessing then it will repeat.
     // If there are no errors then the infinite loop will break
     let results
     while (results === undefined) {
       let fetched, ocrKey
-      // Fetch
+      // Fetch api
       try {
         ocrKey = ocrKeys[Math.floor(Math.random() * ocrKeys.length)]
-        fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrKey + '&url=' + img).then(res => res.json())
+        fetched = await got.get(`https://api.ocr.space/parse/imageurl?apikey=${ocrKey}&url=${img}`).json()
       } catch (err) {
         if (err.name !== 'FetchError') {
           // Stop the infinite loop if bot encountered an error NOT related to FetchError
