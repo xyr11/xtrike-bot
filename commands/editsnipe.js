@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js')
 const { isChannel } = require('../modules/base')
-const { sniper } = require('../modules/sniper')
+const { sniper, maxSnipes, exceedMaxSnipesNotice } = require('../modules/sniper')
 
 exports.info = {
   name: 'editsnipe',
@@ -9,13 +9,13 @@ exports.info = {
   description: 'Get the original message of the most recently edited messages.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$editsnipe [number] [channel]`',
-  option: '`[number]`: Get the *nth* edited message, default is `1` (most recent) and max is `50` \n `[channel]`: the channel to get deleted messages.',
+  option: `\`[number]\`: get the *nth* edited message, default is \`1\` (newest), max is \`${maxSnipes}\` (oldest) \n\`[channel]\`: channel to snipe`,
   similar: '`$$snipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true,
   options: [
-    { type: 4, name: 'number', description: 'Get the nth edited message' },
-    { type: 7, name: 'channel', description: 'The channel to snipe' }
+    { type: 4, name: 'number', description: 'The nth edited message' },
+    { type: 7, name: 'channel', description: 'Channel to snipe' }
   ]
 }
 
@@ -43,11 +43,18 @@ exports.run = async (msg, args) => {
   // Check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
+  // Fetch snipes
   /** @type {import('../modules/sniper').Edited} */
   //* (For older versions) Get editsnipe data object
   let edits = await sniper('b', channelId)
   //* (For newer versions) If editsnipe data is an array, get the value inside the array
-  if (Array.isArray(edits)) edits = edits[index - 1] || edits[0]
+  let content
+  if (Array.isArray(edits)) {
+    // If user inputted a value larger than the max amount then add a notice in the message
+    if (index > maxSnipes) content = exceedMaxSnipesNotice
+    // If given index does not exist, give the last entry of the array (meaning the oldest one)
+    edits = edits[index - 1] || edits[0]
+  }
   // Check if editsnipe data exits
   if (!edits) return msg.reply("There's nothing to snipe!")
 
@@ -66,6 +73,7 @@ exports.run = async (msg, args) => {
   const author = await msg.client.users.fetch(edit.authorId, { force: true }) // get author
   const embeds = []
   const files = []
+
   embeds.push(new MessageEmbed()
     .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
     .setColor(author.hexAccentColor)
@@ -79,7 +87,9 @@ exports.run = async (msg, args) => {
     .setTimestamp(Number(edit.time)))
   // Check if there are sniped embeds
   if (edit.embeds) edit.embeds.forEach(e => embeds.push(e))
+
   // Check if there are sniped files
   if (edit.attachments.length) edit.attachments.forEach(url => files.push(url))
-  await msg.reply({ embeds, files })
+
+  await msg.reply({ content, embeds, files })
 }

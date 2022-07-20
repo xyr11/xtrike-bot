@@ -26,8 +26,20 @@
  */
 
 const Discord = require('discord.js') // eslint-disable-line no-unused-vars
+const zlib = require('zlib')
+const errorCatch = require('../modules/errorCatch')
+const got = require('got')
 const { Message, MessageReaction, User } = require('discord.js') // eslint-disable-line no-unused-vars
 const Snipes = require('../schemas/snipes')
+
+// Sniper config variables so it's easier to manipulate
+const maxSnipes = 15
+const maxFileSize = 2 // in MB
+const maxFilesPerSnipe = 3
+
+// Export some config variables
+exports.exceedMaxSnipesNotice = `Hi! I can only save up to ${maxSnipes} entries so here's the oldest one instead:`
+exports.maxSnipes = maxSnipes
 
 /**
  * Get sniped data
@@ -60,8 +72,8 @@ const saveSnipe = async (_id, data) => {
     storedData.push(data)
     // Sort from the latest one to the oldest one using the timestamp
     storedData.sort((a, b) => b.t - a.t)
-    // Get the last 50 items
-    storedData = storedData.slice(0, 50)
+    // Limit the amount of items stored
+    storedData = storedData.slice(0, maxSnipes)
     // Update the entry
     await Snipes.updateOne({ _id }, { d: storedData })
   } else {
@@ -71,24 +83,79 @@ const saveSnipe = async (_id, data) => {
 }
 
 /**
+ * Fetches, downloads, and compresses attachments for the sniper
+ * @param {String} url url to save
+ * @param {Discord.Client} client discord client for the errorCatch module
+ * @param {Number} maxSize max file size it can fetch (for filtering out large files)
+ */
+const mediaFetch = async (url, client, maxSize = maxFileSize) => {
+  // Fetch the url using got.stream to get the headers only
+  // Infinite loop so it can retry fetching if there's a FetchError
+  let stream
+  while (stream === undefined) {
+    try {
+      stream = await new Promise((resolve, reject) => {
+        // Stream the media
+        const mediaStream = got.stream(url)
+          // When the headers become available, immediately destroy the stream
+          // since we only want the headers for now
+          .on('response', res => {
+            mediaStream.destroy()
+            resolve(res)
+          })
+          // If there's an error then throw the error
+          .on('error', error => reject(error))
+      })
+    } catch (err) {
+      // If it's a FetchError then retry fetching, if not then log the error and stop the loop
+      if (err.name !== 'FetchError') {
+        errorCatch(err, client)
+        stream = null
+      }
+    }
+  }
+
+  // If media can't be found or doesn't have 'content-length' in the header then return
+  if (!stream || stream?.statusCode !== 200 || !stream?.headers['content-length']) return
+
+  // If content length exceeds the given maxFileLength then return
+  if (stream.headers['content-length'] > maxSize * 1024 * 1024) return
+  // If not then fetch the whole file
+  // Infinite loop so it can retry fetching if there's a FetchError
+  /** @type {Buffer} */
+  let buffer
+  while (buffer === undefined) {
+    try {
+      buffer = await got(url).buffer()
+    } catch (err) {
+      // If it's a FetchError then retry fetching, if not then log the error and return
+      if (err.name !== 'FetchError') return errorCatch(err, client)
+    }
+  }
+  // Compress using gzip and return
+  return await zlib.gzipSync(buffer)
+}
+
+/**
  * @typedef {Object} Deleted
- * @prop {String} a Author id
- * @prop {String} c Message content
- * @prop {String} t Created timestamp
- * @prop {Array}  [e] Embeds
- * @prop {Array}  [f] Attachments
- * @prop {String} [r] Message id that is being replied on
+ * @prop {String}   a   Author id
+ * @prop {String}   c   Message content
+ * @prop {String}   t   Created timestamp
+ * @prop {Object[]} [e] Embeds
+ * @prop {String[]} [f] Attachment urls
+ * @prop {Object.<String, Buffer>} [m] Attachments buffers (compressed with gzip)
+ * @prop {String}   [r] Message id that is being replied on
  */
 
 /**
  * @typedef {Object} Edited
- * @prop {String} a Author id
- * @prop {String} c Message old content
- * @prop {String} i Message id
- * @prop {String} t Edited timestamp
- * @prop {Array}  [e] Old embeds
- * @prop {Array}  [f] Old attachments
- * @prop {String} [r] Message id that is being replied on
+ * @prop {String}   a   Author id
+ * @prop {String}   c   Message old content
+ * @prop {String}   i   Message id
+ * @prop {String}   t   Edited timestamp
+ * @prop {Object[]} [e] Old embeds
+ * @prop {String[]} [f] Old attachment urls
+ * @prop {String}   [r] Message id that is being replied on
  */
 
 /**
@@ -123,7 +190,24 @@ exports.delete = async del => {
   // If message is a reply, add the message id that is being replied on
   if (del.reference) data.r = del.reference.messageId
 
-  // Store data
+  // If there are attachments then try downloading them
+  if (data.f?.length) {
+    // Array to save buffers
+    data.m = {}
+    // Loop over the attachments map to get the original url instead of the proxy url
+    for (const attachment of del.attachments.values()) {
+      // Check if buffer array does not exceed maxFilesPerSnipe
+      if (Object.keys(data.m).length <= maxFilesPerSnipe) {
+        // Download the attachment from the original url
+        const mediaBuf = await mediaFetch(attachment.url, del.client)
+        // If download is successful add it to the snipe data
+        // Array indexing uses the proxy url
+        if (mediaBuf) data.m[attachment.proxyURL] = mediaBuf
+      }
+    }
+  }
+
+  // Store snipe data
   await saveSnipe(_id, data)
 }
 

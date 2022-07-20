@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js')
+const zlib = require('zlib')
 const { isChannel } = require('../modules/base')
-const { sniper } = require('../modules/sniper')
+const { sniper, maxSnipes, exceedMaxSnipesNotice } = require('../modules/sniper')
 
 exports.info = {
   name: 'snipe',
@@ -9,13 +10,13 @@ exports.info = {
   description: 'Get the most recently deleted messages.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$snipe [number] [channel]`',
-  option: '`[number]`: Get the *nth* deleted message, default is `1` (most recent) and max is `50` \n `[channel]`: the channel to get deleted messages.',
+  option: `\`[number]\`: get the *nth* deleted message, default is \`1\` (newest), max is \`${maxSnipes}\` (oldest) \n\`[channel]\`: channel to snipe`,
   similar: '`$$editsnipe` `$$reactionsnipe`',
   permLevel: 'User',
   dank: true,
   options: [
-    { type: 4, name: 'number', description: 'Get the nth deleted message' },
-    { type: 7, name: 'channel', description: 'The channel to snipe' }
+    { type: 4, name: 'number', description: 'The nth deleted message' },
+    { type: 7, name: 'channel', description: 'Channel to snipe' }
   ]
 }
 
@@ -28,8 +29,8 @@ exports.run = async (msg, args) => {
 
   // Get the nth deleted message
   let index = !isNaN(args[0]) ? Math.floor(args[0]) : undefined
-  // If given index is less than 1
-  if (index && index < 1) index = 1
+  // If there are no given index or index is less than 1
+  if (!index || index < 1) index = 1
 
   // If there is a specified channel then snipe from that channel, if not then snipe from the current channel
   let channelId = msg.channelId
@@ -43,11 +44,18 @@ exports.run = async (msg, args) => {
   // check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
+  // Fetch snipes
   /** @type {import('../modules/sniper').Deleted} */
   //* (For older versions) Get snipe data object
   let deletes = await sniper('a', channelId)
   //* (For newer versions) If snipe data is an array, get the value inside the array
-  if (Array.isArray(deletes)) deletes = deletes[index - 1] || deletes[0]
+  let content
+  if (Array.isArray(deletes)) {
+    // If user inputted a value larger than the max amount then add a notice in the message
+    if (index > maxSnipes) content = exceedMaxSnipesNotice
+    // If given index does not exist, give the last entry of the array (meaning the oldest one)
+    deletes = deletes[index - 1] || deletes[deletes.length - 1] // we need to minus one since arrays are zero-based
+  }
   // Check if sniped data exists
   if (!deletes) return msg.reply("There's nothing to snipe!")
 
@@ -57,13 +65,15 @@ exports.run = async (msg, args) => {
     time: deletes.t,
     embeds: deletes.e || [],
     attachments: deletes.f || [],
+    attachmentBuffers: deletes.m || [],
     repliedOn: deletes.r
   }
 
   // Create message
-  const author = await msg.client.users.fetch(del.authorId, { force: true }) // get author
+  const author = await msg.client.users.fetch(del.authorId) // get author
   const embeds = []
   const files = []
+
   embeds.push(new MessageEmbed()
     .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
     .setColor(author.hexAccentColor)
@@ -76,7 +86,27 @@ exports.run = async (msg, args) => {
     .setTimestamp(Number(del.time)))
   // Check if there are sniped embeds
   if (del.embeds) del.embeds.forEach(e => embeds.push(e))
+
   // Check if there are sniped files
-  if (del.attachments.length) del.attachments.forEach(url => files.push(url))
-  await msg.reply({ embeds, files })
+  if (del.attachments.length) {
+    for (const url of del.attachments) {
+      // Check if the attachment url has a saved buffer
+      if (del.attachmentBuffers[url]) {
+        // Get mongodb binary
+        // Check https://mongodb.github.io/node-mongodb-native/api-bson-generated/binary.html
+        const binary = del.attachmentBuffers[url]
+        // Convert it to buffer
+        const compressedBuf = binary.read(0, binary.length())
+        // Decompress the buffer
+        const rawBuffer = await zlib.gunzipSync(compressedBuf)
+        // Push the file
+        files.push({ attachment: rawBuffer, name: url.match(/[^/]+$/)[0] })
+      } else {
+        // If there are no saved buffers then just push the url
+        files.push(url)
+      }
+    }
+  }
+
+  await msg.reply({ content, embeds, files })
 }

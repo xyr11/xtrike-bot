@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const { isChannel } = require('../modules/base')
-const { sniper } = require('../modules/sniper')
+const { sniper, maxSnipes, exceedMaxSnipesNotice } = require('../modules/sniper')
 
 exports.info = {
   name: 'reactionsnipe',
@@ -9,14 +9,14 @@ exports.info = {
   description: 'Get the most recently removed reactions.\n' +
     '{{[Graciously given by Dank Memer <3](https://github.com/DankMemer/sniper)}}',
   usage: '`$$reactionsnipe [number] [channel]`',
-  option: '`[number]`: Get the *nth* removed reaction, default is `1` (most recent) and max is `50` \n `[channel]`: the channel to get deleted messages (optional)',
+  option: `\`[number]\`: get the *nth* removed reaction, default is \`1\` (newest), max is \`${maxSnipes}\` (oldest) \n\`[channel]\`: channel to snipe`,
   aliases: ['reactsnipe'],
   similar: '`$$snipe` `$$editsnipe`',
   permLevel: 'User',
   dank: true,
   options: [
-    { type: 4, name: 'number', description: 'Get the nth removed reaction' },
-    { type: 7, name: 'channel', description: 'The channel to snipe' }
+    { type: 4, name: 'number', description: 'The nth removed reaction' },
+    { type: 7, name: 'channel', description: 'Channel to snipe' }
   ]
 }
 
@@ -44,19 +44,26 @@ exports.run = async (msg, args) => {
   // Check if the given channel is in the same guild
   if (!channel) return msg.reply("There's nothing to snipe!")
 
+  // Fetch snipes
   /** @type {import('../modules/sniper').RemovedReaction} */
   //* (For older versions) Get reactionsnipe data
-  let removedReacts = await sniper('c', channelId)
+  let oldReacts = await sniper('c', channelId)
   //* (For newer versions) If reactionsnipe data is an array, get the index instead
-  if (Array.isArray(removedReacts)) removedReacts = removedReacts[index - 1] || removedReacts[0]
+  let content
+  if (Array.isArray(oldReacts)) {
+    // If user inputted a value larger than the max amount then add a notice in the message
+    if (index > maxSnipes) content = exceedMaxSnipesNotice
+    // If given index does not exist, give the last entry of the array (meaning the oldest one)
+    oldReacts = oldReacts[index - 1] || oldReacts[0]
+  }
   // Check if reactsnipe data exits
-  if (!removedReacts) return msg.reply("There's nothing to snipe!")
+  if (!oldReacts) return msg.reply("There's nothing to snipe!")
 
   const react = {
-    authorId: removedReacts.a,
-    emoji: removedReacts.e,
-    id: removedReacts.i,
-    time: removedReacts.t
+    authorId: oldReacts.a,
+    emoji: oldReacts.e,
+    id: oldReacts.i,
+    time: oldReacts.t
   }
 
   /**
@@ -70,6 +77,7 @@ exports.run = async (msg, args) => {
   // Create embed
   const author = await msg.client.users.fetch(react.authorId, { force: true }) // get author
   msg.reply({
+    content,
     embeds: [new Discord.MessageEmbed()
       .setAuthor({ name: author.tag, iconURL: author.avatarURL() })
       .setColor(author.hexAccentColor)
