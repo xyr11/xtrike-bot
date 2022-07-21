@@ -5,7 +5,8 @@ const { Message } = require('discord.js') // eslint-disable-line no-unused-vars
  * @param {Message} message
  */
 module.exports = message => {
-  if (message.content === 'hi' || message.content === 'hello') {
+  // Check for 'hi' or 'hello' despite the capitalization
+  if (message.content.search(/(hi|hello)\W*$/i) === 0) {
     message.channel.send(`hello <@${message.author.id}>!`)
   }
 }
