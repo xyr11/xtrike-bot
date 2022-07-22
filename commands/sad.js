@@ -1,12 +1,9 @@
-const { botName } = require('../modules/base')
 
-exports.info = {
-  name: 'sad',
-  category: 'Random',
-  description: `Let ${botName} cheer you if you're sad!`,
-  usage: '`$$sad`',
-  permLevel: 'User'
-}
+const BotCmd = require('../class/botCmd')
 
-/** @param {import('../class/sendMsg')} msg */
-exports.run = msg => msg.reply(`Hey ${msg.author.username}, there's no room to be sad. Cheering on you through the hard times! <3`)
+module.exports = new BotCmd('sad')
+  .setCategory('Random')
+  .setDescription(`Let ${require('../modules/base').botName} cheer you if you're sad!`)
+  .setUsage('`$$sad`')
+  .requiredPerm('User')
+  .callback(msg => msg.reply(`Hey ${msg.author.username}, there's no room to be sad. Cheering on you through the hard times! <3`))

@@ -66,10 +66,10 @@ class BotCmd {
    * Minimum permLevel required to use the command
    * @param {String} permLevel
    */
-  setPermLevel (permLevel) { return this.setX({ permLevel }) }
+  requiredPerm (permLevel) { return this.setX({ permLevel }) }
   /**
    * Are inputs or arguments required for the command to run
-   * @param {Boolean} requiredArgs
+   * @param {Boolean} requiredArgs default value is true
    */
   isRequiredArgs (requiredArgs = true) { return this.setX({ requiredArgs }) }
   /** @param {Boolean} dank */
@@ -78,7 +78,7 @@ class BotCmd {
    * Set command interaction options
    * @param {import('discord.js').ApplicationCommandOption[]} options
    */
-  interactionOptions (...options) { return this.setX({ options }) }
+  applicationOptions (...options) { return this.setX({ options }) }
 
   /**
    * The main function to run
