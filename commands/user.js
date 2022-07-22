@@ -98,13 +98,22 @@ exports.run = async (msg, args) => {
       acts = activities.filter(a => a.type !== 'CUSTOM').map(act => `${capitalize(act.type)} ${prep[act.type]} ${(act.url ? `[${act.name}](${act.url})` : act.name)}${act.details ? `: ${act.details}` : ''}${act.state ? ` — ${act.state}` : ''} (since ${discordTime(act.createdTimestamp, 'R')})`)
     }
 
+    // Custom activity
+    let customActDisplay = ''
+    if (customAct && customAct.length) {
+      // Check if there is an emoji
+      if (customAct[0].emoji) customActDisplay += customAct[0].emoji.toString() + ' '
+      // Check if there is an activity state (the text in the activity)
+      if (customAct[0].state) customActDisplay += customAct[0].state
+    }
+
     // Create the embed
     const embed = new Discord.MessageEmbed()
       .setTitle(tag)
       .setThumbnail(user.displayAvatarURL({ size: 512 }))
       .setColor(displayHexColor)
       .setDescription(
-        (customAct && customAct[0] ? `${customAct[0].emoji.toString()} ${customAct[0].state} \n` : '') +
+        (customActDisplay ? customActDisplay + ' \n' : '') +
         `Username: **${username}** (${user.toString()}) \n` +
         (nickname ? `Nickname: ${nickname} \n` : '') +
         `Id: ${id} \n` +
