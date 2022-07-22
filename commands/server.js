@@ -44,7 +44,6 @@ exports.run = async msg => {
   // Get server properties and force fetch if necessary
   const { afkChannelId, afkTimeout, me, channels, createdAt, defaultMessageNotifications, description, explicitContentFilter, features, id, memberCount, mfaLevel, name, nsfwLevel, ownerId, partnered, preferredLocale, premiumSubscriptionCount, premiumTier, presences, rulesChannelId, shard, shardId, systemChannelId, vanityURLCode, verificationLevel, verified, voiceStates } = guild
   const banner = guild.bannerURL()
-  const bans = (await guild.bans.fetch()).size
   const channelCount = (await channels.fetch()).size
   const emojis = (await guild.emojis.fetch()).size
   const icon = guild.iconURL({ size: 512 })
@@ -53,7 +52,6 @@ exports.run = async msg => {
   const scheduledEvents = guild.scheduledEvents && (await guild.scheduledEvents.fetch()).size
   const systemChannelFlags = guild.systemChannelFlags.toArray()
   const threadCount = (await channels.fetchActiveThreads()).threads.size
-  const welcome = await guild.fetchWelcomeScreen()
   // Get all roles and filter out roles managed by bots
   const roles = [...(await guild.roles.fetch()).values()].map(role => !role.managed ? role.toString() : '').filter(a => a)
   // Get online members count
@@ -65,6 +63,13 @@ exports.run = async msg => {
   const inVc = [...voiceStates.cache.values()].map(v => ({ stream: v.streaming }))
   // Get users streaming in vc
   const streaming = inVc.filter(a => a.stream).length
+  // Server properties that may or may not be present so they are surrounded by a try-catch block
+  let bans
+  let welcome = {}
+  try {
+    bans = (await guild.bans.fetch()).size
+    welcome = await guild.fetchWelcomeScreen()
+  } catch {} // Ignore errors
 
   // Create the embed
   const embed = new Discord.MessageEmbed()
