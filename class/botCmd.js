@@ -17,7 +17,12 @@ class BotCmd {
    * Creates a new bot command with default properties
    * @param {String} name Name of the command. Must be the same as the file name.
    */
-  constructor (name) { return this.setX({ info: {}, name, category: 'General', permLevel: 'User' }) }
+  constructor (name) {
+    // Check command name
+    if (!name || typeof name !== 'string') throw new Error('Command name required')
+    // Create a new command with the category set to General and permLevel to User
+    return this.setX({ info: {}, name, category: 'General', permLevel: 'User' })
+  }
 
   // Set common command properties, usually shown in the help embed
   /**
