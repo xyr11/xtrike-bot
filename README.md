@@ -28,15 +28,15 @@ Major changes
 - Automatically enable slash commands and the ;image command in newly joined servers
 - Update server count and delete ;image command data when bot leaves a server
 - `deployslash` and `testingServer` config entry is deprecated
-- Added the BotCmd class
+- Added the BotCmd class and moved initiating local modules inside the command function so it can be reloaded
 
 Other stuff
-- Fixes to ;image, sniper commands, ;help, ;user, hi autoresponse, ;server, and ;user
+- Fixes to sniper commands, ;image, ;help, ;server, and ;user
 - Updated formatting on README file
 - New config entry for `deferEmoji` for the sendMsg class
 - discord.js embed methods deprecation fixes
 - Added reloading modules
-- Updated the video commands to give
+- Updated the video module to just give the source url instead of downloading it
 - For Replit: no need to update Node every time the bot runs
 
 ## Endpoints
