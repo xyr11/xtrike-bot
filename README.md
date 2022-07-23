@@ -22,22 +22,22 @@ Hang tight.
 ## Changelog
 [Check the CHANGELOG.md file](./CHANGELOG.md) for the complete changelog.
 
-### 0.3.2 (upcoming)
+### 0.3.2
 Major changes
-- Updated discord.js to v13.6.0 and other dependencies (3d3d9ac, bc9db41, ede1593, cf9fceb, e4abe52, e4abe52, 61a31d2)
-- Automatically enable slash commands and the ;image command in newly joined servers (3685b3a, e7a1db9)
-- Update server count and delete ;image command data when bot leaves a server (756db7d)
-- `deployslash` and `testingServer` config entry is deprecated (e1b1de8, 47d8327)
-- Added the BotCmd class (cce09cb, 9e12a26, 582c127, 89f335f, 95a1299, d1d5e97)
+- Updated discord.js to v13.6.0 and other dependencies
+- Automatically enable slash commands and the ;image command in newly joined servers
+- Update server count and delete ;image command data when bot leaves a server
+- `deployslash` and `testingServer` config entry is deprecated
+- Added the BotCmd class
 
 Other stuff
-- Fixes to ;image (72cf0da, 183bfaf, b76c5a1, b2a4910), sniper commands (f22f3a0, effb9ca, c5cda22, 6ca1e3f), ;help (57f095d), ;user (6e34280), hi autoresponse (153a515), ;server (c946547), and ;user (251021c)
-- Updated formatting on README file (ede1593)
-- New config entry for `deferEmoji` for the sendMsg class (44ec18d, 8a8c7c0)
-- discord.js embed methods deprecation fixes (36d84c8, b2a4910)
-- Added reloading modules (57a4265)
-- Updated the video commands to give (112dddd)
-- For Replit: no need to update Node every time the bot runs (59f20fe)
+- Fixes to ;image, sniper commands, ;help, ;user, hi autoresponse, ;server, and ;user
+- Updated formatting on README file
+- New config entry for `deferEmoji` for the sendMsg class
+- discord.js embed methods deprecation fixes
+- Added reloading modules
+- Updated the video commands to give
+- For Replit: no need to update Node every time the bot runs
 
 ## Endpoints
 You can either use `GET` or `POST`.
@@ -143,18 +143,6 @@ To update the code, enter:
 git fetch --all && git reset --hard origin/main && npm i
 ```
 **NOTE: This will overwrite files that you may have modified** (other than the `config.js` file). If you don't want it to be overwritten then you can instead fork the repository and do `git merge` with your own version every time a new update releases.
-
-## Roadmap
-<details>
-<summary>To-do's for future versions</summary>
-
-- Command that temporarily disables other commands
-- Use a unified class for commands
-- Get the total number of messages the bot has sent
-- Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
-- More probably...
-
-</details>
 
 ## License
 The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE).
