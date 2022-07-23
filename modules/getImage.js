@@ -1,5 +1,5 @@
 const { imageHash } = require('image-hash')
-const fetch = require('node-fetch')
+const got = require('got')
 const ImagesModel = require('../schemas/images')
 const { getInfo, storeInfo } = require('./botInfo')
 
@@ -132,7 +132,7 @@ const imgEntry = {
   remove: async _id => await ImagesModel.deleteOne({ _id })
 }
 
-const config = {
+const imgConfig = {
   activate: {
     /**
      * Activate `;image` in channel
@@ -150,7 +150,7 @@ const config = {
 
     /**
      * Activate `;image` in server
-     * @param {import('../class/sendMsg')} message message
+     * @param {import('../class/sendMsg')|{ id: String, guildId: String }} message message
      */
     server: async message => {
       // Generate guild identifier
@@ -202,10 +202,10 @@ const fetchImageUrl = async (imageUrl, client) => {
   let ok, buffer, type
   while (ok === undefined) {
     try {
-      const fetched = await fetch(imageUrl).then(res => res) // get fetched result
-      ok = fetched.ok // check if image is deleted
-      type = fetched.headers.get('content-type') // get image type
-      buffer = await fetched.buffer() // get image buffer
+      const fetched = await got.get(imageUrl) // fetch image data
+      ok = fetched.complete && fetched.statusCode === 200 // check if image hasn't been deleted
+      type = fetched.headers['content-type'] // get image type
+      buffer = fetched.rawBody // get raw buffer data
     } catch (err) {
       if (err.name !== 'FetchError') {
         // Stop the infinite loop if bot encountered an error NOT related to FetchError
@@ -290,4 +290,4 @@ const updatePreV020 = async () => {
 const awaitImgHash = input => new Promise((resolve, reject) => { imageHash(input, 10, true, (err, data) => { if (err) reject(err); resolve(data) }) })
 
 // Export the variables
-module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, config, fetchImageUrl, updatePreV020, awaitImgHash }
+module.exports = { ImagesModel, counter: getCounter, syncCounter, guildIdentifiers: getGuildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, config: imgConfig, imgConfig, fetchImageUrl, updatePreV020, awaitImgHash }

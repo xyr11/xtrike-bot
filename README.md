@@ -1,7 +1,10 @@
 # Xtrike Bot
-A multi-purpose Discord bot written in [Discord.js](https://discord.js.org) that does all sorts of bot stuff.
+A multi-purpose Discord bot written in [discord.js](https://discord.js.org) that does all sorts of bot stuff.
 
-[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot) [![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
+[![Status](https://img.shields.io/uptimerobot/status/m786499889-6b41061a49e587f762227724)](https://replit.com/@xyr11/xtrike-bot)
+[![License](https://img.shields.io/github/license/xyr11/xtrike-bot)](#license)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Current Version](https://img.shields.io/github/package-json/v/xyr11/xtrike-bot)](https://github.com/xyr11/xtrike-bot/blob/main/package.json)
 
 ## Features
 ### Search for text in images!
@@ -14,26 +17,27 @@ It's a real inconvenience when you need to open links just to watch epic fails o
 Hang tight.
 
 ## Add the bot to your server
-*The invite link will be available once the bot gets out of beta.*
+*Invite link will be available once the bot gets out of beta.*
 
-## Versions
-### 0.3.1
-New commands, new year bug fixes and updated discord.js to v13.5.1
+## Changelog
+[Check the CHANGELOG.md file](./CHANGELOG.md) for the complete changelog.
 
-#### Breaking changes
-- updated discord.js to v13.5.1
-- moved the SendMsg class to its own folder
-- new config entry for Oxford Dictionaries API
+### 0.3.2
+Major changes
+- Updated discord.js to v13.6.0 and other dependencies
+- Automatically enable slash commands and the ;image command in newly joined servers
+- Update server count and delete ;image command data when bot leaves a server
+- `deployslash` and `testingServer` config entry is deprecated
+- Added the BotCmd class and moved initiating local modules inside the command function so it can be reloaded
 
-#### Other stuff
-- fixed `extractVids` autoresponse not working
-- updated the `user` command to include the presence status and server timeout
-- added the `server` command to get all available info on the current server
-- forgot to remove the `isBeta` status on the `image` command, command should work now
-- added the `define` command which gives word definitions (powered by Oxford Dictionaries)
-- recategorized some commands
-
-You can see past changelogs [in the CHANGELOG.md file.](./CHANGELOG.md)
+Other stuff
+- Fixes to sniper commands, ;image, ;help, ;server, and ;user
+- Updated formatting on README file
+- New config entry for `deferEmoji` for the sendMsg class
+- discord.js embed methods deprecation fixes
+- Added reloading modules
+- Updated the video module to just give the source url instead of downloading it
+- For Replit: no need to update Node every time the bot runs
 
 ## Endpoints
 You can either use `GET` or `POST`.
@@ -63,34 +67,40 @@ console.log(stats)
 
 ### Prerequisites
 + [Git](https://git-scm.com/downloads)
-+ [Node.js 16.6 or later (preferably the latest version)](https://nodejs.org/en/download/)
++ [Node.js 16.9.0 or later](https://nodejs.org/en/download/)
 + [a MongoDB database](https://www.mongodb.com/)
-+ [an OCRSpace API key](https://ocr.space/ocrapi)
-+ [Replit account](https://replit.com) (optional)
-+ [Oxford Dictionaries API ID and key](https://developer.oxforddictionaries.com/) (for the `oxford` command, optional)
++ [Replit account](https://replit.com) (*optional*)
++ API keys for the services below (*optional*)
 
-### Configure repository
-*If you're using Replit*, click: [![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot)](https://replit.com/github/xyr11/xtrike-bot).
+### API services
++ [OCRSpace API](https://ocr.space/ocrapi) (API key)
++ [Oxford Dictionaries API](https://developer.oxforddictionaries.com/) (API ID and key)
 
-*If not*, then clone the repository via Git by opening your console and entering the following commands:
+### Configuring the repository
+[Download the repo](https://github.com/xyr11/xtrike-bot/archive/refs/heads/main.zip) or clone it by entering this command on your console:
 ```
-cd "C:/path/of/repo/folder"
-git clone https://github.com/xyr11/xtrike-bot.git && cd xtrike-bot
-npm i
+git clone https://github.com/xyr11/xtrike-bot.git
 ```
 
-### Set up the bot account
+Then, install all the required dependencies using:
+```
+npm install
+```
+
+##### For Replit users:
+[![Run on Replit](https://replit.com/badge/github/xyr11/xtrike-bot "'Run on Replit' button")](https://replit.com/github/xyr11/xtrike-bot) \
+(or go to https://replit.com/github/xyr11/xtrike-bot)
+
+### Setting up the bot account
 On https://discord.com/developers/applications, click "New Application". Add your application name and press "Create" to create a new application. You can set your bot description in this page.
 
 After that, go to the "Bot" tab. Click the "Add Bot" button and press the confirmation button. After that, enable all privileged intents in the "Privileged Gateway Intents" tab so that the bot can properly fetch data. You can also set a custom bot name and bot avatar in this page.
 
-### Add config variables
+### Adding config variables
 After that, rename the `example-config.js` file to `config.js` and replace the values of all the required variables to configure your bot. There are comments to help you out.
 
-### Run repository
-*If you're on Replit*, press the big "Run" button.
-
-*If not*, open your console and enter the following command to start your bot:
+### Booting up the bot
+Open your console and enter the following command to start your bot:
 ```
 npm start
 ```
@@ -98,6 +108,11 @@ If no errors are encountered, you should be able to see the following message:
 ```
 Ready as <Bot username>! 🤖 (<Date and time>)
 ```
+
+##### For Replit users:
+Just press the big "Run" button.
+
+If you want to update to the latest version of Node manually due to new builds, enter `npm run replit-node-latest` on your shell (beside the console).
 
 ### Customizing the bot
 You can customize the bot by replacing the default value of the optional variables on your `config.js` file.
@@ -113,6 +128,7 @@ Variable | Default value | Description
 `botColor` | "`#E3E5E8`" | Used for the color of embeds sent by the bot. Use a hex color value like "#RRGGBB".
 `infoFields` | Check file | Info fields. This is an array of fields that will be shown in the `;info` embed. Fields needs a `name` and `value` property, and they support Discord embed formatting too.
 `botSupport` | N/A | User IDs of people that has the 'Bot Support' role. Right now they don't do anything but in the future this may change.
+`deferEmoji` | "`💭`" | It's like the counterpart to the "Xtrike Bot is thinking..." text in slash commands, but instead it will react a certain emoji to the message. You can place a unicode emoji like "💭", or an id of a custom Discord emoji (bot must be in the server where the custom emoji is from) like "921418001826340904".
 `errorLogging` | N/A | Channel ID for error logging. All errors caught will be send in the specified channel. Note that the error message may include personal info such as folder names.
 `status` | "`online`" | Presence status: `online`/`idle`/`dnd`/`invisible`.
 `actType` | "`playing`" | Activity type: `playing`/`watching`/`listening`/`competing`.
@@ -126,27 +142,12 @@ To update the code, enter:
 ```
 git fetch --all && git reset --hard origin/main && npm i
 ```
-***NOTE: This will overwrite all files that you have modified, so you will lose them.*** If you want it to be saved permanently then I suggest forking the repository instead and doing `git merge` with your own version every time there is a new update.
-
-## Roadmap
-<details>
-<summary>To-do's for future versions</summary>
-
-- Command that temporarily disables other commands
-- Use a unified class for commands
-- Get the total number of messages the bot has sent
-- Endpoint will cache results every 30 seconds instead of requesting data every time someone visits
-- More probably...
-
-</details>
+**NOTE: This will overwrite files that you may have modified** (other than the `config.js` file). If you don't want it to be overwritten then you can instead fork the repository and do `git merge` with your own version every time a new update releases.
 
 ## License
 The code is licensed under [MIT License](https://github.com/xyr11/xtrike-bot/blob/main/LICENSE).
 
-## Contact
-[Join the official support and dev Discord server!](https://discord.gg/x3F22hN)
-
 ## Credits
-Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thank also to [Replit](https://replit.com) for the bot hosting.
+Huge thank you to [Worn Off Keys's discord.js playlist](https://www.youtube.com/playlist?list=PLaxxQQak6D_f4Z5DtQo0b1McgjLVHmE8Q), to [the *An Idiot's Guide* guide](https://anidiots.guide/), and finally to [Discord.js Guide](https://discordjs.guide/), especially with the new and spicy v13 stuff. A huge thanks also to [Replit](https://replit.com) for the bot hosting.
 
-[^1]: Supported sites: Facebook, Twitter, Tiktok. DISCLAIMER: The bot only temporarily saves the videos generated from this feature so that it can be send on Discord. You are entirely responsible for any and all content generated from these links.
+[^1]: Supported sites: facebook.com, twitter.com, tiktok.com. Disclaimer: The bot only shares the source url of the video from the post containing it.

@@ -1,2 +1,2 @@
-run="npm run replit-build && npm start"
+run="npm start"
 language="nodejs"

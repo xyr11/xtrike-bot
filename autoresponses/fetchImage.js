@@ -1,5 +1,5 @@
 const { Message, MessageEmbed } = require('discord.js') // eslint-disable-line no-unused-vars
-const fetch = require('node-fetch')
+const got = require('got')
 const { ocrApi } = require('../config')
 const { counter, syncCounter, guildIdentifiers, syncGuildIdentifiers, getTimestamp, imgEntry, fetchImageUrl, updatePreV020, awaitImgHash } = require('../modules/getImage')
 
@@ -60,16 +60,16 @@ const getAndSaveImage = async (message, imageUrl, index) => {
   if (await imgEntry.get({ h: hash })) return
 
   // get the text inside the image using OCR API
-  // this part is an infinite loop, so if fetch() gets a FetchError
+  // this part is an infinite loop, so if `got` gets a FetchError
   // or if the API has IsErroredOnProcessing then it will repeat.
   // if there are no errors then the infinite loop will break
   let results
   while (results === undefined) {
     let fetched, ocrKey
-    // fetch
+    // fetch api
     try {
       ocrKey = ocrKeys[Math.floor(Math.random() * ocrKeys.length)]
-      fetched = await fetch('https://api.ocr.space/parse/imageurl?apikey=' + ocrKey + '&url=' + imageUrl).then(res => res.json())
+      fetched = await got.get(`https://api.ocr.space/parse/imageurl?apikey=${ocrKey}&url=${imageUrl}`).json()
     } catch (err) {
       if (err.name !== 'FetchError') {
         // stop the infinite loop if bot encountered an error NOT related to FetchError

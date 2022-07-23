@@ -71,12 +71,12 @@ const botSupport = [
   '012345678901234567'
 ]
 
-// Slash commands options
-// Deploy slash commands in all servers? ===============================
-// If false, slash commands will only deploy on the testing server
-const deploySlash = false
-// Server ID of the testing server (if deploySlash is false) ===========
-const testingServer = '012345678901234567'
+// Defer reaction on messages (optional) ===============================
+// It's like the counterpart to the "Xtrike Bot is thinking..." text in
+// slash commands, but instead it will react a certain emoji to the
+// message. You can place a unicode emoji, or an id of a custom Discord
+// emoji (bot must be in the server where the custom emoji is from).
+const deferEmoji = '💭' // or '921418001826340904'
 
 // Channel ID for error logging (optional) =============================
 // All errors caught will be send in the specified channel. Note that
@@ -96,4 +96,4 @@ const isMobile = false
 
 // export the variables
 // don't touch this please!
-module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, oxfordApi, devs, botSupport, deploySlash, testingServer, errorLogging, actType, actName, status, isMobile }
+module.exports = { botPrefix, botName, botDescription, botColor, infoFields, clientId, discordToken, mongoURI, ocrApi, oxfordApi, devs, botSupport, deferEmoji, errorLogging, actType, actName, status, isMobile }

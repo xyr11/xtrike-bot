@@ -1,12 +1,9 @@
-exports.info = {
-  name: 'hmm',
-  category: 'Random',
-  description: 'Reply with "hmm..."',
-  usage: '`$$hmm [extra text]`',
-  aliases: ['hmmm', 'hmmmm', 'hmmmmm'],
-  permLevel: 'User',
-  options: [{ type: 3, name: 'text', description: 'Extra text' }]
-}
+const BotCmd = require('../class/botCmd')
 
-/** @param {import('../class/sendMsg')} msg */
-exports.run = msg => msg.send(`${msg.author} ${msg.text ? msg.text + ' ' : ''}hmmmm... 🤔`)
+module.exports = new BotCmd('hmm')
+  .setCategory('Random')
+  .setDescription('hmm...')
+  .setUsage('`$$hmm`')
+  .setAliases('hmmm', 'hmmmm', 'hmmmmm')
+  .applicationOptions({ type: 3, name: 'text', description: 'Extra text' })
+  .callback(msg => msg.send(`${msg.author} ${msg.text ? msg.text + ' ' : ''}hmmmm... 🤔`))

@@ -1,45 +1,8 @@
 const { MessageEmbed } = require('discord.js')
 const Fuse = require('fuse.js')
 const getPixels = require('get-pixels')
-const { prefix, colors, userPerms } = require('../modules/base')
-const { config: imgConfig, imgEntry, fetchImageUrl, updatePreV020, guildIdentifiers, awaitImgHash } = require('../modules/getImage')
-
-exports.info = {
-  name: 'image',
-  category: 'Media',
-  description: 'Search for text in images. {{By default, it searches for images sent until 8 months ago and from the current channel only.}}',
-  usage: '`$$image [options] <words>`',
-  option: '`--server` to include images on other channels\n' +
-    '`--all` to include images sent 8+ months ago\n' +
-    '`--disable <channel|server>`\n' +
-    '`--enable <channel|server>`',
-  aliases: ['images', 'img'],
-  permLevel: 'User',
-  requiredArgs: true,
-  options: [
-    { type: 3, name: 'search', description: 'The words to search' },
-    { type: 5, name: '--server', description: 'Include images on other channels (default: false)' },
-    { type: 5, name: '--all', description: 'Include images sent 8+ months ago (default: false)' },
-    {
-      type: 3,
-      name: '--disable',
-      description: 'Disable the command in the current server or channel',
-      choices: [
-        { name: 'server', value: 'server' },
-        { name: 'channel', value: 'channel' }
-      ]
-    },
-    {
-      type: 3,
-      name: '--enable',
-      description: 'Enable the command in the current server or channel',
-      choices: [
-        { name: 'server', value: 'server' },
-        { name: 'channel', value: 'channel' }
-      ]
-    }
-  ]
-}
+const { imgEntry, fetchImageUrl, awaitImgHash } = require('../modules/getImage')
+const BotCmd = require('../class/botCmd')
 
 // Hello there! Please look at guides/fetchImage.md to know more about the
 // specifications of the `;image` command. Thank you!
@@ -203,35 +166,67 @@ const fetchEach = async (data, index, client, map) => {
   map.set(index, { channel, msgId, user: user.tag, avatar: user.avatarURL(), color, image, timestamp: (timestamp + 1635638400) * 1000, _id, hash })
 }
 
-// text to reply
-const msgNotEnabled = `A moderator or admin hasn't enabled this command yet. \nTo enable it, enter \`${prefix}image --enable\``
-const msgDisableWarning = "When you disable the image command, you won't be able to use it until a moderator enables it back again. It will also remove ALL data regarding images sent so you wouldn't be able to search for them again. \nAre you really sure about this? Enter `" + prefix + 'image --disable server YES` to go ahead.'
+module.exports = new BotCmd('image')
+  .setCategory('Media')
+  .setDescription('Search for text in images{{. By default, it searches for images sent until 8 months ago and from the current channel only.}}')
+  .setUsage('`$$image [options] <words>`')
+  .setOptionText('`--server` to include images on other channels\n' +
+  '`--all` to include images sent 8+ months ago\n' +
+  '`--disable <channel|server>`\n' +
+  '`--enable <channel|server>`')
+  .setAliases(['images', 'img'])
+  .requiredPerm('User')
+  .isRequiredArgs()
+  .applicationOptions([
+    { type: 3, name: 'search', description: 'The words to search' },
+    { type: 5, name: '--server', description: 'Include images on other channels (default: false)' },
+    { type: 5, name: '--all', description: 'Include images sent 8+ months ago (default: false)' },
+    {
+      type: 3,
+      name: '--disable',
+      description: 'Disable the command in the current server or channel',
+      choices: [
+        { name: 'server', value: 'server' },
+        { name: 'channel', value: 'channel' }
+      ]
+    },
+    {
+      type: 3,
+      name: '--enable',
+      description: 'Enable the command in the current server or channel',
+      choices: [
+        { name: 'server', value: 'server' },
+        { name: 'channel', value: 'channel' }
+      ]
+    }
+  ])
+  .callback(async (msg, args) => {
+    const { prefix, colors, userPerms } = require('../modules/base')
+    const { imgConfig, imgEntry, updatePreV020, guildIdentifiers } = require('../modules/getImage')
 
-/**
- * @param {import('../class/sendMsg')} msg
- * @param {Array} args
- */
-exports.run = async (msg, args) => {
-  const { id, channelId, guildId } = msg
-  msg.setEphemeral()
-  await msg.setDefer() // defer reply
+    // text to reply
+    const msgNotEnabled = `A moderator or admin hasn't enabled this command yet. \nTo enable it, enter \`${prefix}image --enable\``
+    const msgDisableWarning = "When you disable the image command, you won't be able to use it until a moderator enables it back again. It will also remove ALL data regarding images sent so you wouldn't be able to search for them again. \nAre you really sure about this? Enter `" + prefix + 'image --disable server YES` to go ahead.'
 
-  // Set the instance of the map
-  maps[id] = new Map()
+    const { id, channelId, guildId } = msg
+    msg.setEphemeral()
+    await msg.setDefer({}, false) // defer reply
 
-  // Backward compatibility for pre-v0.2.0 entries
-  await updatePreV020()
+    // Set the instance of the map
+    maps[id] = new Map()
 
-  // Get server data
-  const configEntry = await imgEntry.get({ f: true, g: guildId })
-  // Check if current channel is excluded
-  const isExcluded = configEntry.d.e.indexOf(channelId) > -1
+    // Backward compatibility for pre-v0.2.0 entries
+    await updatePreV020()
 
-  // Activate/deactivate command
-  if (userPerms(msg) < 2) { // check user permission level
-    msg.reply('You need to be at least a moderator to be able to do this.')
-  } else {
+    // Get server data
+    const configEntry = await imgEntry.get({ f: true, g: guildId })
+    // Check if current channel is excluded
+    const isExcluded = configEntry && configEntry.d.e.indexOf(channelId) > -1
+
+    // Activate/deactivate command
     if (args[0] === '--activate' || args[0] === '--enable') {
+      // Check user permission level
+      if (userPerms(msg) < 2) return msg.reply('You need to be at least a moderator to be able to do this.')
       if (args[1] === 'channel') {
         // Activate channel
         // Check if command is not activated in server
@@ -244,13 +239,14 @@ exports.run = async (msg, args) => {
         // Activate server
         // Check if command is already activated
         if (configEntry) return msg.reply('You have enabled this server already!')
-        await imgConfig.activate.server(msg.message)
-        return msg.reply({
+        return imgConfig.activate.server(msg.message).then(() => msg.reply({
           content: 'Success!',
-          embeds: [{ description: `:green_circle: Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
-        })
+          embeds: [{ description: `🟢 Successfully enabled the \`${prefix}image\` command for this server`, color: colors.green }]
+        }))
       }
     } else if (args[0] === '--deactivate' || args[0] === '--disable') {
+      // Check user permission level
+      if (userPerms(msg) < 2) return msg.reply('You need to be at least a moderator to be able to do this.')
       // Check if command is not activated in server
       if (!configEntry) return msg.reply(msgNotEnabled)
       if (!args[1]) {
@@ -265,113 +261,117 @@ exports.run = async (msg, args) => {
         return msg.reply('Successfully excluded this channel for image monitoring.')
       } else if (args[1] === 'server') {
         // Show deactivate server warning
-        if (args[2].toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
+        if (args[2]?.toLowerCase() !== 'yes') return msg.reply(msgDisableWarning)
         await imgConfig.deactivate.server(guildId)
         return msg.reply('Successfully disabled this command!')
       }
     }
-  }
 
-  // Return silently if server hasn't activated the command yet
-  if (!configEntry || isExcluded) return
+    // Return if command is disabled on server or channel
+    // If msg is a slash command then reply with a message, if not then return silently
+    if (!configEntry || isExcluded) return msg.isSlash && msg.reply('This channel is currently disabled for image monitoring.')
 
-  // Function to check if the given option is present in `args`
-  const option = option => args.indexOf(option) > -1 && args.indexOf(option)
+    // show the defer emoji
+    await msg.setDefer()
 
-  // Get image data from collection entry
-  let data
-  if (option('--server')) {
-    // Search for images in the whole server
-    args.splice(option('--server'), 1) // remove `--server`
-    data = await imgEntry.getAll({ g: guildIdentifiers().get(guildId) }, '-f -g')
-  } else {
-    // Search for images in the current channel only (default)
-    data = await imgEntry.getAll({ c: channelId }, '-f -g')
-  }
+    // Function to check if the given option is present in `args`
+    const option = option => args.indexOf(option) > -1 && args.indexOf(option)
 
-  // ? `--here`: search for images in the current channel (deprecated because it's already the default)
-  if (option('--here')) args.splice(option('--here'), 1) // remove `--here`
-
-  // Filter old images
-  if (option('--all')) {
-    // `--all`: search for images regardless of how old it is
-    args.splice(option('--all'), 1) // remove `--all`
-  } else {
-    // Filter images sent 32 weeks (~8 months) or earlier (default)
-    // 32 weeks in unix time is 1000*60*60*24*7*32 = 19353600000
-    data = data.filter(obj => obj.w >= (Date.now() - 19353600000) / 1000 - 1635638400)
-  }
-
-  // Filter empty values
-  data = data.reduce((prev, curr) => {
-    if (!curr.d) {
-      // Remove entries with empty values from the array
-      imgEntry.remove(curr._id)
-      return [...prev] // remove it from the array too
-    }
-    return [...prev, curr]
-  }, [])
-
-  // Set the search options
-  const fuse = new Fuse(data, {
-    // isCaseSensitive: false,
-    // includeScore: false,
-    // shouldSort: true,
-    // includeMatches: false,
-    minMatchCharLength: 2,
-    // findAllMatches: false,
-    // location: 0,
-    threshold: 0.45,
-    // distance: 100,
-    ignoreLocation: true,
-    ignoreFieldNorm: true,
-    keys: ['d']
-  })
-
-  // Search the object
-  /** @type {Object[]} */
-  let results = fuse.search(args.join(' '))
-  // Check if there are any results
-  if (!results.length) return msg.reply({ content: 'Sorry, I wasn\'t able to find images that contain that text.' })
-  // Process each result
-  for (const r in results) {
-    // Check whether all results have been processed (including `undefined` values)
-    // or if the map has at least 10 values (`undefined` values are not counted)
-    if (valuesCount(id) >= results.length || filteredValCount(id) >= 10) continue // if true, stop the loop
-    // If not then keep processing the images
-    await new Promise((resolve, reject) => setTimeout(resolve, 50)) // add 50ms delay for each loop
-    fetchEach(results[r], r, msg.client, maps[id])
-  }
-
-  // When the all results have been fetched, get the array
-  results = (await processedArr(id, results.length))
-    .sort((a, b) => a[0] - b[0]) // sort by index
-    .map(a => a[1]) // get the values
-
-  // Convert each result into a MessageEmbed
-  const embeds = []
-  for (const p in results) {
-    const result = results[p]
-    // Check if image already exists in the embeds array by using the image url and hash
-    const hashes = embeds.map(e => e.hash)
-    const images = embeds.map(e => e.image)
-    if (hashes.indexOf(result.hash) <= -1 || images.indexOf(result.image)) {
-      // Make an embed
-      const { channel, msgId, user, avatar, color, image, timestamp } = result
-      embeds.push(new MessageEmbed()
-        .setAuthor(`#${+p + 1} by ${user} (Link)`, avatar, `https://discord.com/channels/${msg.guildId}/${channel}/${msgId}`)
-        .setColor(color)
-        .setImage(image)
-        .setTimestamp(timestamp)
-        .setFooter({ text: `🔎 "${args.join(' ')}"` }))
+    // Get image data from collection entry
+    let data
+    if (option('--server')) {
+      // Search for images in the whole server
+      args.splice(option('--server'), 1) // remove `--server`
+      data = await imgEntry.getAll({ g: guildIdentifiers().get(guildId) }, '-f -g')
     } else {
-      // Image already exists
-      imgEntry.remove(result._id) // delete entry in db
+      // Search for images in the current channel only (default)
+      data = await imgEntry.getAll({ c: channelId }, '-f -g')
     }
-  }
 
-  // Send embeds
-  msg.reply({ content: `I was able to find ${valuesCount(id)} images:`, embeds })
-  // Delete instance data
-  return delete maps[id]
-}
+    // ? `--here`: search for images in the current channel (deprecated because it's already the default)
+    if (option('--here')) args.splice(option('--here'), 1) // remove `--here`
+
+    // Filter old images
+    if (option('--all')) {
+      // `--all`: search for images regardless of how old it is
+      args.splice(option('--all'), 1) // remove `--all`
+    } else {
+      // Filter images sent 32 weeks (~8 months) or earlier (default)
+      // 32 weeks in unix time is 1000*60*60*24*7*32 = 19353600000
+      data = data.filter(obj => obj.w >= (Date.now() - 19353600000) / 1000 - 1635638400)
+    }
+
+    // Filter empty values
+    data = data.reduce((prev, curr) => {
+      if (!curr.d) {
+        // Remove entries with empty values from the array
+        imgEntry.remove(curr._id)
+        return [...prev] // remove it from the array too
+      }
+      return [...prev, curr]
+    }, [])
+
+    // Set the search options
+    const fuse = new Fuse(data, {
+      // isCaseSensitive: false,
+      // includeScore: false,
+      // shouldSort: true,
+      // includeMatches: false,
+      minMatchCharLength: 2,
+      // findAllMatches: false,
+      // location: 0,
+      threshold: 0.45,
+      // distance: 100,
+      ignoreLocation: true,
+      ignoreFieldNorm: true,
+      keys: ['d']
+    })
+
+    // Search the object
+    /** @type {Object[]} */
+    let results = fuse.search(args.join(' '))
+    // Check if there are any results
+    if (!results.length) return msg.reply({ content: 'Sorry, I wasn\'t able to find images that contain that text.' })
+    // Process each result
+    for (const r in results) {
+      // Check whether all results have been processed (including `undefined` values)
+      // or if the map has at least 10 values (`undefined` values are not counted)
+      if (valuesCount(id) >= results.length || filteredValCount(id) >= 10) continue // if true, stop the loop
+      // If not then keep processing the images
+      await new Promise((resolve, reject) => setTimeout(resolve, 50)) // add 50ms delay for each loop
+      fetchEach(results[r], r, msg.client, maps[id])
+    }
+
+    // When the all results have been fetched, get the array
+    results = (await processedArr(id, results.length))
+      .sort((a, b) => a[0] - b[0]) // sort by index
+      .map(a => a[1]) // get the values
+
+    // Convert each result into a MessageEmbed
+    const embeds = []
+    for (const p in results) {
+      const result = results[p]
+      if (!result || embeds.length > 10) return // limit to 10 embeds only
+      // Check if image already exists in the embeds array by using the image url and hash
+      const hashes = embeds.map(e => e.hash)
+      const images = embeds.map(e => e.image)
+      if (hashes.indexOf(result.hash) <= -1 || images.indexOf(result.image)) {
+        // Make an embed
+        const { channel, msgId, user, avatar, color, image, timestamp } = result
+        embeds.push(new MessageEmbed()
+          .setAuthor({ name: `#${+p + 1} by ${user} (Link)`, iconURL: avatar, url: `https://discord.com/channels/${msg.guildId}/${channel}/${msgId}` })
+          .setColor(color)
+          .setImage(image)
+          .setTimestamp(timestamp)
+          .setFooter({ text: `🔎 "${args.join(' ')}"` }))
+      } else {
+        // Image already exists
+        imgEntry.remove(result._id) // delete entry in db
+      }
+    }
+
+    // Send embeds
+    msg.reply({ content: `I was able to find ${valuesCount(id)} images:`, embeds })
+    // Delete instance data
+    return delete maps[id]
+  })
