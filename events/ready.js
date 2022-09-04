@@ -2,7 +2,7 @@ const Amongoose = require('mongoose')
 const config = require('../config')
 const { presence } = require('../modules/base')
 const { storeInfo, getInfo } = require('../modules/botInfo')
-const { logGood, logInfo } = require('../modules/logger')
+const { logGood, logInfo, logUrgent } = require('../modules/logger')
 
 /** @param {import('discord.js').Client} client */
 exports.execute = async client => {
@@ -22,6 +22,8 @@ exports.execute = async client => {
 
   // Connect to MongoDB server
   await Amongoose.connect(config.mongoURI, { keepAlive: true })
+    .then(() => logGood('Connected to database'))
+    .catch(logUrgent)
 
   // Statistics
   // Server count
