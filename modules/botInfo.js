@@ -27,13 +27,20 @@ exports.getInfo = async (_id) => {
 /**
  * Get keys
  * @function
- * @returns {[String]}
+ * @returns {String[]}
  */
 exports.getKeys = async () => await BotInfo.find().distinct('_id')
 
 /**
+ * @typedef BotInfo
+ * @type {Object}
+ * @prop {String} _id Entry name
+ * @prop {Any}    d   Data
+*/
+
+/**
  * Get all
  * @function
- * @returns {[Object<String, Any>]}
+ * @returns {BotInfo[]}
  */
 exports.getAll = async () => await BotInfo.find()

@@ -41,10 +41,10 @@ exports.execute = async message => {
   // Checks
   // If that command doesn't exist or if they dont have proper permLevels, silently exit and do nothing
   if (!cmd || !hasPerms(cmd, message)) return
-  // Check if command is in beta
-  if (cmd.info.isBeta && userPerms(message) < 4) return message.reply('This command isn\'t really done yet, check back later.')
   // If message starts with 'pls' but dank mode is not enabled in command, return
   if (dank && !cmd.info.dank) return
+  // Check if command is in beta
+  if (cmd.info.isBeta && userPerms(message) < 4) return message.reply('This command isn\'t really done yet, check back later.')
 
   // Run the command
   try {
