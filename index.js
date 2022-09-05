@@ -1,19 +1,28 @@
 const { Client, Collection } = require('discord.js')
 const fs = require('fs')
 const config = require('./config')
+const outputErr = require('./modules/errorCatch')
 const { intents, partials } = require('./modules/base')
 const { logGray } = require('./modules/logger')
 
-// Access our .env file
+// Access the .env file
 const dotenv = require('dotenv')
 dotenv.config()
 
-// Initialize client
-const client = new Client({ intents, partials, ws: { properties: config.isMobile ? { $browser: 'Discord iOS' } : {} } })
-
-// Handle errors
-const outputErr = require('./modules/errorCatch')
+// Handle process errors
+// Catch rejections (for async)
 process.on('unhandledRejection', error => outputErr(error, client))
+// Catch exceptions (for sync)
+process.on('uncaughtException', error => outputErr(error, client))
+
+// Initialize the client
+const client = new Client({
+  intents,
+  partials,
+  failIfNotExists: false, // Whether to error if the referenced message does not exist
+  ws: { properties: config.isMobile ? { browser: 'Discord Android' } : {} }
+})
+// Log client errors
 client.on('error', error => outputErr(error, client))
 
 // Read the commands folder
