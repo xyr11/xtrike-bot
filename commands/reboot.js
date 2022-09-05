@@ -32,7 +32,6 @@ module.exports = new BotCmd('reboot')
   .setUsage('`$$reboot`')
   .requiredPerm('lmao')
   .callback(async msg => {
-    const { presence } = require('../modules/base')
     const { storeInfo } = require('../modules/botInfo')
 
     const { client } = msg
@@ -41,7 +40,7 @@ module.exports = new BotCmd('reboot')
     msg.urgent('Bot is shutting down. 🤖')
 
     // Set activity
-    await client.user.setActivity('none. Rebooting...', { type: presence.activityType })
+    await client.user.setActivity('none. Rebooting...')
 
     // Reply
     await msg.reply('Bot is shutting down.')
