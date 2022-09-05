@@ -56,6 +56,9 @@ module.exports = new BotCmd('reboot')
       return client.commands.delete(cmd.info.name)
     }))
 
+    // Terminate connection
+    client.destroy()
+
     // Exit
     process.exit(0)
   })
